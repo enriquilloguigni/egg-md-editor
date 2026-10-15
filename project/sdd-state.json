@@ -11,7 +11,8 @@
     "F-001": {
       "status": "planned",
       "docs": {
-        "process": "proposed"
+        "process": "proposed",
+        "screens": "proposed"
       }
     }
   },
@@ -19,7 +20,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T15:59:17.874Z",
+  "updated_at": "2026-10-15T16:39:20.684Z",
   "tier": {
     "category": "S",
     "budget_waived": []
