@@ -1,0 +1,15 @@
+{
+  "schema": "sdd-state/v1",
+  "project": "egg-md-editor",
+  "phases": {
+    "discovery": "pending",
+    "project_spec": "pending",
+    "architecture": "pending",
+    "roadmap": "pending"
+  },
+  "features": {},
+  "current": {
+    "level": "project"
+  },
+  "updated_at": "2026-10-15T00:33:45.322Z"
+}
