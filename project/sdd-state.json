@@ -4,14 +4,14 @@
   "phases": {
     "discovery": "done",
     "project_spec": "done",
-    "architecture": "pending",
+    "architecture": "done",
     "roadmap": "pending"
   },
   "features": {},
   "current": {
     "level": "project"
   },
-  "updated_at": "2026-10-15T03:53:48.032Z",
+  "updated_at": "2026-10-15T04:39:37.448Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -59,8 +59,8 @@
     }
   ],
   "last_gate": {
-    "name": "PROJECT_SPEC_REVIEW",
-    "artifact": "project/project-spec/",
+    "name": "DESIGN_APPROVED",
+    "artifact": "project/architecture/, project/design/",
     "verdict": "aprobar",
     "result": "pass",
     "decided_by": "agente",
@@ -78,6 +78,14 @@
     {
       "name": "PROJECT_SPEC_REVIEW",
       "artifact": "project/project-spec/",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "agente",
+      "decided_at": "2026-10-15"
+    },
+    {
+      "name": "DESIGN_APPROVED",
+      "artifact": "project/architecture/, project/design/",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "agente",
