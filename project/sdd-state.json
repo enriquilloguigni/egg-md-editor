@@ -19,7 +19,8 @@
         "security-permissions": "proposed",
         "logs": "proposed",
         "audit": "proposed",
-        "external-services": "proposed"
+        "external-services": "proposed",
+        "business-rules": "proposed"
       }
     }
   },
@@ -27,7 +28,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T17:15:30.584Z",
+  "updated_at": "2026-10-15T19:17:27.221Z",
   "tier": {
     "category": "S",
     "budget_waived": []
