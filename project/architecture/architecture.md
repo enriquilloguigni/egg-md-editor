@@ -1,61 +1,58 @@
 # Architecture Context — egg-md-editor
 
-## Stack tecnológico
+## Estilo y principios
 
-**Decisión humana (mantenedor, 2026-10-15): .NET 10 + Avalonia UI.** Este Context refleja esa decisión vigente; todo agente debe respetarla sin reabrirla.
+- Arquitectura de escritorio local-first: un proceso por usuario, sin servidor, sin red y sin servicios externos (C-001); todo el estado vive en el equipo del usuario.
+- Una sola ventana con un único documento abierto a la vez (CQ-005), representado por un modelo único del que derivan las dos vistas.
+- UX de procesador de texto tradicional: menús persistentes, barra de formato y atajos sobre comandos compartidos.
 
-| Área | Decisión vigente | Trazabilidad |
-|---|---|---|
-| Runtime y lenguaje | .NET 10 (C#), compilación `dotnet build` local en cada OS | BR-008, BR-009, NFR-005, A-001 |
-| UI de escritorio | Avalonia UI (XAML + MVVM), renderizado por software, sin dependencia de GPU | FR-001, FR-009, BR-003 |
-| Plataformas | Windows, macOS y Linux en las versiones soportadas por .NET 10 | BR-009, NFR-005, FR-010 |
-| Parsing Markdown | Implementación conforme a CommonMark con tareas/tachado GFM dentro del proceso (sin servicios externos) | FR-002, NFR-005 |
-| Exportación a PDF | Generación local dentro del proceso, fiel a la vista WYSIWYG | FR-005 |
-| Ortografía | Motor local con diccionario personal por idioma en disco del usuario | FR-008, BR-005, BR-006 |
-| Persistencia | Único archivo Markdown UTF-8 en disco local; guardado sin pérdida, EOL consistentes | FR-004, NFR-004, BR-004, A-002 |
-| Localización | Arquitectura i18n extensible; v1 español e inglés | NFR-006, BR-007, FR-010 |
-| Red | Sin cliente HTTP, sin telemetría, sin almacenamiento remoto: 100% local y offline | C-001, BR-001, NFR-002, NFR-003 |
-| Dependencias | Solo paquetes NuGet con licencia permisiva compatible con MIT, atribución en archivo de terceros y en Acerca de | C-002, BR-002, NFR-007 |
+## Límites y responsabilidades
 
-Patrones: aplicación monolítica de un solo proceso; una única ventana con un único documento abierto (BR-003); los dos paneles son dos vistas del mismo documento en memoria con sincronización bidireccional en proceso (FR-001) — sin cola, red ni persistencia intermedia; MVVM en toda la UI; modelo de documento único deshacer/rehacer central (FR-007).
+- Límite del sistema: el proceso de la aplicación. No existen interfaces externas de red ni contratos con terceros (C-001, NFR-002, NFR-003); las interfaces son internas: modelo de documento, servicios y adaptadores.
+- UI (menús, barra de formato, dos paneles, diálogos): entrada del usuario y presentación, sin lógica de dominio.
+- Modelo de documento y sincronización: representación única, correspondencia de posiciones y reflejo bidireccional <500 ms p95 (NFR-001).
+- Servicios internos (archivo UTF-8 con finales de línea por SO, exportación a PDF, ortografía, metadatos, i18n): tras interfaces del núcleo y sin I/O de red.
+- Adaptadores de plataforma (Windows, macOS, Linux): rutas, diálogos nativos, fuentes y finales de línea.
 
-## Hardware base mínimo soportado (fija NFR-001)
+## Relaciones entre partes
 
-NFR-001 exige latencia de sincronización bidireccional < 500 ms en p95 para documentos de hasta 1.000.000 de caracteres «sobre el hardware base mínimo soportado que declara Architecture». Para v1 ese hardware base queda declarado y acotado como sigue (medida de referencia y suelo de soporte):
+- UI → ViewModel → modelo único de documento; los dos paneles leen y escriben el mismo modelo por separado.
+- El parser CommonMark (con tareas y tachado GFM) es el contrato entre sintaxis y WYSIWYG y media la sincronización en ambas direcciones.
+- Exportación PDF y ortografía dependen del modelo, nunca de la UI; la corrección usa el idioma del bloque de metadatos (FR-006, FR-008).
 
-| Recurso | Mínimo soportado |
-|---|---|
-| CPU | 2 núcleos físicos x86-64 o ARM64 a 2.5 GHz o superior |
-| RAM | 8 GB |
-| Almacenamiento | 1 GB libre en disco local |
-| Pantalla | 1366×768 |
-| Aceleración GPU | No requerida (renderizado por software) |
-| Red | No requerida: el hardware mínimo no incluye conectividad (C-001, NFR-002) |
-| SO | Versiones soportadas por .NET 10 en Windows, macOS y Linux (NFR-005, BR-009) |
+## Tecnologías fundamentales
 
-La verificación de NFR-001 se ejecuta sobre esta configuración; por debajo de ella no hay compromiso de rendimiento. Mencionados en Architecture: NFR-001, NFR-002, NFR-004, NFR-005, NFR-006, NFR-007 — cada NFR conserva su redacción original en Project Spec.
+- Stack: .NET 10 (`net10.0`) y Avalonia UI — decisión humana vigente, base de las tres plataformas con distribución solo-código-fuente.
+- Librerías de dominio (Markdown, fórmulas, diagramas, PDF, ortografía, i18n): selección condicionada por C-002; ninguna puede requerir red ni sustituir el stack base.
+- Sin tecnologías de datos, red ni telemetría: solo archivos locales y preferencias del usuario.
 
-## Superficies
+## Patrones adoptados
 
-- Ventana única de procesador (menús Archivo/Edición/Ver/Formato/Herramientas/Ayuda + barra de formato) con dos paneles: WYSIWYG a la izquierda, Markdown estándar a la derecha — FR-001, FR-009.
-- Diálogos: abrir/guardar como, exportación a PDF, propiedades de metadatos, buscar/reemplazar, ir a línea, Acerca de con atribuciones — FR-004, FR-005, FR-006, FR-007, FR-010.
-- Idiomas de UI: español e inglés (FR-010, BR-007). Los IDs `SC-xxx` de pantallas y `TK-xxx` de tokens se asignan en `design-system.md` (fase Design).
+- MVVM en Avalonia: vistas delgadas, un ViewModel por pantalla y comandos compartidos entre menú, barra y atajos.
+- Modelo único con sincronización bidireccional por eventos (sin sondeo) y mapa de correspondencia de posiciones entre paneles.
+- Puerto/adaptador por plataforma y por librería con licencia: el núcleo no conoce SO, rutas ni APIs concretas.
+- i18n por recursos (es, en) con inyección de cadenas, extensible más allá de v1 (NFR-006).
+
+## Infraestructura de ejecución
+
+- Ejecución: aplicación de escritorio compilada y ejecutada por el usuario; sin contenedores, sin servicios desplegados y sin red (C-001).
+- Plataformas v1: Windows, macOS y Linux en las versiones de la matriz de soporte oficial de .NET 10 (x64 y arm64); el amarre es esa matriz del runtime, no una lista propia del producto (CQ-002, NFR-005, BR-009).
+- Toolchain: .NET SDK 10.0.x y TFM `net10.0`; distribución solo como código fuente con build local, sin instaladores, binarios publicados ni auto-update.
+- Hardware base mínimo soportado para v1 (fija NFR-001): CPU 64 bits (x86_64/arm64) de ≥2 núcleos a ≥2,0 GHz, 8 GB de RAM, 2 GB de disco libres y pantalla ≥1280×720; sin GPU acelerada ni periféricos de red.
+- Persistencia: documento y exportaciones en el sistema de archivos del usuario; preferencias y diccionario personal por idioma (CQ-004) en el directorio de configuración del usuario.
+
+## Decisiones vigentes en texto operativo
+
+- Stack .NET 10 + Avalonia UI y matriz de plataformas de .NET 10: inamovibles sin un ADR aprobado por el humano.
+- NFR-001 se certifica sobre el hardware base declarado en Infraestructura de ejecución; NFR-005 sobre la matriz de soporte de .NET 10; NFR-007 exige licencias permisivas compatibles con MIT (C-002).
+- Idiomas de UI v1: español e inglés sobre i18n extensible; tema claro/oscuro, modo foco y zoom son atributos de la aplicación.
+- **Comando de prueba:** `dotnet test` en la raíz del repositorio; la solución .NET (aplicación + pruebas unitarias) vive en la raíz y Verification exige exit_code=0.
 
 ## Constraints
 
-Tier S: este proyecto no tiene `constraints.md`; el bloque sustituye al tier S.
-
 ```
-| id    | descripción                                                                                                                                        | vínculo                                                        | origen                        | estado    |
-|-------|----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|-------------------------------|-----------|
-| C-001 | La aplicación funciona 100% local y offline: sin telemetría, sin servicios de red y sin procesamiento de datos de terceros (sin nube).              | BR-001 · NFR-002 · NFR-003 · FR-004 · vision (principios)      | decisión humana 2026-10-15    | confirmed |
-| C-002 | Solo licencias permisivas compatibles con MIT en las dependencias, con la atribución declarada en un archivo de terceros y en la ventana Acerca de. | BR-002 · NFR-007 · FR-010 (Acerca de con atribuciones)        | decisión humana 2026-10-15    | confirmed |
+| id    | description | source | status |
+|---|---|---|---|
+| C-001 | La aplicación funciona 100% local y offline: sin telemetría, sin servicios de red y sin procesamiento de datos de terceros (sin nube). | heredada de project/discovery/discovery-context.md (decisión humana 2026-10-15) | confirmed |
+| C-002 | Solo licencias permisivas compatibles con MIT en las dependencias, con la atribución declarada en un archivo de terceros y en la ventana Acerca de. | heredada de project/discovery/discovery-context.md (decisión humana 2026-10-15) | confirmed |
 ```
-
-Restricciones de soporte derivadas sin ID propio: distribución solo-fuente (BR-008, A-001), documento único en disco local (BR-004, A-002), ventana única con un documento abierto (BR-003), y el hardware base mínimo declarado arriba como suelo de NFR-001.
-
-## Trazabilidad de requisitos
-
-FR cubiertos por el stack/superficies: FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010. BR: BR-001…BR-010. NFR: NFR-001…NFR-007. Ningún requisito se crea ni se modifica aquí; el mapeo FR → Features (`F-xxx`) se hace en el Roadmap, cuando los Features existan.
-
-Comando de prueba: `dotnet build`
