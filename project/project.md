@@ -11,12 +11,12 @@ Editor de texto con paneles sincronizados WYSIWYG ↔ Markdown, barra de formato
 ## Dimensión
 
 Categoría: Pequeño (S)
-Ponderado: 4.30
+Ponderado: 4.90
 
-Alcance 25% 7
+Alcance 30% 7
 Integraciones 20% 2
-Riesgo regulatorio 20% 1
-Superficie 15% 7
+Riesgo regulatorio 10% 1
+Superficie 20% 7
 Novedad técnica 10% 8
 Brownfield 10% 1
 
