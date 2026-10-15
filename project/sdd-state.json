@@ -7,16 +7,12 @@
     "architecture": "done",
     "roadmap": "done"
   },
-  "features": {
-    "F-001": {
-      "status": "planned"
-    }
-  },
+  "features": {},
   "current": {
-    "level": "feature",
-    "id": "F-001"
+    "level": "project",
+    "id": ""
   },
-  "updated_at": "2026-10-15T05:04:37.350Z",
+  "updated_at": "2026-10-15T05:34:22.298Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -76,7 +72,7 @@
       "artifact": "project/features/F-001-entorno-de-aplicacion/feature.md",
       "blocks": "trazabilidad Feature ↔ Roadmap",
       "impact": "medium",
-      "status": "pending_human"
+      "status": "resolved"
     }
   ],
   "last_gate": {
