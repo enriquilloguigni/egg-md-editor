@@ -9,14 +9,17 @@
   },
   "features": {
     "F-001": {
-      "status": "planned"
+      "status": "planned",
+      "docs": {
+        "process": "proposed"
+      }
     }
   },
   "current": {
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T15:07:41.813Z",
+  "updated_at": "2026-10-15T15:59:17.874Z",
   "tier": {
     "category": "S",
     "budget_waived": []
