@@ -12,7 +12,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T12:50:36.409Z",
+  "updated_at": "2026-10-15T13:11:52.790Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -76,8 +76,8 @@
     }
   ],
   "last_gate": {
-    "name": "PROJECT_SPEC_REVIEW",
-    "artifact": "project/project-spec/",
+    "name": "ROADMAP_APPROVED",
+    "artifact": "project/roadmap/roadmap.md (v2)",
     "verdict": "aprobar",
     "result": "pass",
     "decided_by": "agente",
@@ -119,6 +119,14 @@
     {
       "name": "PROJECT_SPEC_REVIEW",
       "artifact": "project/project-spec/functional-requirements.md (v2)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "agente",
+      "decided_at": "2026-10-15"
+    },
+    {
+      "name": "ROADMAP_APPROVED",
+      "artifact": "project/roadmap/roadmap.md (v2)",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "agente",
