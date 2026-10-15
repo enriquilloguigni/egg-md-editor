@@ -13,7 +13,8 @@
       "docs": {
         "process": "proposed",
         "screens": "proposed",
-        "visual-resources": "proposed"
+        "visual-resources": "proposed",
+        "data-structures": "proposed"
       }
     }
   },
@@ -21,7 +22,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T16:49:57.446Z",
+  "updated_at": "2026-10-15T16:56:30.431Z",
   "tier": {
     "category": "S",
     "budget_waived": []
