@@ -12,7 +12,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T13:57:25.708Z",
+  "updated_at": "2026-10-15T14:57:53.707Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -85,7 +85,7 @@
   ],
   "last_gate": {
     "name": "ROADMAP_APPROVED",
-    "artifact": "project/roadmap/roadmap.md (v2)",
+    "artifact": "project/roadmap/roadmap.md (v3, tras ADR-001)",
     "verdict": "aprobar",
     "result": "pass",
     "decided_by": "agente",
@@ -135,6 +135,14 @@
     {
       "name": "ROADMAP_APPROVED",
       "artifact": "project/roadmap/roadmap.md (v2)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "agente",
+      "decided_at": "2026-10-15"
+    },
+    {
+      "name": "ROADMAP_APPROVED",
+      "artifact": "project/roadmap/roadmap.md (v3, tras ADR-001)",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "agente",
