@@ -20,7 +20,8 @@
         "logs": "proposed",
         "audit": "proposed",
         "external-services": "proposed",
-        "business-rules": "proposed"
+        "business-rules": "proposed",
+        "error-handling": "proposed"
       }
     }
   },
@@ -28,7 +29,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T19:17:27.221Z",
+  "updated_at": "2026-10-15T19:24:18.769Z",
   "tier": {
     "category": "S",
     "budget_waived": []
