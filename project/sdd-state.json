@@ -5,13 +5,13 @@
     "discovery": "done",
     "project_spec": "done",
     "architecture": "done",
-    "roadmap": "pending"
+    "roadmap": "done"
   },
   "features": {},
   "current": {
     "level": "project"
   },
-  "updated_at": "2026-10-15T04:40:10.389Z",
+  "updated_at": "2026-10-15T04:47:17.866Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -59,8 +59,8 @@
     }
   ],
   "last_gate": {
-    "name": "DESIGN_APPROVED",
-    "artifact": "project/architecture/",
+    "name": "ROADMAP_APPROVED",
+    "artifact": "project/roadmap/roadmap.md",
     "verdict": "aprobar",
     "result": "pass",
     "decided_by": "agente",
@@ -85,7 +85,15 @@
     },
     {
       "name": "DESIGN_APPROVED",
-      "artifact": "project/architecture/",
+      "artifact": "project/architecture/, project/design/",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "agente",
+      "decided_at": "2026-10-15"
+    },
+    {
+      "name": "ROADMAP_APPROVED",
+      "artifact": "project/roadmap/roadmap.md",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "agente",
