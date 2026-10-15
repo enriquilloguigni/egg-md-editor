@@ -12,7 +12,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T13:31:41.871Z",
+  "updated_at": "2026-10-15T13:57:25.708Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -76,11 +76,11 @@
     },
     {
       "id": "PD-FEAT-001",
-      "question": "Referencias Project Spec de F-001 «Entorno de aplicación»: la orden de ciclo lista FR-011/FR-012/FR-010/BR-003/BR-007/NFR-006 «según el Roadmap v2», pero la fila F-001 de roadmap.md (v2, ROADMAP_APPROVED) cita solo BR-003/BR-007/FR-010/NFR-006 y asigna FR-011 (menú principal) a F-028 y FR-012 (barra de formato) a F-029; decidir si feature.md y la Spec de F-001 se escriben con las 4 referencias del Roadmap o con las 6 de la orden (esta última opción exige /sdd-change sobre roadmap.md v2)",
+      "question": "Referencias Project Spec de F-001 «Entorno de aplicación»: la orden de ciclo lista FR-011/FR-012/FR-010/BR-003/BR-007/NFR-006 «según el Roadmap v2», pero la fila F-001 de roadmap.md (v2, ROADMAP_APPROVED) cita solo BR-003/BR-007/FR-010/NFR-006 y asigna FR-011 (menú principal) a F-028 y FR-012 (barra de formato) a F-029. RESUELTA (humano, 2026-10-15): F-001 incluye desde el inicio la parte visual del menú principal y de la barra de formato (todas las opciones visibles al usuario desde el primer entregable); la programación funcional de ambos queda para las Features que aplique más adelante (F-028/F-029). Modifica roadmap.md v2 aprobado → exige /sdd-change antes de /sdd-feature.",
       "artifact": "project/roadmap/roadmap.md (v2) vs project/features/F-001-entorno-de-aplicacion/feature.md (pendiente de crear)",
-      "blocks": "feature.md de F-001 y los 13 documentos de spec/ (ciclo documental detenido antes de iniciar)",
+      "blocks": "feature.md de F-001 y los 13 documentos de spec/ (ciclo documental detenido antes de iniciar); tras la decisión, bloquea /sdd-feature hasta completar /sdd-change",
       "impact": "high",
-      "status": "pending_human"
+      "status": "resolved"
     }
   ],
   "last_gate": {
