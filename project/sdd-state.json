@@ -12,7 +12,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T13:11:52.790Z",
+  "updated_at": "2026-10-15T13:31:41.871Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -73,6 +73,14 @@
       "blocks": "trazabilidad Feature ↔ Roadmap",
       "impact": "medium",
       "status": "resolved"
+    },
+    {
+      "id": "PD-FEAT-001",
+      "question": "Referencias Project Spec de F-001 «Entorno de aplicación»: la orden de ciclo lista FR-011/FR-012/FR-010/BR-003/BR-007/NFR-006 «según el Roadmap v2», pero la fila F-001 de roadmap.md (v2, ROADMAP_APPROVED) cita solo BR-003/BR-007/FR-010/NFR-006 y asigna FR-011 (menú principal) a F-028 y FR-012 (barra de formato) a F-029; decidir si feature.md y la Spec de F-001 se escriben con las 4 referencias del Roadmap o con las 6 de la orden (esta última opción exige /sdd-change sobre roadmap.md v2)",
+      "artifact": "project/roadmap/roadmap.md (v2) vs project/features/F-001-entorno-de-aplicacion/feature.md (pendiente de crear)",
+      "blocks": "feature.md de F-001 y los 13 documentos de spec/ (ciclo documental detenido antes de iniciar)",
+      "impact": "high",
+      "status": "pending_human"
     }
   ],
   "last_gate": {
