@@ -7,11 +7,16 @@
     "architecture": "done",
     "roadmap": "done"
   },
-  "features": {},
-  "current": {
-    "level": "project"
+  "features": {
+    "F-001": {
+      "status": "planned"
+    }
   },
-  "updated_at": "2026-10-15T04:47:17.866Z",
+  "current": {
+    "level": "feature",
+    "id": "F-001"
+  },
+  "updated_at": "2026-10-15T05:03:34.862Z",
   "tier": {
     "category": "S",
     "budget_waived": []
