@@ -12,7 +12,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T05:34:22.298Z",
+  "updated_at": "2026-10-15T12:34:51.438Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -64,7 +64,7 @@
       "artifact": "project/roadmap/roadmap.md",
       "blocks": "ratificación humana del gate ROADMAP_APPROVED",
       "impact": "high",
-      "status": "pending_human"
+      "status": "resolved"
     },
     {
       "id": "PD-002",
