@@ -2,8 +2,8 @@
   "schema": "sdd-state/v1",
   "project": "egg-md-editor",
   "phases": {
-    "discovery": "in_progress",
-    "project_spec": "pending",
+    "discovery": "done",
+    "project_spec": "done",
     "architecture": "pending",
     "roadmap": "pending"
   },
@@ -11,7 +11,7 @@
   "current": {
     "level": "project"
   },
-  "updated_at": "2026-10-15T02:43:18.404Z",
+  "updated_at": "2026-10-15T03:53:48.032Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -56,6 +56,32 @@
       "blocks": "Architecture y Feature Spec (estructura de ventana)",
       "impact": "medium",
       "status": "resolved"
+    }
+  ],
+  "last_gate": {
+    "name": "PROJECT_SPEC_REVIEW",
+    "artifact": "project/project-spec/",
+    "verdict": "aprobar",
+    "result": "pass",
+    "decided_by": "agente",
+    "decided_at": "2026-10-15"
+  },
+  "gate_history": [
+    {
+      "name": "DISCOVERY_COMPLETE",
+      "artifact": "project/project.md",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-15"
+    },
+    {
+      "name": "PROJECT_SPEC_REVIEW",
+      "artifact": "project/project-spec/",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "agente",
+      "decided_at": "2026-10-15"
     }
   ]
 }
