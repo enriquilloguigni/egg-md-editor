@@ -16,7 +16,7 @@
     "level": "feature",
     "id": "F-001"
   },
-  "updated_at": "2026-10-15T05:03:34.862Z",
+  "updated_at": "2026-10-15T05:04:37.350Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -61,6 +61,22 @@
       "blocks": "Architecture y Feature Spec (estructura de ventana)",
       "impact": "medium",
       "status": "resolved"
+    },
+    {
+      "id": "PD-001",
+      "question": "Ratificar o rechazar el criterio de ordenación del Roadmap declarado en roadmap.md («riesgo técnico primero»: M1 núcleo+sincronización dual, M2 UX de procesador, M3 metadatos/ortografía/i18n, M4 archivo/PDF/búsqueda/ayuda)",
+      "artifact": "project/roadmap/roadmap.md",
+      "blocks": "ratificación humana del gate ROADMAP_APPROVED",
+      "impact": "high",
+      "status": "pending_human"
+    },
+    {
+      "id": "PD-002",
+      "question": "Destino de project/features/F-001-entorno-de-aplicacion/feature.md: huérfano de un borrador anterior de Roadmap (F-001–F-013) que no aparece en roadmap.md vigente (F-014–F-027); decidir si se elimina/archiva o se reintegra como Feature del Roadmap",
+      "artifact": "project/features/F-001-entorno-de-aplicacion/feature.md",
+      "blocks": "trazabilidad Feature ↔ Roadmap",
+      "impact": "medium",
+      "status": "pending_human"
     }
   ],
   "last_gate": {
