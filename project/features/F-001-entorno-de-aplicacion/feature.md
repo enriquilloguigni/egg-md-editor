@@ -11,9 +11,9 @@ Que la aplicación arranque en una sola ventana plenamente operativa: menús, ba
 ## Referencias Project Spec
 
 - FR-010 — Localización y ayuda
-- BR-003 — una sola ventana con un único documento abierto a la vez
-- BR-007 — UI en español e inglés sobre arquitectura i18n extensible
-- NFR-006 — Mantenibilidad (i18n extensible más allá de los idiomas de v1)
+- BR-003 — ventana única, documento único
+- BR-007 — UI es/en, i18n extensible
+- NFR-006 — Mantenibilidad
 
 ## Dependencias
 
