@@ -2,7 +2,7 @@
   "schema": "sdd-state/v1",
   "project": "egg-md-editor",
   "phases": {
-    "discovery": "pending",
+    "discovery": "in_progress",
     "project_spec": "pending",
     "architecture": "pending",
     "roadmap": "pending"
@@ -11,5 +11,51 @@
   "current": {
     "level": "project"
   },
-  "updated_at": "2026-10-15T00:33:45.322Z"
+  "updated_at": "2026-10-15T02:43:18.404Z",
+  "tier": {
+    "category": "S",
+    "budget_waived": []
+  },
+  "pending_decisions": [
+    {
+      "id": "OQ-001",
+      "question": "Tamaño target y latencia de sincronización bidireccional en v1",
+      "artifact": "project/discovery/open-questions.md",
+      "blocks": "NFR de rendimiento en Project Spec",
+      "impact": "high",
+      "status": "resolved"
+    },
+    {
+      "id": "OQ-002",
+      "question": "Versiones de OS soportadas en v1",
+      "artifact": "project/discovery/open-questions.md",
+      "blocks": "Architecture (APIs, empaquetado, CI multi-OS)",
+      "impact": "medium",
+      "status": "resolved"
+    },
+    {
+      "id": "OQ-003",
+      "question": "Política de licencias y atribución de dependencias",
+      "artifact": "project/discovery/open-questions.md",
+      "blocks": "Architecture (selección de librerías)",
+      "impact": "medium",
+      "status": "resolved"
+    },
+    {
+      "id": "OQ-004",
+      "question": "Alcance del diccionario personal de ortografía",
+      "artifact": "project/discovery/open-questions.md",
+      "blocks": "Feature Spec (menú contextual y corrector)",
+      "impact": "low",
+      "status": "resolved"
+    },
+    {
+      "id": "OQ-005",
+      "question": "Múltiples documentos abiertos simultáneamente en v1",
+      "artifact": "project/discovery/open-questions.md",
+      "blocks": "Architecture y Feature Spec (estructura de ventana)",
+      "impact": "medium",
+      "status": "resolved"
+    }
+  ]
 }
