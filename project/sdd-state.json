@@ -11,7 +11,7 @@
   "current": {
     "level": "project"
   },
-  "updated_at": "2026-10-15T04:39:37.448Z",
+  "updated_at": "2026-10-15T04:40:10.389Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -60,7 +60,7 @@
   ],
   "last_gate": {
     "name": "DESIGN_APPROVED",
-    "artifact": "project/architecture/, project/design/",
+    "artifact": "project/architecture/",
     "verdict": "aprobar",
     "result": "pass",
     "decided_by": "agente",
@@ -85,7 +85,7 @@
     },
     {
       "name": "DESIGN_APPROVED",
-      "artifact": "project/architecture/, project/design/",
+      "artifact": "project/architecture/",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "agente",
