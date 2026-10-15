@@ -14,7 +14,8 @@
         "process": "proposed",
         "screens": "proposed",
         "visual-resources": "proposed",
-        "data-structures": "proposed"
+        "data-structures": "proposed",
+        "inapp-communication": "proposed"
       }
     }
   },
@@ -22,7 +23,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T16:56:30.431Z",
+  "updated_at": "2026-10-15T17:00:17.171Z",
   "tier": {
     "category": "S",
     "budget_waived": []
