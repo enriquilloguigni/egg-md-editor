@@ -6,7 +6,7 @@ Que la aplicación arranque como entorno base en una sola ventana, con atajos de
 
 ## Prioridad
 
-P1 — feature fundacional: primera entrega del roadmap v3, sin dependencias.
+Prioridad: P1 — feature fundacional: primera entrega del roadmap v3, sin dependencias.
 
 ## Verificación independiente
 
