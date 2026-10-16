@@ -24,6 +24,23 @@
         "error-handling": "approved",
         "states-transitions": "approved",
         "acceptance-criteria": "approved"
+      },
+      "spec_version": "v1",
+      "plan_version": "v1",
+      "tasks": {
+        "T-001": "todo",
+        "T-002": "todo",
+        "T-003": "todo",
+        "T-004": "todo",
+        "T-005": "todo",
+        "T-006": "todo",
+        "T-007": "todo",
+        "T-008": "todo",
+        "T-009": "todo",
+        "T-010": "todo",
+        "T-011": "todo",
+        "T-012": "todo",
+        "T-013": "todo"
       }
     }
   },
@@ -31,7 +48,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-16T16:05:41.047Z",
+  "updated_at": "2026-10-16T16:15:53.639Z",
   "tier": {
     "category": "S",
     "budget_waived": []
