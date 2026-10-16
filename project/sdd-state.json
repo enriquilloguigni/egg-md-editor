@@ -22,7 +22,8 @@
         "external-services": "proposed",
         "business-rules": "proposed",
         "error-handling": "proposed",
-        "states-transitions": "proposed"
+        "states-transitions": "proposed",
+        "acceptance-criteria": "proposed"
       }
     }
   },
@@ -30,7 +31,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-15T19:28:20.308Z",
+  "updated_at": "2026-10-15T19:48:58.446Z",
   "tier": {
     "category": "S",
     "budget_waived": []
