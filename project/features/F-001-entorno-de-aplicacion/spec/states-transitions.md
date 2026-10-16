@@ -2,12 +2,21 @@
 
 ## Estados
 
-| id | estado | descripción |
-|---|---|---|
-| ST-001 | Sesión en arranque | Proceso lanzado desde el código fuente; la ventana `SC-001` aún no se presenta (inicial) |
-| ST-002 | Entorno operativo — español | `SC-001` presentada con el 100 % del menú y la barra de formato visibles; idioma activo: español (BR-F001-004) |
-| ST-003 | Entorno operativo — inglés | `SC-001` presentada como en ST-002; idioma activo: inglés, tras conmutación en caliente |
-| ST-004 | Sesión finalizada | `SC-001` cerrada, recursos liberados sin procesos residuales; la elección de idioma no pervive (final) |
+### ST-001 — Sesión en arranque
+
+Proceso lanzado desde el código fuente; la ventana `SC-001` aún no se presenta. Estado inicial.
+
+### ST-002 — Entorno operativo — español
+
+`SC-001` presentada con el 100 % del menú y la barra de formato visibles; idioma activo: español (BR-F001-004).
+
+### ST-003 — Entorno operativo — inglés
+
+`SC-001` presentada como en ST-002; idioma activo: inglés, tras conmutación en caliente.
+
+### ST-004 — Sesión finalizada
+
+`SC-001` cerrada, recursos liberados sin procesos residuales; la elección de idioma no pervive. Estado final.
 
 Estado inicial: `ST-001`. Estado final: `ST-004`. Los estados transitorios de superficie (menú desplegado o cerrado, aviso flotante visible u oculto) no son estados funcionales: se describen en `process.md` y `inapp-communication.md` (COM-003).
 
