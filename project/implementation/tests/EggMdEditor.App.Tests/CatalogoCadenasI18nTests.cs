@@ -39,7 +39,13 @@ public class CatalogoCadenasI18nTests
             .OrderBy(clave => clave, StringComparer.Ordinal)
             .ToList();
 
-        Assert.Equal(6 + 48 + 12, clavesPublicadas.Count);
+        // Los rótulos publicados son los de los catálogos de menú y barra
+        // (T-002) más los 2 valores de la selección de idioma de la entrada
+        // Idioma de la interfaz (SC-001, T-010), derivados como los construye
+        // ConstructorDeMenuPrincipal desde el catálogo de idiomas.
+        Assert.Equal(
+            6 + 48 + 12 + CatalogoIdiomas.Valores.Count,
+            clavesPublicadas.Count);
         Assert.Equal(
             clavesPublicadas,
             CatalogoCadenasI18n.TextosPorIdioma[CatalogoCadenasI18n.CodigoDefecto]
@@ -48,7 +54,9 @@ public class CatalogoCadenasI18nTests
             clavesPublicadas,
             CatalogoCadenasI18n.TextosPorIdioma["en"]
                 .Keys.OrderBy(clave => clave, StringComparer.Ordinal));
-        Assert.Equal(66, CatalogoCadenasI18n.TotalCadenas);
+        Assert.Equal(
+            6 + 48 + 12 + CatalogoIdiomas.Valores.Count,
+            CatalogoCadenasI18n.TotalCadenas);
     }
 
     [Fact]
@@ -142,5 +150,12 @@ public class CatalogoCadenasI18nTests
             .Select(menu => menu.Clave)
             .Concat(CatalogoMenuPrincipal.Menus
                 .SelectMany(menu => menu.Entradas.Select(entrada => entrada.Clave)))
-            .Concat(CatalogoBarraFormato.Controles.Select(control => control.Clave));
+            .Concat(CatalogoBarraFormato.Controles.Select(control => control.Clave))
+            .Concat(ClavesDeValoresDeIdioma());
+
+    // Valores Español | English de la entrada Idioma de la interfaz (T-010):
+    // claves derivadas del catálogo de idiomas tal como las publica
+    // ConstructorDeMenuPrincipal.
+    private static IEnumerable<string> ClavesDeValoresDeIdioma() =>
+        CatalogoIdiomas.Valores.Select(Servicios.ConstructorDeMenuPrincipal.ClaveDeValorDeIdioma);
 }
