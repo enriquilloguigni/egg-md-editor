@@ -3,36 +3,35 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using EggMdEditor.App.Catalogos;
-using EggMdEditor.App.Servicios;
+using EggMdEditor.App.Catalogs;
+using EggMdEditor.App.Services;
 
 namespace EggMdEditor.App;
 
 public partial class App : Application
 {
-    private readonly SesionDeAplicacion? _sesionDelProceso;
-    private readonly RegistradorDeCicloDeVida? _registradorDeCicloDeVida;
+    private readonly ApplicationSession? _processSession;
+    private readonly LifecycleLogger? _lifecycleLogger;
 
     /// <summary>
-    /// Constructor sin argumentos para el diseñador de XAML y las pruebas
-    /// headless: la ventana que cree creará su propia sesión con los defectos
-    /// de la Spec (idioma español, BR-007), sin registrador del proceso.
+    /// Parameterless constructor for the XAML designer and headless tests: the
+    /// window it creates will create its own session with the Spec defaults
+    /// (Spanish language, BR-007), with no process logger.
     /// </summary>
     public App() : this(null, null)
     {
     }
 
     /// <summary>
-    /// Crea la aplicación del proceso (T-012) sobre la sesión nueva del
-    /// arranque — siempre en español, sin persistencia (BR-F001-006) — y su
-    /// registrador del ciclo de vida (T-007); con cualquiera de los dos
-    /// ausentes (diseñador, pruebas), la ventana opera con los suyos por
-    /// defecto.
+    /// Creates the process's application (T-012) over the startup's new
+    /// session — always in Spanish, with no persistence (BR-F001-006) — and
+    /// its lifecycle logger (T-007); with either of them absent (designer,
+    /// tests), the window operates with its own defaults.
     /// </summary>
-    public App(SesionDeAplicacion? sesionDelProceso, RegistradorDeCicloDeVida? registradorDeCicloDeVida)
+    public App(ApplicationSession? processSession, LifecycleLogger? lifecycleLogger)
     {
-        _sesionDelProceso = sesionDelProceso;
-        _registradorDeCicloDeVida = registradorDeCicloDeVida;
+        _processSession = processSession;
+        _lifecycleLogger = lifecycleLogger;
     }
 
     public override void Initialize()
@@ -44,20 +43,19 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // SC-001 (BR-003): ventana única que comparte la sesión del
-            // proceso — una sesión por ejecución, correlación de registros
-            // (NFR-003) — y su registrador del ciclo de vida, para que su
-            // cierre emita LOG-003 y aplique ERR-005 (COM-004, T-011). Si la
-            // creación falla, la excepción sube al punto de entrada: ERR-001,
-            // sin ventana presentada (T-012).
-            var ventana = new MainWindow(
-                _sesionDelProceso ?? new SesionDeAplicacion(),
-                registradorDeCicloDeVida: _registradorDeCicloDeVida);
-            desktop.MainWindow = ventana;
+            // SC-001 (BR-003): single window sharing the process's session —
+            // one session per run, log correlation (NFR-003) — and its
+            // lifecycle logger, so its close emits LOG-003 and applies
+            // ERR-005 (COM-004, T-011). If creation fails, the exception goes
+            // up to the entry point: ERR-001, no window presented (T-012).
+            var window = new MainWindow(
+                _processSession ?? new ApplicationSession(),
+                lifecycleLogger: _lifecycleLogger);
+            desktop.MainWindow = window;
 
-            if (_registradorDeCicloDeVida is not null)
+            if (_lifecycleLogger is not null)
             {
-                ventana.Opened += AlPresentarseLaVentana;
+                window.Opened += OnWindowShown;
             }
         }
 
@@ -65,18 +63,18 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// LOG-001 (T-012): la ventana única se presentó completa — creada y
-    /// abierta, sin que el pintado del arranque fallara (ERR-002) —; se
-    /// registra el fin de la inicialización una sola vez, con el catálogo
-    /// i18n cargado y el idioma activo de la sesión.
+    /// LOG-001 (T-012): the single window was presented complete — created and
+    /// opened, with the startup painting not failing (ERR-002) —; the end of
+    /// the initialization is logged exactly once, with the i18n catalog loaded
+    /// and the session's active language.
     /// </summary>
-    private void AlPresentarseLaVentana(object? sender, EventArgs e)
+    private void OnWindowShown(object? sender, EventArgs e)
     {
-        if (sender is Window ventana)
+        if (sender is Window window)
         {
-            ventana.Opened -= AlPresentarseLaVentana;
+            window.Opened -= OnWindowShown;
         }
 
-        _registradorDeCicloDeVida?.RegistrarFinDeInicializacion();
+        _lifecycleLogger?.LogInitializationEnd();
     }
 }
