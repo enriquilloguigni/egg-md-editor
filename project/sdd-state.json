@@ -45,10 +45,10 @@
     }
   },
   "current": {
-    "level": "project",
-    "id": ""
+    "level": "feature",
+    "id": "F-001"
   },
-  "updated_at": "2026-10-19T16:21:09.438Z",
+  "updated_at": "2026-10-19T17:03:47.146Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -92,7 +92,7 @@
       "artifact": "project/features/F-001-entorno-de-aplicacion/plan/mockups.md",
       "blocks": "PLAN_REVIEW (mockups_coverage SC-001) y el cierre Git del incremento",
       "impact": "medium",
-      "status": "pending_human"
+      "status": "resolved"
     }
   ],
   "last_gate": {
