@@ -4,9 +4,9 @@
         Title="egg-md-editor"
         Width="1280" Height="720">
 
-  <!-- SC-001 (T-008): ventana única (BR-003) con la barra de menú persistente
-       (Z2) sobre el área de documento (Z4). La barra de formato (Z3) llega
-       con T-009, la entrada de idioma conmutada con T-010 y el cableado de
+  <!-- SC-001 (T-008, T-009): ventana única (BR-003) con la barra de menú
+       persistente (Z2) y la barra de formato (Z3) sobre el área de documento
+       (Z4). La entrada de idioma conmutada llega con T-010 y el cableado de
        los servicios (COM-001–COM-004) con T-011. -->
   <DockPanel>
 
@@ -16,8 +16,15 @@
          (ADR-001). -->
     <Menu x:Name="BarraMenu" DockPanel.Dock="Top" />
 
+    <!-- Z3 — Barra de formato, siempre visible: sus controles se construyen
+         desde CatalogoBarraFormato (fuente única de recuento y orden,
+         FR-012/DS-001) en orden de escritura, cada uno con su icono (VR-001)
+         y su aviso flotante (VR-002), visibles sin acción conectada
+         (ADR-001). -->
+    <StackPanel x:Name="BarraFormato" DockPanel.Dock="Top" Orientation="Horizontal" Spacing="2" />
+
     <!-- Z4 — Área de documento: vacía en F-001, sin vistas ni paneles
-         (FR-001 → F-003, FR-004 → F-002); sobre ella se pintarán los avisos
+         (FR-001 → F-003, FR-004 → F-002); sobre ella se pintan los avisos
          flotantes de la barra de formato. -->
     <Border x:Name="AreaDeDocumento" />
 
