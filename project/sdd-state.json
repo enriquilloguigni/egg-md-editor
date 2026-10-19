@@ -39,7 +39,7 @@
         "T-009": "done",
         "T-010": "done",
         "T-011": "done",
-        "T-012": "todo",
+        "T-012": "done",
         "T-013": "todo"
       }
     }
@@ -48,7 +48,7 @@
     "level": "feature",
     "id": "F-001"
   },
-  "updated_at": "2026-10-19T20:22:24.481Z",
+  "updated_at": "2026-10-19T20:28:19.072Z",
   "tier": {
     "category": "S",
     "budget_waived": []
