@@ -4,10 +4,11 @@
         Title="egg-md-editor"
         Width="1280" Height="720">
 
-  <!-- SC-001 (T-008, T-009): ventana única (BR-003) con la barra de menú
+  <!-- SC-001 (T-008–T-010): ventana única (BR-003) con la barra de menú
        persistente (Z2) y la barra de formato (Z3) sobre el área de documento
-       (Z4). La entrada de idioma conmutada llega con T-010 y el cableado de
-       los servicios (COM-001–COM-004) con T-011. -->
+       (Z4). La entrada de idioma con su selección mutuamente excluyente se
+       construye con el menú (T-010); el cableado de los servicios
+       (COM-001–COM-004) llega con T-011. -->
   <DockPanel>
 
     <!-- Z2 — Barra de menú persistente, siempre visible: sus menús y entradas
