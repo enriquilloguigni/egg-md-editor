@@ -1,2 +1,10 @@
 **/.opencode
 **/.vs
+
+# .NET build output
+bin/
+obj/
+artifacts/
+TestResults/
+*.user
+*.suo
