@@ -48,7 +48,7 @@
     "level": "feature",
     "id": "F-001"
   },
-  "updated_at": "2026-10-19T20:54:06.512Z",
+  "updated_at": "2026-10-19T21:19:23.228Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -105,7 +105,7 @@
     {
       "id": "PD-GEN-004",
       "question": "¿Se aplica C-003 (código fuente en inglés) de forma retroactiva al código ya creado en F-001 (T-001…T-013) mediante refactor de identificadores, ficheros, carpetas y comentarios?",
-      "artifact": "project/implementation/ (src + tests) y project/architecture/ (C-003, ADR-003)",
+      "artifact": "project/implementation/ (src + tests) y project/architecture/ (C-003 y su registro de decisión)",
       "blocks": "Ordena el refactor antes de la Verification de F-001",
       "impact": "medium",
       "status": "resolved"
