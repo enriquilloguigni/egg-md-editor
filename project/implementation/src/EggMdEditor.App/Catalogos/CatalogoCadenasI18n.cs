@@ -84,6 +84,11 @@ public static class CatalogoCadenasI18n
 
                 // Herramientas (FR-011).
                 ["menu.herramientas.idioma-interfaz"] = "Idioma de la interfaz",
+                // Valores de la selección de idioma de la entrada anterior
+                // (SC-001, T-010): nombres propios de cada idioma, iguales en
+                // español y en inglés.
+                ["menu.herramientas.idioma-interfaz.es"] = "Español",
+                ["menu.herramientas.idioma-interfaz.en"] = "English",
                 ["menu.herramientas.contador-palabras"] = "Contador de palabras y caracteres",
                 ["menu.herramientas.revision-ortografica"] = "Revisión ortográfica",
 
@@ -169,6 +174,11 @@ public static class CatalogoCadenasI18n
 
                 // Tools (FR-011).
                 ["menu.herramientas.idioma-interfaz"] = "Interface language",
+                // Values of the language selection of the previous entry
+                // (SC-001, T-010): proper names of each language, the same
+                // in Spanish and English.
+                ["menu.herramientas.idioma-interfaz.es"] = "Español",
+                ["menu.herramientas.idioma-interfaz.en"] = "English",
                 ["menu.herramientas.contador-palabras"] = "Word and character count",
                 ["menu.herramientas.revision-ortografica"] = "Spell checking",
 
