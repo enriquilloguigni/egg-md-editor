@@ -19,12 +19,13 @@ public partial class MainWindow : Window
     /// de menú persistente desde <see cref="CatalogoMenuPrincipal"/> —fuente
     /// única de recuento y de orden de FR-011 (DS-001)— con los rótulos en el
     /// idioma activo de la sesión y todas las entradas visibles sin acción
-    /// conectada (ADR-001); y su barra de formato desde
+    /// conectada (ADR-001); la entrada Idioma de la interfaz (T-010) lleva
+    /// sus dos valores mutuamente excluyentes, marcados según el idioma
+    /// activo de la sesión. Y construye su barra de formato desde
     /// <see cref="CatalogoBarraFormato"/> —fuente única de FR-012 (DS-001)—
     /// en orden de escritura, con icono (VR-001) y aviso flotante (VR-002)
-    /// por control, igualmente sin acción conectada. Sin entrada de idioma
-    /// conmutada (T-010) y sin servicios cableados (T-011): T-011 inyectará
-    /// la sesión compartida y conectará COM-001–COM-004.
+    /// por control, igualmente sin acción conectada. Sin servicios cableados
+    /// (T-011): T-011 conectará COM-001–COM-004.
     /// </summary>
     public MainWindow(SesionDeAplicacion sesion)
     {
