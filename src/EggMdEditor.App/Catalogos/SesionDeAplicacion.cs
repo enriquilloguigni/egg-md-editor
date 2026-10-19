@@ -9,6 +9,13 @@ namespace EggMdEditor.App.Catalogos;
 /// </summary>
 public sealed class SesionDeAplicacion
 {
+    /// <summary>
+    /// Identificador único de la sesión, asignado al crearla (una sesión por
+    /// ejecución): correlación de los registros técnicos, que lo comparten
+    /// todos y salen por la salida estándar, sin escritura a disco (NFR-003).
+    /// </summary>
+    public string IdentificadorDeSesion { get; } = Guid.NewGuid().ToString("D");
+
     /// <summary>Idioma activo de la sesión. Siempre exactamente uno (BR-007).</summary>
     public IdiomaDeInterfaz IdiomaActivo { get; set; } = CatalogoIdiomas.Defecto;
 
