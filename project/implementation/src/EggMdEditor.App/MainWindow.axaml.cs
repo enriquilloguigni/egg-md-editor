@@ -1,240 +1,240 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using EggMdEditor.App.Catalogos;
-using EggMdEditor.App.Servicios;
+using EggMdEditor.App.Catalogs;
+using EggMdEditor.App.Services;
 
 namespace EggMdEditor.App;
 
 public partial class MainWindow : Window
 {
-    private readonly SesionDeAplicacion _sesion;
-    private readonly GestorDeCierreDeSesion _gestorDeCierre;
+    private readonly ApplicationSession _session;
+    private readonly SessionShutdownManager _shutdownManager;
 
     /// <summary>
-    /// Constructor sin argumentos para el diseñador de XAML y para el
-    /// arranque: crea la sesión en su defecto de arranque (idioma español,
-    /// BR-007) con los servicios por defecto.
+    /// Parameterless constructor for the XAML designer and for the startup:
+    /// creates the session at its startup default (Spanish language, BR-007)
+    /// with the default services.
     /// </summary>
-    public MainWindow() : this(new SesionDeAplicacion())
+    public MainWindow() : this(new ApplicationSession())
     {
     }
 
     /// <summary>
-    /// Crea la ventana única de la aplicación (BR-003) con su barra de menú
-    /// persistente al 100 % de FR-011 (T-008, T-010), su barra de formato al
-    /// 100 % de FR-012 (T-009) y su área de documento vacía (AC-015), y
-    /// cablea en ella los canales internos COM-001–COM-004 (T-011):
+    /// Creates the application's single window (BR-003) with its persistent
+    /// menu bar at 100 % of FR-011 (T-008, T-010), its format bar at 100 % of
+    /// FR-012 (T-009) and its empty document area (AC-015), and wires the
+    /// internal channels COM-001–COM-004 into it (T-011):
     ///
     /// <list type="bullet">
-    /// <item>COM-001 — relabelizado en caliente (DS-003): suscripción única
-    /// a la notificación del servicio de conmutación de idioma (T-004) que
-    /// re-resuelve toda cadena visible desde el idioma activo ya aplicado a
-    /// la sesión; la entrada de idioma del menú (T-010) conmuta al pulsar
-    /// cada valor y restaura su marca de radio si la conmutación no llega a
-    /// efectiva (ya activa o abortada, ERR-003).</item>
-    /// <item>COM-002 — atajos (T-005): el teclado de la ventana traduce cada
-    /// gesto al modelo de combinaciones y lo despacha; el registro único del
-    /// despachador asigna <c>Ctrl/Cmd+Shift+L</c> a alternar es/en y
-    /// <c>Ctrl/Cmd+Q</c> al cierre, y cualquier otro atajo permanece inerte
-    /// (BR-F001-003, ADR-001).</item>
-    /// <item>COM-003 — estado visual (T-009, T-010): el gestor espeja sobre
-    /// la sesión el estado del menú {Cerrado | Desplegado con entrada activa}
-    /// y la visibilidad del aviso flotante de la barra de formato.</item>
-    /// <item>COM-004 — cierre: el atajo de cierre y la ventana cierran por el
-    /// mismo camino; al cerrarse, se libera la sesión con su registro
-    /// LOG-003 (T-007) y cesan los canales internos; ante fallo de cierre,
-    /// ERR-005 con código de salida de error.</item>
+    /// <item>COM-001 — hot relabeling (DS-003): single subscription to the
+    /// language switching service notification (T-004) that re-resolves every
+    /// visible string from the active language already applied to the session;
+    /// the menu's language entry (T-010) switches on pressing each value and
+    /// restores its radio check if the switching does not become effective
+    /// (already active or aborted, ERR-003).</item>
+    /// <item>COM-002 — shortcuts (T-005): the window's keyboard translates
+    /// each gesture to the combination model and dispatches it; the
+    /// dispatcher's single register assigns <c>Ctrl/Cmd+Shift+L</c> to
+    /// toggling es/en and <c>Ctrl/Cmd+Q</c> to closing, and any other shortcut
+    /// remains inert (BR-F001-003, ADR-001).</item>
+    /// <item>COM-003 — visual state (T-009, T-010): the mirror reflects onto
+    /// the session the menu state {Closed | Expanded with active entry} and
+    /// the format bar tooltip visibility.</item>
+    /// <item>COM-004 — close: the close shortcut and the window close through
+    /// the same path; on closing, the session is released with its LOG-003
+    /// log (T-007) and the internal channels cease; on close failure, ERR-005
+    /// with error exit code.</item>
     /// </list>
     ///
-    /// Los servicios son inyectables para un cableado determinista en pruebas;
-    /// por defecto se crean sobre la sesión dada, con la salida de registros
-    /// formateada a la salida estándar del proceso (T-007, C-001).
+    /// The services are injectable for deterministic wiring in tests; by
+    /// default they are created over the given session, with the log output
+    /// formatted to the process's standard output (T-007, C-001).
     /// </summary>
     public MainWindow(
-        SesionDeAplicacion sesion,
-        ServicioConmutacionIdioma? servicioDeIdioma = null,
-        DespachadorDeAtajos? despachadorDeAtajos = null,
-        DisparadorDeSegundaVentana? disparadorDeSegundaVentana = null,
-        RegistradorDeCicloDeVida? registradorDeCicloDeVida = null)
+        ApplicationSession session,
+        LanguageSwitchingService? languageService = null,
+        ShortcutDispatcher? shortcutDispatcher = null,
+        SecondWindowTrigger? secondWindowTrigger = null,
+        LifecycleLogger? lifecycleLogger = null)
     {
-        ArgumentNullException.ThrowIfNull(sesion);
+        ArgumentNullException.ThrowIfNull(session);
 
-        _sesion = sesion;
+        _session = session;
 
         InitializeComponent();
 
-        ConstructorDeMenuPrincipal.Construir(BarraMenu, sesion);
-        ConstructorDeBarraFormato.Construir(BarraFormato, sesion);
+        MainMenuBuilder.Build(MenuBar, session);
+        FormatBarBuilder.Build(FormatBar, session);
 
-        // COM-001 (T-004): servicio de conmutación con la salida de registros
-        // del proceso (LOG-002) y notificación única de relabelizado (DS-003).
-        ServicioDeIdioma = servicioDeIdioma ?? new ServicioConmutacionIdioma(
-            sesion,
-            SuministradorCatalogoCadenasI18n.Instancia,
-            new SalidaDeRegistrosConsola());
-        ServicioDeIdioma.IdiomaConmutado += AlConmutarseElIdioma;
-        CablearEntradaDeIdioma();
+        // COM-001 (T-004): switching service with the process's log output
+        // (LOG-002) and single relabeling notification (DS-003).
+        LanguageService = languageService ?? new LanguageSwitchingService(
+            session,
+            I18nStringCatalogProvider.Instance,
+            new ConsoleLogOutput());
+        LanguageService.LanguageSwitched += OnLanguageSwitched;
+        WireLanguageEntry();
 
-        // COM-003: espejo de estado visual de menú y avisos (VR-002).
-        new GestorDeEstadoVisual(sesion).Conectar(BarraMenu, BarraFormato);
+        // COM-003: visual state mirror of menu and tooltips (VR-002).
+        new VisualStateMirror(session).Connect(MenuBar, FormatBar);
 
-        // COM-004 (T-007): cierre de la ventana con liberación de la sesión
-        // y registros LOG-003; el atajo de cierre del despachador (COM-002)
-        // cierra por este mismo camino.
-        _gestorDeCierre = new GestorDeCierreDeSesion(sesion, registradorDeCicloDeVida);
-        DespachadorDeAtajos = despachadorDeAtajos
-            ?? new DespachadorDeAtajos(ServicioDeIdioma, new AccionDeCierreDeVentana(this));
-        AddHandler(InputElement.KeyDownEvent, AlPulsarUnaTecla, RoutingStrategies.Tunnel);
-        Closed += AlCerrarLaVentana;
+        // COM-004 (T-007): window close with session release and LOG-003
+        // logs; the dispatcher's close shortcut (COM-002) closes through this
+        // same path.
+        _shutdownManager = new SessionShutdownManager(session, lifecycleLogger);
+        ShortcutDispatcher = shortcutDispatcher
+            ?? new ShortcutDispatcher(LanguageService, new WindowCloseAction(this));
+        AddHandler(InputElement.KeyDownEvent, OnKeyPressed, RoutingStrategies.Tunnel);
+        Closed += OnWindowClosed;
 
-        // T-006: contraparte de enfoque de la ventana única, cableada sobre
-        // esta ventana; el disparador atiende la solicitud sin crear otra.
-        DisparadorDeSegundaVentana =
-            disparadorDeSegundaVentana ?? new DisparadorDeSegundaVentana(new EnfocadorDeVentana(this));
+        // T-006: focus counterpart of the single window, wired over this
+        // window; the trigger attends the request without creating another.
+        SecondWindowTrigger =
+            secondWindowTrigger ?? new SecondWindowTrigger(new WindowFocuser(this));
     }
 
-    /// <summary>Servicio de conmutación de idioma (COM-001) cableado a esta ventana.</summary>
-    public ServicioConmutacionIdioma ServicioDeIdioma { get; }
+    /// <summary>Language switching service (COM-001) wired to this window.</summary>
+    public LanguageSwitchingService LanguageService { get; }
 
-    /// <summary>Despachador de atajos (COM-002) cableado a esta ventana.</summary>
-    public DespachadorDeAtajos DespachadorDeAtajos { get; }
-
-    /// <summary>
-    /// Disparador de la solicitud de segunda ventana (AC-014, T-006) con la
-    /// contraparte de enfoque de esta ventana: el punto de entrada del
-    /// proceso le pasa la solicitud y la ventana única existente recibe el
-    /// foco, sin crearse otra (BR-003).
-    /// </summary>
-    public DisparadorDeSegundaVentana DisparadorDeSegundaVentana { get; }
+    /// <summary>Shortcut dispatcher (COM-002) wired to this window.</summary>
+    public ShortcutDispatcher ShortcutDispatcher { get; }
 
     /// <summary>
-    /// COM-001 (DS-003): relabelizado en caliente. La notificación llega tras
-    /// aplicar el idioma nuevo a la sesión —la fuente observable—, de modo
-    /// que toda cadena visible se re-resuelve desde el estado ya aplicado,
-    /// sin reinicio y conservando el resto del estado (BR-F001-005).
+    /// Trigger of the second window request (AC-014, T-006) with this window's
+    /// focus counterpart: the process's entry point passes it the request and
+    /// the existing single window receives the focus, without another one
+    /// being created (BR-003).
     /// </summary>
-    private void AlConmutarseElIdioma(object? sender, IdiomaConmutadoEventArgs e) =>
-        RelabelizadorDeInterfaz.Relabelizar(BarraMenu, BarraFormato, _sesion.IdiomaActivo);
+    public SecondWindowTrigger SecondWindowTrigger { get; }
 
     /// <summary>
-    /// COM-001 desde el menú (T-010): pulsar un valor de la selección de
-    /// idioma conmuta al idioma elegido. Si la conmutación no llega a
-    /// efectiva —idioma ya activo u operación abortada por catálogo no
-    /// disponible (ERR-003)—, el idioma activo de la sesión no cambió y la
-    /// marca de radio se restaura desde el estado; si es efectiva, el
-    /// relabelizado llega con la notificación única (DS-003) y la marca con
-    /// él (el relabelizado re-marca la selección desde el estado).
+    /// COM-001 (DS-003): hot relabeling. The notification arrives after
+    /// applying the new language to the session —the observable source—, so
+    /// every visible string is re-resolved from the already-applied state,
+    /// with no restart and keeping the rest of the state (BR-F001-005).
     /// </summary>
-    private void ConmutarDesdeMenu(IdiomaDeInterfaz idiomaDestino)
+    private void OnLanguageSwitched(object? sender, LanguageSwitchedEventArgs e) =>
+        UiRelabeler.Relabel(MenuBar, FormatBar, _session.ActiveLanguage);
+
+    /// <summary>
+    /// COM-001 from the menu (T-010): pressing a language selection value
+    /// switches to the chosen language. If the switching does not become
+    /// effective —already active language or operation aborted by an
+    /// unavailable catalog (ERR-003)—, the session's active language did not
+    /// change and the radio check is restored from the state; if effective,
+    /// the relabeling arrives with the single notification (DS-003) and the
+    /// check with it (the relabeling re-checks the selection from the state).
+    /// </summary>
+    private void SwitchFromMenu(InterfaceLanguage targetLanguage)
     {
-        var resultado = ServicioDeIdioma.Conmutar(idiomaDestino);
+        var result = LanguageService.Switch(targetLanguage);
 
-        if (resultado.Estado != EstadoConmutacionIdioma.Conmutada)
+        if (result.State != LanguageSwitchState.Switched)
         {
-            RelabelizadorDeInterfaz.Relabelizar(BarraMenu, BarraFormato, _sesion.IdiomaActivo);
+            UiRelabeler.Relabel(MenuBar, FormatBar, _session.ActiveLanguage);
         }
     }
 
     /// <summary>
-    /// Conecta los valores de la selección de idioma de la entrada
-    /// Herramientas → Idioma de la interfaz (T-010) al canal COM-001: cada
-    /// valor, identificado por su clave de catálogo, conmuta a su idioma.
+    /// Connects the language selection values of the Tools → Interface
+    /// language entry (T-010) to the COM-001 channel: each value, identified
+    /// by its catalog key, switches to its language.
     /// </summary>
-    private void CablearEntradaDeIdioma()
+    private void WireLanguageEntry()
     {
-        foreach (var item in EnumerarElementosDeMenu(BarraMenu))
+        foreach (var item in EnumerateMenuItems(MenuBar))
         {
-            if (item.Tag is not string clave)
+            if (item.Tag is not string key)
             {
                 continue;
             }
 
-            // Solo los valores de idioma (T-010) conmutan al pulsarse. La
-            // coincidencia es exacta con los valores del catálogo: cualquier
-            // otra entrada queda sin acción conectada (ADR-001) — nunca se
-            // conmuta hacia un valor fuera del catálogo (BR-007).
-            foreach (var idioma in CatalogoIdiomas.Valores)
+            // Only the language values (T-010) switch when pressed. The
+            // match is exact with the catalog values: any other entry stays
+            // with no connected action (ADR-001) — never switches to a value
+            // outside the catalog (BR-007).
+            foreach (var language in LanguageCatalog.Values)
             {
-                if (ConstructorDeMenuPrincipal.ClaveDeValorDeIdioma(idioma) == clave)
+                if (MainMenuBuilder.LanguageValueKey(language) == key)
                 {
-                    var idiomaDelValor = idioma;
-                    item.Click += (_, _) => ConmutarDesdeMenu(idiomaDelValor);
+                    var valueLanguage = language;
+                    item.Click += (_, _) => SwitchFromMenu(valueLanguage);
                     break;
                 }
             }
         }
     }
 
-    /// <summary>COM-002: traduce el gesto al modelo y lo despacha (T-005). Los gestos no expresables —sin letra ni dígito— y las combinaciones no asignadas quedan inertes (BR-F001-003, ADR-001).</summary>
-    private void AlPulsarUnaTecla(object? sender, KeyEventArgs e)
+    /// <summary>COM-002: translates the gesture to the model and dispatches it (T-005). Non-expressible gestures —no letter nor digit— and unassigned combinations remain inert (BR-F001-003, ADR-001).</summary>
+    private void OnKeyPressed(object? sender, KeyEventArgs e)
     {
-        var combinacion = TraductorDeGestos.Traducir(e.Key, e.KeyModifiers);
+        var combination = GestureTranslator.Translate(e.Key, e.KeyModifiers);
 
-        if (combinacion is null)
+        if (combination is null)
         {
             return;
         }
 
-        var resultado = DespachadorDeAtajos.Despachar(combinacion.Value);
+        var result = ShortcutDispatcher.Dispatch(combination.Value);
 
-        if (resultado.Estado == EstadoDespachoAtajo.Despachado)
+        if (result.State == ShortcutDispatchState.Dispatched)
         {
             e.Handled = true;
         }
     }
 
     /// <summary>
-    /// COM-004: la ventana se cerró —sea por el atajo de cierre (COM-002), la
-    /// orden del sistema o el cierre del usuario—. Cesan los canales internos
-    /// de la ventana y la sesión se libera con su registro LOG-003 (T-007);
-    /// ante un fallo de cierre o de liberación, ERR-005: el proceso queda con
-    /// el código de salida de error para terminarse igualmente, sin procesos
-    /// residuales.
+    /// COM-004: the window was closed —by the close shortcut (COM-002), the
+    /// system order or the user's close—. The window's internal channels
+    /// cease and the session is released with its LOG-003 log (T-007); on a
+    /// close or release failure, ERR-005: the process is left with the error
+    /// exit code to terminate anyway, with no residual processes.
     /// </summary>
-    private void AlCerrarLaVentana(object? sender, EventArgs e)
+    private void OnWindowClosed(object? sender, EventArgs e)
     {
-        ServicioDeIdioma.IdiomaConmutado -= AlConmutarseElIdioma;
-        RemoveHandler(InputElement.KeyDownEvent, AlPulsarUnaTecla);
+        LanguageService.LanguageSwitched -= OnLanguageSwitched;
+        RemoveHandler(InputElement.KeyDownEvent, OnKeyPressed);
 
         try
         {
-            _gestorDeCierre.Cerrar();
+            _shutdownManager.Shutdown();
         }
         catch (Exception)
         {
-            // ERR-005 ya registrado por el gestor (mensaje en español por la
-            // salida de error y LOG-003 con nivel Error): el cierre sigue
-            // hasta el final y el proceso termina con código de error.
-            Environment.ExitCode = _gestorDeCierre.CodigoDeSalidaPendiente;
+            // ERR-005 already logged by the manager (Spanish message through
+            // the error output and LOG-003 with Error level): the shutdown
+            // continues to the end and the process terminates with an error
+            // code.
+            Environment.ExitCode = _shutdownManager.PendingExitCode;
         }
     }
 
-    private static IEnumerable<MenuItem> EnumerarElementosDeMenu(Menu barra) =>
-        barra.Items.OfType<MenuItem>().SelectMany(EnumerarElementosDeMenu);
+    private static IEnumerable<MenuItem> EnumerateMenuItems(Menu bar) =>
+        bar.Items.OfType<MenuItem>().SelectMany(EnumerateMenuItems);
 
-    private static IEnumerable<MenuItem> EnumerarElementosDeMenu(MenuItem item)
+    private static IEnumerable<MenuItem> EnumerateMenuItems(MenuItem item)
     {
         yield return item;
 
-        foreach (var hijo in item.Items.OfType<MenuItem>())
+        foreach (var child in item.Items.OfType<MenuItem>())
         {
-            foreach (var elemento in EnumerarElementosDeMenu(hijo))
+            foreach (var element in EnumerateMenuItems(child))
             {
-                yield return elemento;
+                yield return element;
             }
         }
     }
 
-    /// <summary>Contraparte de cierre (COM-004) sobre la ventana: cerrarla dispara el cierre de la sesión.</summary>
-    private sealed class AccionDeCierreDeVentana(MainWindow ventana) : IAccionDeCierre
+    /// <summary>Close counterpart (COM-004) over the window: closing it triggers the session shutdown.</summary>
+    private sealed class WindowCloseAction(MainWindow window) : ICloseAction
     {
-        public void Ejecutar() => ventana.Close();
+        public void Execute() => window.Close();
     }
 
-    /// <summary>Contraparte de enfoque (T-006) sobre la ventana única existente: traerla al frente con el foco, sin crear otra (BR-003).</summary>
-    private sealed class EnfocadorDeVentana(MainWindow ventana) : IEnfocadorDeVentana
+    /// <summary>Focus counterpart (T-006) over the existing single window: bring it to the front with the focus, without creating another (BR-003).</summary>
+    private sealed class WindowFocuser(MainWindow window) : IWindowFocuser
     {
-        public void Enfocar() => ventana.Activate();
+        public void Focus() => window.Activate();
     }
 }
