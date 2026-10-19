@@ -48,7 +48,7 @@
     "level": "project",
     "id": ""
   },
-  "updated_at": "2026-10-16T16:15:53.639Z",
+  "updated_at": "2026-10-19T16:21:09.438Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -56,67 +56,43 @@
   "pending_decisions": [
     {
       "id": "OQ-001",
-      "question": "Tamaño target y latencia de sincronización bidireccional en v1",
-      "artifact": "project/discovery/open-questions.md",
-      "blocks": "NFR de rendimiento en Project Spec",
-      "impact": "high",
       "status": "resolved"
     },
     {
       "id": "OQ-002",
-      "question": "Versiones de OS soportadas en v1",
-      "artifact": "project/discovery/open-questions.md",
-      "blocks": "Architecture (APIs, empaquetado, CI multi-OS)",
-      "impact": "medium",
       "status": "resolved"
     },
     {
       "id": "OQ-003",
-      "question": "Política de licencias y atribución de dependencias",
-      "artifact": "project/discovery/open-questions.md",
-      "blocks": "Architecture (selección de librerías)",
-      "impact": "medium",
       "status": "resolved"
     },
     {
       "id": "OQ-004",
-      "question": "Alcance del diccionario personal de ortografía",
-      "artifact": "project/discovery/open-questions.md",
-      "blocks": "Feature Spec (menú contextual y corrector)",
-      "impact": "low",
       "status": "resolved"
     },
     {
       "id": "OQ-005",
-      "question": "Múltiples documentos abiertos simultáneamente en v1",
-      "artifact": "project/discovery/open-questions.md",
-      "blocks": "Architecture y Feature Spec (estructura de ventana)",
-      "impact": "medium",
       "status": "resolved"
     },
     {
       "id": "PD-001",
-      "question": "Ratificar o rechazar el criterio de ordenación del Roadmap declarado en roadmap.md («riesgo técnico primero»: M1 núcleo+sincronización dual, M2 UX de procesador, M3 metadatos/ortografía/i18n, M4 archivo/PDF/búsqueda/ayuda)",
-      "artifact": "project/roadmap/roadmap.md",
-      "blocks": "ratificación humana del gate ROADMAP_APPROVED",
-      "impact": "high",
       "status": "resolved"
     },
     {
       "id": "PD-002",
-      "question": "Destino de project/features/F-001-entorno-de-aplicacion/feature.md: huérfano de un borrador anterior de Roadmap (F-001–F-013) que no aparece en roadmap.md vigente (F-014–F-027); decidir si se elimina/archiva o se reintegra como Feature del Roadmap",
-      "artifact": "project/features/F-001-entorno-de-aplicacion/feature.md",
-      "blocks": "trazabilidad Feature ↔ Roadmap",
-      "impact": "medium",
       "status": "resolved"
     },
     {
       "id": "PD-FEAT-001",
-      "question": "Referencias Project Spec de F-001 «Entorno de aplicación»: la orden de ciclo lista FR-011/FR-012/FR-010/BR-003/BR-007/NFR-006 «según el Roadmap v2», pero la fila F-001 de roadmap.md (v2, ROADMAP_APPROVED) cita solo BR-003/BR-007/FR-010/NFR-006 y asigna FR-011 (menú principal) a F-028 y FR-012 (barra de formato) a F-029. RESUELTA (humano, 2026-10-15): F-001 incluye desde el inicio la parte visual del menú principal y de la barra de formato (todas las opciones visibles al usuario desde el primer entregable); la programación funcional de ambos queda para las Features que aplique más adelante (F-028/F-029). Modifica roadmap.md v2 aprobado → exige /sdd-change antes de /sdd-feature.",
-      "artifact": "project/roadmap/roadmap.md (v2) vs project/features/F-001-entorno-de-aplicacion/feature.md (pendiente de crear)",
-      "blocks": "feature.md de F-001 y los 13 documentos de spec/ (ciclo documental detenido antes de iniciar); tras la decisión, bloquea /sdd-feature hasta completar /sdd-change",
-      "impact": "high",
       "status": "resolved"
+    },
+    {
+      "id": "PD-PLAN-001",
+      "question": "Bloqueo de permisos de la sesión: el sistema de permisos rechaza toda mutación de archivos («Permission denied: edit») al intentar materializar plan/mockups.md de SC-001, cuyo contenido íntegro elaboró sdd-designer (49 líneas, sin ambigüedades, dentro del presupuesto tier S). ¿Se concede permiso de escritura en la sesión para materializar el documento y continuar el ciclo (cierre Git → PLAN_REVIEW)?",
+      "artifact": "project/features/F-001-entorno-de-aplicacion/plan/mockups.md",
+      "blocks": "PLAN_REVIEW (mockups_coverage SC-001) y el cierre Git del incremento",
+      "impact": "medium",
+      "status": "pending_human"
     }
   ],
   "last_gate": {
