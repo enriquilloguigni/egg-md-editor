@@ -150,12 +150,18 @@ public partial class MainWindow : Window
                 continue;
             }
 
-            var idiomaDelValor = CatalogoIdiomas.Valores.FirstOrDefault(
-                idioma => ConstructorDeMenuPrincipal.ClaveDeValorDeIdioma(idioma) == clave);
-
-            if (idiomaDelValor is IdiomaDeInterfaz idioma)
+            // Solo los valores de idioma (T-010) conmutan al pulsarse. La
+            // coincidencia es exacta con los valores del catálogo: cualquier
+            // otra entrada queda sin acción conectada (ADR-001) — nunca se
+            // conmuta hacia un valor fuera del catálogo (BR-007).
+            foreach (var idioma in CatalogoIdiomas.Valores)
             {
-                item.Click += (_, _) => ConmutarDesdeMenu(idioma);
+                if (ConstructorDeMenuPrincipal.ClaveDeValorDeIdioma(idioma) == clave)
+                {
+                    var idiomaDelValor = idioma;
+                    item.Click += (_, _) => ConmutarDesdeMenu(idiomaDelValor);
+                    break;
+                }
             }
         }
     }
