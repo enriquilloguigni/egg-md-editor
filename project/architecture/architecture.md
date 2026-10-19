@@ -55,4 +55,5 @@
 |---|---|---|---|
 | C-001 | La aplicación funciona 100% local y offline: sin telemetría, sin servicios de red y sin procesamiento de datos de terceros (sin nube). | heredada de project/discovery/discovery-context.md (decisión humana 2026-10-15) | confirmed |
 | C-002 | Solo licencias permisivas compatibles con MIT en las dependencias, con la atribución declarada en un archivo de terceros y en la ventana Acerca de. | heredada de project/discovery/discovery-context.md (decisión humana 2026-10-15) | confirmed |
+| C-003 | Todo código fuente creado se redacta en inglés: identificadores, comentarios y documentación inline. No altera la gobernanza de los textos de producto (la UI se resuelve del catálogo i18n es/en según Spec, BR-F001-007) ni es retroactiva sobre el código existente; una eventual retroactividad se decidiría y registraría aparte. | decisión humana 2026-10-19 (PD-GEN-003) | confirmed |
 ```
