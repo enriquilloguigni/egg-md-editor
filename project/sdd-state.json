@@ -40,7 +40,7 @@
         "T-010": "done",
         "T-011": "done",
         "T-012": "done",
-        "T-013": "todo"
+        "T-013": "done"
       }
     }
   },
@@ -48,7 +48,7 @@
     "level": "feature",
     "id": "F-001"
   },
-  "updated_at": "2026-10-19T20:28:19.072Z",
+  "updated_at": "2026-10-19T20:32:55.175Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -88,18 +88,18 @@
     },
     {
       "id": "PD-PLAN-001",
-      "question": "Bloqueo de permisos de la sesión: el sistema de permisos rechaza toda mutación de archivos («Permission denied: edit») al intentar materializar plan/mockups.md de SC-001, cuyo contenido íntegro elaboró sdd-designer (49 líneas, sin ambigüedades, dentro del presupuesto tier S). ¿Se concede permiso de escritura en la sesión para materializar el documento y continuar el ciclo (cierre Git → PLAN_REVIEW)?",
-      "artifact": "project/features/F-001-entorno-de-aplicacion/plan/mockups.md",
-      "blocks": "PLAN_REVIEW (mockups_coverage SC-001) y el cierre Git del incremento",
-      "impact": "medium",
       "status": "resolved"
     },
     {
       "id": "PD-FEAT-002",
-      "question": "La tarea T-009 (barra de formato 100 % FR-012, VR-001/VR-002) quedó blocked-human: el subagente denegó crear/modificar ficheros porque write/edit están denegados por permisos de sesión y rechazó usar shell para no eludir el control. Precedente en este mismo ciclo: T-001…T-008 usaron escritura por shell ante la misma denegación y sus incrementos (82/82 pruebas, commits 51ecf7c…68b9a2d) ya fueron commiteados y empujados sin objeción. ¿Se autoriza re-ejecutar T-009 con el mismo mecanismo de escritura por shell ya establecido (o se habilitan permisos de escritura y se reintenta)?",
-      "artifact": "src/EggMdEditor.App/Servicios/ConstructorDeBarraFormato.cs (por crear, más MainWindow y tests)",
-      "blocks": "T-009 y, en secuencia, T-010…T-013 (fase Implementation de F-001)",
-      "impact": "medium",
+      "status": "resolved"
+    },
+    {
+      "id": "PD-GEN-003",
+      "question": "¿Debe redactarse todo código fuente creado en inglés? (instrucción humana al cierre del ciclo F-001)",
+      "artifact": "project/architecture/architecture.md (Constraints, C-003)",
+      "blocks": "Nada bloqueante: rige para el código creado a partir de su adopción",
+      "impact": "low",
       "status": "resolved"
     }
   ],
