@@ -1,10 +1,9 @@
 using Xunit;
 
-namespace EggMdEditor.App.Tests;
-
-// Prueba de humo del andamiaje (T-001): verifica que la solución compila, que el
-// proyecto de pruebas referencia al proyecto de aplicación y que `dotnet test`
-// se ejecuta. No cubre comportamiento funcional (eso corresponde a T-002…T-013).
+// Smoke test of the scaffolding (T-001): checks that the solution builds,
+// that the test project references the application project and that `dotnet
+// test` runs. It does not cover functional behavior (that belongs to
+// T-002…T-013).
 public class SmokeTests
 {
     [Fact]
