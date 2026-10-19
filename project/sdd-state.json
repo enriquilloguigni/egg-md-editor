@@ -48,7 +48,7 @@
     "level": "feature",
     "id": "F-001"
   },
-  "updated_at": "2026-10-19T17:03:47.146Z",
+  "updated_at": "2026-10-19T17:08:30.461Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -96,12 +96,12 @@
     }
   ],
   "last_gate": {
-    "name": "SPEC_REVIEW",
-    "artifact": "F-001 spec/ (13 documentos, v1)",
+    "name": "PLAN_REVIEW",
+    "artifact": "F-001 plan/ (plan.md v1 + mockups.md v1, SC-001)",
     "verdict": "aprobar",
     "result": "pass",
     "decided_by": "humano",
-    "decided_at": "2026-10-16"
+    "decided_at": "2026-10-19"
   },
   "gate_history": [
     {
@@ -175,6 +175,14 @@
       "result": "pass",
       "decided_by": "humano",
       "decided_at": "2026-10-16"
+    },
+    {
+      "name": "PLAN_REVIEW",
+      "artifact": "F-001 plan/ (plan.md v1 + mockups.md v1, SC-001)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-19"
     }
   ]
 }
