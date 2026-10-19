@@ -28,7 +28,7 @@
       "spec_version": "v1",
       "plan_version": "v1",
       "tasks": {
-        "T-001": "todo",
+        "T-001": "done",
         "T-002": "todo",
         "T-003": "todo",
         "T-004": "todo",
@@ -48,7 +48,7 @@
     "level": "feature",
     "id": "F-001"
   },
-  "updated_at": "2026-10-19T17:08:30.461Z",
+  "updated_at": "2026-10-19T17:14:21.509Z",
   "tier": {
     "category": "S",
     "budget_waived": []
