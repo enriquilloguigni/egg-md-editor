@@ -63,7 +63,8 @@
         "inapp-communication": "draft",
         "security-permissions": "draft",
         "logs": "draft",
-        "audit": "draft"
+        "audit": "draft",
+        "visual-resources": "draft"
       }
     }
   },
@@ -71,7 +72,7 @@
     "level": "feature",
     "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T17:46:32.352Z",
+  "updated_at": "2026-10-20T17:50:59.292Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -148,6 +149,14 @@
       "blocks": "Diseño del servicio de archivo en la Spec de F-002",
       "impact": "high",
       "status": "resolved"
+    },
+    {
+      "id": "PD-FEAT-005",
+      "question": "¿Introduce F-002 retroalimentación visual durante el arrastre de un archivo sobre SC-001? Opción a: sin indicador (conforme a los drafts vigentes; recomendada por el analista). Opción b: resaltar el destino al arrastrar un .md (exige actualizar screens.md, añadir VR, tarea en Plan y evidencia visual; abriría también la cuestión del soltado de no-.md).",
+      "artifact": "project/features/F-002-gestion-de-archivo/spec/visual-resources.md (v1) + screens.md",
+      "blocks": "Nada para el draft; condiciona la evidencia visual de UI_REVIEW solo si se elige la opción b",
+      "impact": "low",
+      "status": "pending_human"
     }
   ],
   "last_gate": {
