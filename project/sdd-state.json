@@ -50,7 +50,7 @@
         "visual_sha256": "6ab57aeb35dac62d122560841ff0cf9d7c167161c7e36392014ed8be127c0b09",
         "result": "cubierto",
         "spec": "v1",
-        "commit": "221c79e65494819a384204c72347f8c5a063f4d5"
+        "commit": "ec92dd3d2811e64f82da10c7d1bcec6226ef5560"
       }
     }
   },
@@ -58,7 +58,7 @@
     "level": "feature",
     "id": "F-001-entorno-de-aplicacion"
   },
-  "updated_at": "2026-10-20T13:40:09.948Z",
+  "updated_at": "2026-10-20T13:52:44.138Z",
   "tier": {
     "category": "S",
     "budget_waived": []
