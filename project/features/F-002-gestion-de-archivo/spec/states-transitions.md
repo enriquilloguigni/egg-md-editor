@@ -2,20 +2,35 @@
 
 ## Estados
 
-```
-| id | estado | ruta asignada | estado de guardado | fichero temporal | contenido |
-|---|---|---|---|---|---|
-| ST-005 | Documento nuevo sin ruta | no | Sin cambios pendientes | no | vacío |
-| ST-006 | Documento sin ruta con cambios sin guardar | no | Con cambios sin guardar | presente: respaldo único e impredecible del documento (BR-F002-003); puede faltar si su creación falló (ERR-013) | el contenido editado en F-003 |
-| ST-007 | Documento con ruta | sí | Sin cambios pendientes | no | el del archivo en disco (NFR-004) |
-| ST-008 | Documento con ruta con cambios sin guardar | sí | Con cambios sin guardar | no: el autoguardado escribe en el archivo del documento (PD-FEAT-004) | el contenido editado en F-003 |
-| ST-009 | Ofrecimiento de recuperación de respaldo huérfano | sin cambio | sin cambio | presente: fichero huérfano conservado con permisos restrictivos (BR-F002-003) | el último respaldado |
-| ST-010 | Documento cerrado — sesión finalizada | ninguna | — | ninguno: el ciclo del fichero temporal termina con el documento (data-structures.md) | descartado |
-```
+### ST-005 — Documento nuevo sin ruta
+
+Documento de trabajo vacío, sin ruta asignada y en estado «Sin cambios pendientes»; sin fichero temporal y con contenido vacío. Es el estado con el que arranca la aplicación y al que vuelve la acción «Nuevo».
+
+### ST-006 — Documento sin ruta con cambios sin guardar
+
+Documento sin ruta asignada y en estado «Con cambios sin guardar», con el contenido editado en F-003. Corre aquí el ciclo de autoguardado con destino «Fichero temporal» (BR-F002-001); existe un fichero temporal de respaldo propio, único e impredecible (BR-F002-003), que puede faltar si su creación falló (ERR-013).
+
+### ST-007 — Documento con ruta
+
+Documento con ruta asignada y en estado «Sin cambios pendientes», con el contenido del archivo en disco, en UTF-8 (NFR-004). No tiene fichero temporal: el autoguardado escribe en el archivo del documento (PD-FEAT-004).
+
+### ST-008 — Documento con ruta con cambios sin guardar
+
+Documento con ruta asignada y en estado «Con cambios sin guardar», con el contenido editado en F-003. Corre aquí el ciclo de autoguardado con destino «Archivo del documento» (BR-F002-001, PD-FEAT-004) y no tiene fichero temporal.
+
+### ST-009 — Ofrecimiento de recuperación de respaldo huérfano
+
+Capa modal sobre el documento en espera, que no cambia: la ruta y el estado de guardado se mantienen sin cambio y el contenido sigue siendo el último respaldado. El fichero temporal huérfano se conserva con permisos restrictivos (BR-F002-003) y su ofrecimiento se repite en cada arranque (BR-F002-005).
+
+### ST-010 — Documento cerrado — sesión finalizada
+
+Sesión terminada: el documento se descarta, su contenido queda descartado y no tiene ruta ni fichero temporal —el ciclo del fichero temporal termina con el documento (data-structures.md)—. Estado final, sin salida.
 
 Estado inicial: `ST-005` — el documento de trabajo vacío y sin ruta con el que arranca la aplicación; la acción «Nuevo» vuelve a este estado. Estado final: `ST-010`.
 
-En `ST-006` y `ST-008` corre el ciclo de autoguardado, con destino «Fichero temporal» y «Archivo del documento» respectivamente (BR-F002-001, PD-FEAT-004); en los demás estados no corre. `ST-009` es una capa modal: el documento de trabajo queda en espera mientras se ofrece cada huérfano (BR-F002-005).
+El ciclo de autoguardado corre solo en `ST-006` y `ST-008`, con destino «Fichero temporal» y «Archivo del documento» respectivamente (BR-F002-001, PD-FEAT-004); en los demás estados no corre.
+
+`ST-009` es una capa modal: el documento de trabajo queda en espera mientras se ofrece cada huérfano (BR-F002-005).
 
 Los estados de superficie —arrastre sobre `SC-001`, aviso `SC-002` visible— no son estados funcionales: se describen en `process.md` e `inapp-communication.md`.
 
