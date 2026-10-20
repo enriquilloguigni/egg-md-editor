@@ -66,7 +66,10 @@
         "audit": "draft",
         "visual-resources": "draft",
         "external-services": "draft",
-        "business-rules": "draft"
+        "business-rules": "draft",
+        "error-handling": "draft",
+        "states-transitions": "draft",
+        "acceptance-criteria": "draft"
       }
     }
   },
@@ -74,7 +77,7 @@
     "level": "feature",
     "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T18:37:58.494Z",
+  "updated_at": "2026-10-20T21:15:04.607Z",
   "tier": {
     "category": "S",
     "budget_waived": []
