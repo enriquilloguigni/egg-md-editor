@@ -9,13 +9,13 @@
 
 ## Flujo principal
 
-**Arranque — ofrecimiento de recuperación (PD-FEAT-006, BR-F002-005):** al arrancar, si existe fichero temporal huérfano — respaldo de un documento sin ruta tras una terminación inesperada —, el sistema lo detecta y presenta el ofrecimiento con dos rutas:
+**Arranque — ofrecimiento de recuperación (PD-FEAT-006, BR-F002-005):** al arrancar, el sistema detecta todos los ficheros temporales huérfanos — respaldos de documentos sin ruta tras una terminación inesperada, uno por cada documento sin ruta pendiente de elección — y presenta el ofrecimiento por cada uno, secuencialmente, para que el usuario elija por fichero entre dos rutas:
 
-- **Recuperar:** el contenido respaldado se abre como documento de trabajo sin ruta y en estado «Con cambios sin guardar», y entra por el mismo ciclo de apertura y guardado que cualquier documento sin ruta — aviso `SC-002` en los tres momentos de PD-FEAT-003 y respaldo temporal del autoguardado (PD-FEAT-004).
-- **Eliminar:** se descarta el fichero temporal y el arranque continúa normal.
-- **Sin elección:** la aplicación arranca normal; el fichero persiste conservado con los permisos restrictivos de BR-F002-003 y el ofrecimiento se repite en cada arranque hasta que el usuario elija.
+- **Recuperar:** el contenido respaldado de ese fichero se abre como documento de trabajo sin ruta y en estado «Con cambios sin guardar», y entra por el mismo ciclo de apertura y guardado que cualquier documento sin ruta — aviso `SC-002` en los tres momentos de PD-FEAT-003 y respaldo temporal del autoguardado (PD-FEAT-004).
+- **Eliminar:** se descarta ese fichero temporal y, terminado el ofrecimiento de todos los huérfanos, el arranque continúa normal.
+- **Sin elección sobre un fichero:** ese fichero se conserva con los permisos restrictivos de BR-F002-003 y su ofrecimiento se repite en cada arranque hasta que el usuario elija.
 
-Los textos del ofrecimiento los define `screens.md`; el diagnóstico de fallos de lectura del huérfano vive en `error-handling.md`.
+Los textos del ofrecimiento los define `screens.md`; el diagnóstico de fallos de lectura de un huérfano vive en `error-handling.md`.
 
 1. **Nuevo:** el usuario invoca Nuevo → si el documento abierto tiene cambios sin guardar se presenta el aviso (PD-FEAT-003) con sus opciones; tras resolverlo, o si no hay cambios, el sistema crea un documento vacío sin ruta.
 2. **Abrir:** el usuario invoca Abrir y elige un archivo .md en el diálogo del sistema → si hay cambios sin guardar, aviso (PD-FEAT-003) → resuelto, el sistema carga el archivo como único documento de trabajo (BR-003) y lo coloca al frente de recientes.
