@@ -48,18 +48,20 @@
         "stale": false,
         "evidence_sha256": "c8d7cb86182a6cc63e2451163fa83e7b1a79a4aa51f7d3078f1560df96d30e1e",
         "visual_sha256": "d69fbc5df5b9d9a00e9933fe101e4a03e727dfa127789a423749a7790c9c5893",
-        "result": "cubierto",
+        "result": "v2",
         "spec": "v1",
-        "commit": "d4e8fc5b9b43d5ab051a32ce3d87360e35446f15"
+        "commit": "d4e8fc5b9b43d5ab051a32ce3d87360e35446f15",
+        "plan": "v1"
       }
     },
     "F-002-gestion-de-archivo": {
-      "status": "planned",
+      "status": "spec_in_progress",
       "docs": {
         "process": "draft",
         "screens": "draft",
         "data-structures": "draft",
-        "inapp-communication": "draft"
+        "inapp-communication": "draft",
+        "security-permissions": "draft"
       }
     }
   },
@@ -67,7 +69,7 @@
     "level": "feature",
     "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T17:24:57.941Z",
+  "updated_at": "2026-10-20T17:34:37.518Z",
   "tier": {
     "category": "S",
     "budget_waived": []
