@@ -8,7 +8,7 @@
     "roadmap": "done"
   },
   "features": {
-    "F-001": {
+    "F-001-entorno-de-aplicacion": {
       "status": "planned",
       "docs": {
         "process": "approved",
@@ -41,14 +41,21 @@
         "T-011": "done",
         "T-012": "done",
         "T-013": "done"
+      },
+      "verification": {
+        "run": "v1",
+        "execution": "E-001",
+        "stale": false,
+        "evidence_sha256": "a859fe84790a4d8b1e5842d825e0c65527db862f5e457754cdc4327e4356711b",
+        "visual_sha256": "7590d1a9e9d870664793c9730082ef85d982fcd3a3542f7bfbfab1092f205f3e"
       }
     }
   },
   "current": {
     "level": "feature",
-    "id": "F-001"
+    "id": "F-001-entorno-de-aplicacion"
   },
-  "updated_at": "2026-10-19T21:19:23.228Z",
+  "updated_at": "2026-10-20T13:14:42.457Z",
   "tier": {
     "category": "S",
     "budget_waived": []
