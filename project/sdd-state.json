@@ -9,7 +9,7 @@
   },
   "features": {
     "F-001-entorno-de-aplicacion": {
-      "status": "planned",
+      "status": "completed",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -45,20 +45,23 @@
       "verification": {
         "run": "v1",
         "execution": "E-002",
-        "stale": false,
+        "stale": true,
         "evidence_sha256": "8d0b6d896b55168ea868b429066e65718043ae546ad483958334c8d3c46402c1",
         "visual_sha256": "6ab57aeb35dac62d122560841ff0cf9d7c167161c7e36392014ed8be127c0b09",
         "result": "cubierto",
         "spec": "v1",
         "commit": "ec92dd3d2811e64f82da10c7d1bcec6226ef5560"
       }
+    },
+    "F-002-gestion-de-archivo": {
+      "status": "planned"
     }
   },
   "current": {
     "level": "feature",
-    "id": "F-001-entorno-de-aplicacion"
+    "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T13:52:44.138Z",
+  "updated_at": "2026-10-20T16:58:33.743Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -119,6 +122,22 @@
       "blocks": "Ordena el refactor antes de la Verification de F-001",
       "impact": "medium",
       "status": "resolved"
+    },
+    {
+      "id": "PD-FEAT-003",
+      "question": "¿Qué momentos disparan el aviso de cambios sin guardar en F-002: solo al crear un documento nuevo (literal FR-004), o también al abrir otro archivo y al cerrar la aplicación?",
+      "artifact": "project/features/F-002-gestion-de-archivo/spec/ (scope, acceptance-criteria)",
+      "blocks": "Spec de F-002: proceso.md y acceptance-criteria.md",
+      "impact": "medium",
+      "status": "pending_human"
+    },
+    {
+      "id": "PD-FEAT-004",
+      "question": "¿Cuál es la semántica del autoguardado silencioso de F-002: ¿solo documentos ya guardados en disco, o también fichero temporal/respaldo para documentos sin ruta, y cómo interactúa con el aviso de cambios sin guardar?",
+      "artifact": "project/features/F-002-gestion-de-archivo/spec/ (data-structures, states-transitions)",
+      "blocks": "Diseño del servicio de archivo en la Spec de F-002",
+      "impact": "high",
+      "status": "pending_human"
     }
   ],
   "last_gate": {
