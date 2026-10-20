@@ -44,10 +44,10 @@
       },
       "verification": {
         "run": "v1",
-        "execution": "E-001",
+        "execution": "E-002",
         "stale": false,
-        "evidence_sha256": "a859fe84790a4d8b1e5842d825e0c65527db862f5e457754cdc4327e4356711b",
-        "visual_sha256": "7590d1a9e9d870664793c9730082ef85d982fcd3a3542f7bfbfab1092f205f3e"
+        "evidence_sha256": "8d0b6d896b55168ea868b429066e65718043ae546ad483958334c8d3c46402c1",
+        "visual_sha256": "6ab57aeb35dac62d122560841ff0cf9d7c167161c7e36392014ed8be127c0b09"
       }
     }
   },
@@ -55,7 +55,7 @@
     "level": "feature",
     "id": "F-001-entorno-de-aplicacion"
   },
-  "updated_at": "2026-10-20T13:14:42.457Z",
+  "updated_at": "2026-10-20T13:22:41.281Z",
   "tier": {
     "category": "S",
     "budget_waived": []
