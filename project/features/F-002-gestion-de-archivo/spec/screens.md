@@ -33,6 +33,14 @@ Comportamiento dinámico: al abrir, el área de documento pasa a mostrar el arch
 de recientes se reordena por uso y registra cada guardar como (FR-004); el autoguardado no produce
 ningún cambio visible en SC-001 (PD-FEAT-004).
 
+Estado de drag-over de SC-001 (PD-FEAT-005): mientras se arrastra un archivo .md válido sobre la
+ventana, esta se resalta como destino de soltado (borde y estado de destino) — la indicación visual
+del destino que process.md declara para el arrastre sobre SC-001 — y vuelve a su estado normal al
+salir de la ventana o al soltar. Si el arrastre no puede distinguirse o no arrastra un .md, la
+ventana permanece en su estado normal y el soltado de contenido no .md se ignora tal como está
+especificado (FR-004, security-permissions.md); el recurso visual del resaltado queda pendiente de
+visual-resources.md.
+
 ## SC-002 — Aviso de cambios sin guardar (nueva)
 
 Propósito: avisar de cambios sin guardar antes de crear un documento nuevo, abrir otro archivo o
