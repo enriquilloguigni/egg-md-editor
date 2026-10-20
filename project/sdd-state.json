@@ -46,11 +46,11 @@
         "run": "v2",
         "execution": "E-003",
         "stale": false,
-        "evidence_sha256": "8d0b6d896b55168ea868b429066e65718043ae546ad483958334c8d3c46402c1",
-        "visual_sha256": "6ab57aeb35dac62d122560841ff0cf9d7c167161c7e36392014ed8be127c0b09",
+        "evidence_sha256": "c8d7cb86182a6cc63e2451163fa83e7b1a79a4aa51f7d3078f1560df96d30e1e",
+        "visual_sha256": "d69fbc5df5b9d9a00e9933fe101e4a03e727dfa127789a423749a7790c9c5893",
         "result": "cubierto",
         "spec": "v1",
-        "commit": "ec92dd3d2811e64f82da10c7d1bcec6226ef5560"
+        "commit": "d4e8fc5b9b43d5ab051a32ce3d87360e35446f15"
       }
     },
     "F-002-gestion-de-archivo": {
@@ -61,7 +61,7 @@
     "level": "feature",
     "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T17:15:04.542Z",
+  "updated_at": "2026-10-20T17:18:05.131Z",
   "tier": {
     "category": "S",
     "budget_waived": []
