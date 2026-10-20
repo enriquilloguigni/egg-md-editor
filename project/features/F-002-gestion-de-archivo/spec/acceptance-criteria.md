@@ -253,4 +253,15 @@ Métrica:
 - Recuento de operaciones de Nuevo, Abrir y de cierre sobre un documento con cambios sin guardar que muestran SC-002 antes de continuar: 100 %; umbral 0 sustituciones del documento y 0 cierres de la aplicación sin aviso previo (PD-FEAT-003).
 ```
 
-No requerido / Fuera de alcance: AC sobre la edición y el formato del contenido del documento (F-003, F-004, F-005), sobre el bloque de metadatos (F-008), sobre la exportación a PDF (F-010), sobre la conexión funcional de las entradas del menú Archivo a sus acciones (F-028), sobre la persistencia de preferencias del usuario (F-030) y sobre la persistencia de la lista de recientes entre sesiones (F-030); también los criterios de auditoría, que `audit.md` declara inexistentes para F-002, y los fallos de arranque y de pintado de la ventana, que pertenecen a F-001 (ERR-001, ERR-002). El alcance de FR-004 se entrega completo en esta Feature, sin recortes (BR-010).
+No requerido / Fuera de alcance — quedan fuera de esta Feature, con la referencia de su dueño:
+
+- Edición y formato del contenido del documento (F-003, F-004, F-005).
+- Bloque de metadatos del documento (F-008).
+- Exportación a PDF (F-010).
+- Conexión funcional de las entradas del menú Archivo con sus acciones (F-028).
+- Persistencia de preferencias del usuario (F-030).
+- Persistencia de la lista de recientes entre sesiones (F-030).
+- Criterios de auditoría: `audit.md` los declara inexistentes para F-002.
+- Fallos de arranque y de pintado de la ventana: pertenecen a F-001 (ERR-001, ERR-002).
+
+El alcance de FR-004 se entrega completo en esta Feature, sin recortes (BR-010).
