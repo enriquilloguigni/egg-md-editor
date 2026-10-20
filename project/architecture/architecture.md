@@ -46,7 +46,8 @@
 - Stack .NET 10 + Avalonia UI y matriz de plataformas de .NET 10: inamovibles sin un ADR aprobado por el humano.
 - NFR-001 se certifica sobre el hardware base declarado en Infraestructura de ejecución; NFR-005 sobre la matriz de soporte de .NET 10; NFR-007 exige licencias permisivas compatibles con MIT (C-002).
 - Idiomas de UI v1: español e inglés sobre i18n extensible; tema claro/oscuro, modo foco y zoom son atributos de la aplicación.
-- **Comando de prueba:** `dotnet test` en `project/implementation/`; la solución .NET (aplicación + pruebas unitarias) vive en el árbol único `project/implementation/` (§11) y Verification exige exit_code=0.
+- Comando de prueba: dotnet test project/implementation/egg-md-editor.slnx
+- La solución .NET (aplicación + pruebas unitarias) vive en el árbol único `project/implementation/` (§11) y Verification exige exit_code=0.
 
 ## Constraints
 
