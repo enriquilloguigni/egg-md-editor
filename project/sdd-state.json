@@ -65,7 +65,8 @@
         "logs": "draft",
         "audit": "draft",
         "visual-resources": "draft",
-        "external-services": "draft"
+        "external-services": "draft",
+        "business-rules": "draft"
       }
     }
   },
@@ -73,7 +74,7 @@
     "level": "feature",
     "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T18:10:47.123Z",
+  "updated_at": "2026-10-20T18:37:58.494Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -157,6 +158,14 @@
       "artifact": "project/features/F-002-gestion-de-archivo/spec/visual-resources.md (v1) + screens.md",
       "blocks": "Nada para el draft; condiciona la evidencia visual de UI_REVIEW solo si se elige la opción b",
       "impact": "low",
+      "status": "resolved"
+    },
+    {
+      "id": "PD-FEAT-006",
+      "question": "¿Qué destino tiene al siguiente arranque el fichero temporal huérfano (última copia respaldada de un documento sin ruta con cambios sin guardar, no eliminada por una terminación inesperada)?",
+      "artifact": "project/features/F-002-gestion-de-archivo/spec/business-rules.md (v1, BR-F002-005)",
+      "blocks": "Resolución de BR-F002-005 y cierre de la Spec de F-002 (gate SPEC_REVIEW); condiciona process.md, screens.md, error-handling.md e i18n si se elige ofrecimiento",
+      "impact": "medium",
       "status": "resolved"
     }
   ],
