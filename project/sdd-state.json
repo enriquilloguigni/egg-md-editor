@@ -56,7 +56,8 @@
     "F-002-gestion-de-archivo": {
       "status": "planned",
       "docs": {
-        "process": "draft"
+        "process": "draft",
+        "screens": "draft"
       }
     }
   },
@@ -64,7 +65,7 @@
     "level": "feature",
     "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T17:20:38.866Z",
+  "updated_at": "2026-10-20T17:21:54.460Z",
   "tier": {
     "category": "S",
     "budget_waived": []
