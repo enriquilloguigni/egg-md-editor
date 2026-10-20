@@ -17,5 +17,5 @@
 No requerido / Fuera de alcance:
 
 - **Cancelación del usuario en un diálogo nativo del sistema operativo** (cerrarlo sin elegir archivo): no es un error — la operación en curso se cancela sin efecto sobre el documento, sin mensaje propio y sin registro (process.md; los diálogos nativos no se diseñan en esta Feature, screens.md).
-- **Fallos de pintado o de redibujado de `SC-001` posteriores al arranque:** pertenecen a F-001 (`ERR-001` y `ERR-002` de F-001) y no a esta Feature.
+- **Fallos de pintado o de redibujado de `SC-001` posteriores al arranque:** no están especificados como error ni en F-001 ni en esta Feature — en F-001 no tienen `ERR` porque la sesión no ejecuta operaciones sobre el documento que los provoquen (F-001 es el entorno de aplicación, no la gestión de archivo), y en F-002 no se define ningún `ERR` para ellos.
 - **Trazabilidad funcional de estos fallos:** no aplica — `audit.md` declara que F-002 no genera eventos de auditoría; el detalle técnico de los registros vive en `logs.md` (`LOG-004`–`LOG-006`), aquí solo enlazado y no reproducido.
