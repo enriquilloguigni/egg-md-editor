@@ -1,9 +1,11 @@
 # Result de Verification — F-001 Entorno de aplicación
 
-Spec: v1 (`spec/`) — FR-010, FR-011, FR-012 (parte visual, ADR-001) y NFR-006; reglas BR-003, BR-007; criterios de éxito DS-001, DS-002, DS-003.
-Plan: v1 (`plan/plan.md`) — T-001–T-013: 13/13 tareas done y verificadas en esta corrida, conforme a la Secuencia del Plan (T-001/T-012/T-013 por `dotnet test` operativo en `project/implementation/`).
-Execution: E-002 — Run v1 (`verification/runs/v1/verification-run.md`), corrida 2026-10-20 en Linux local (A-001, C-001, catálogos en memoria); sustituye a E-001, abortada por causa de tooling (HV-001), no por defecto de Spec ni de Plan.
-Commit: `ec92dd3d2811e64f82da10c7d1bcec6226ef5560` (implementation commit vigente al dictamen; sin cambios locales pendientes en `project/implementation/` — verificado que el hash está en el historial posterior del upstream).
+Spec: v1
+Plan: v1
+Execution: E-002
+Commit: ec92dd3d2811e64f82da10c7d1bcec6226ef5560
+Run: v1 (`verification/runs/v1/verification-run.md`) — corrida 2026-10-20 en Linux local (A-001, C-001, catálogos en memoria); sustituye a E-001, abortada por causa de tooling (HV-001), no por defecto de Spec ni de Plan.
+Alcance verificado: FR-010, FR-011, FR-012 (parte visual, ADR-001), NFR-006; reglas BR-003, BR-007; criterios DS-001, DS-002, DS-003 — 13/13 tareas T-001–T-013 done y verificadas en esta corrida, conforme a la Secuencia del Plan (T-001/T-012/T-013 por `dotnet test` operativo en `project/implementation/`).
 
 Cobertura: 100 % — 13/13 tareas · 15/15 AC (AC-001–AC-015) · 3/3 DS · 10/10 dimensiones mínimas del Run v1 (funcionales, reglas, pantallas, datos, seguridad, comunicación interna, externos, errores, estados/transiciones, AC+tareas), según la matriz AC→prueba del `verification-run.md`.
 
