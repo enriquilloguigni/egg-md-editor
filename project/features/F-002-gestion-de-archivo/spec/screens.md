@@ -46,7 +46,7 @@ Elementos de la interfaz:
 
 ```
 Diálogo modal sobre SC-001 — bloquea la operación en curso hasta que se resuelve.
-Aviso parametrizado por ocasión — patrón común de título, mensaje y acciones (i18n es/en, BR-007).
+Aviso parametrizado por ocasión — patrón común de título, mensaje y acciones (i18n es/en con relabelizado en caliente, BR-007).
 Título — según la ocasión; los valores canónicos están en el bloque de textos.
 Mensaje — según la ocasión: nombra la operación en curso y pregunta qué hacer con los cambios, o anuncia el
   respaldo encontrado al arrancar y pregunta qué hacer con él.
@@ -64,8 +64,8 @@ Acciones disponibles y efecto:
 - Cancelar: anula la operación en curso; el documento queda tal cual estaba.
 - Recuperar como documento de trabajo (ofrecimiento): abre el contenido respaldado como documento único sin
   ruta, en «Con cambios sin guardar» (process.md), y entra en el ciclo de apertura y autoguardado (PD-FEAT-004).
-- Eliminar respaldo (ofrecimiento): descarta el fichero temporal y el arranque continúa normal.
-- Ahora no (ofrecimiento, sin elección): conserva el fichero con los permisos de BR-F002-003; el ofrecimiento se repite en cada arranque.
+- Eliminar respaldo (ofrecimiento): descarta ese fichero temporal; terminado el ofrecimiento de todos los huérfanos, el arranque continúa normal.
+- Ahora no (ofrecimiento, sin elección): conserva ese fichero con permisos de BR-F002-003; su ofrecimiento se repite en cada arranque.
 
 Textos canónicos del catálogo i18n es/en (BR-007):
 
@@ -87,8 +87,8 @@ eliminar     Eliminar respaldo                             Delete backup
 ahora_no     Ahora no                                      Not now
 ```
 
-Comportamiento dinámico: la ocasión «cambios sin guardar» aparece solo con cambios sin guardar y en los tres
-momentos declarados (PD-FEAT-003); resuelta, desaparece y la operación continúa o queda cancelada. La ocasión
-«ofrecimiento» aparece solo al arrancar con fichero temporal huérfano (BR-F002-005); sin elección se repite en
-cada arranque. Ambas siguen el idioma activo con relabelizado en caliente (BR-007); los fallos de lectura del
-huérfano viven en error-handling.md; el respaldo temporal complementa este aviso, no lo sustituye (PD-FEAT-004).
+Comportamiento dinámico: la ocasión «cambios sin guardar» aparece solo con cambios sin guardar, en los tres momentos
+de PD-FEAT-003. La ocasión «ofrecimiento» aparece solo al arrancar con ficheros temporales huérfanos (PD-FEAT-006,
+BR-F002-005): la detección los encuentra todos y el diálogo se presenta por cada uno, secuencialmente —diálogo
+por huérfano, no lista—, con elección por fichero; sin elección («Ahora no»), cada fichero se conserva con permisos
+de BR-F002-003 y su diálogo se repite en cada arranque; los fallos de lectura del huérfano viven en error-handling.md.
