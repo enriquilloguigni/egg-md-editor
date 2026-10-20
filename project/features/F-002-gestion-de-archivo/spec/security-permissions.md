@@ -16,7 +16,7 @@ Del sistema operativo, ejercidos bajo la cuenta local del usuario, sin elevació
 
 - Lectura de archivos .md del disco local para abrir por diálogo, arrastre o recientes (FR-004, BR-004).
 - Escritura en la ruta que el usuario elige al guardar o guardar como, en UTF-8 (NFR-004).
-- Lectura y escritura en el directorio de temporales del SO para el fichero de respaldo (PD-FEAT-004, BR-001).
+- Crear, sobrescribir y eliminar el fichero de respaldo en el directorio de temporales del SO, y nada más en él (PD-FEAT-004, BR-001).
 
 El acceso queda limitado a los archivos que el propio usuario elige o suelta sobre la ventana. Un permiso denegado por el SO se manifiesta como fallo de lectura o de escritura y se trata en error-handling.md.
 
