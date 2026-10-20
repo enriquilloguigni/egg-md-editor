@@ -69,4 +69,11 @@ Sin recurso nuevo — aplicado y declarado:
   error-handling.md apoyada en los estados de TK-004, sin recurso propio de esta Feature.
 ```
 
-Separación con screens: screens.md define qué es cada superficie y sus elementos —el título, el mensaje y los botones de `SC-002` según la ocasión, con sus efectos, y los elementos añadidos a `SC-001`—; este documento define solo su recurso visual: jerarquía de acciones, foco por defecto, resaltado de drag-over de SC-001 (VR-007) y tokens aplicados. Ningún recurso requiere un token distinto de TK-001, TK-002 y TK-004.
+Separación con screens: screens.md define qué es cada superficie y sus elementos —el título, el mensaje y los botones de `SC-002` según la ocasión, con sus efectos, y los elementos añadidos a `SC-001`—; este documento define solo su recurso
+visual: jerarquía de acciones, foco por defecto, resaltado de drag-over de SC-001 (VR-007) y tokens aplicados.
+
+Ningún recurso requiere un token distinto de estos tres:
+
+- TK-001 — paleta claro/oscuro: acento de la superficie, resaltado del destino de soltado y contraste AA en ambos temas.
+- TK-002 — tipografía de la UI: rótulos i18n y texto del aviso, con la escala de tamaños base.
+- TK-004 — retícula de controles y estados: altura, espaciado, retícula de los botones y estados de foco.
