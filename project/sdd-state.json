@@ -64,7 +64,8 @@
         "security-permissions": "draft",
         "logs": "draft",
         "audit": "draft",
-        "visual-resources": "draft"
+        "visual-resources": "draft",
+        "external-services": "draft"
       }
     }
   },
@@ -72,7 +73,7 @@
     "level": "feature",
     "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T17:54:17.693Z",
+  "updated_at": "2026-10-20T18:03:58.220Z",
   "tier": {
     "category": "S",
     "budget_waived": []
