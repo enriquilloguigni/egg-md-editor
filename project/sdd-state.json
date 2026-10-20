@@ -54,14 +54,17 @@
       }
     },
     "F-002-gestion-de-archivo": {
-      "status": "planned"
+      "status": "planned",
+      "docs": {
+        "process": "draft"
+      }
     }
   },
   "current": {
     "level": "feature",
     "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T17:18:05.131Z",
+  "updated_at": "2026-10-20T17:20:38.866Z",
   "tier": {
     "category": "S",
     "budget_waived": []
@@ -129,7 +132,7 @@
       "artifact": "project/features/F-002-gestion-de-archivo/spec/ (scope, acceptance-criteria)",
       "blocks": "Spec de F-002: proceso.md y acceptance-criteria.md",
       "impact": "medium",
-      "status": "pending_human"
+      "status": "resolved"
     },
     {
       "id": "PD-FEAT-004",
@@ -137,7 +140,7 @@
       "artifact": "project/features/F-002-gestion-de-archivo/spec/ (data-structures, states-transitions)",
       "blocks": "Diseño del servicio de archivo en la Spec de F-002",
       "impact": "high",
-      "status": "pending_human"
+      "status": "resolved"
     }
   ],
   "last_gate": {
