@@ -43,9 +43,9 @@
         "T-013": "done"
       },
       "verification": {
-        "run": "v1",
+        "run": "v2",
         "execution": "E-002",
-        "stale": true,
+        "stale": false,
         "evidence_sha256": "8d0b6d896b55168ea868b429066e65718043ae546ad483958334c8d3c46402c1",
         "visual_sha256": "6ab57aeb35dac62d122560841ff0cf9d7c167161c7e36392014ed8be127c0b09",
         "result": "cubierto",
@@ -61,7 +61,7 @@
     "level": "feature",
     "id": "F-002-gestion-de-archivo"
   },
-  "updated_at": "2026-10-20T16:58:33.743Z",
+  "updated_at": "2026-10-20T17:09:42.010Z",
   "tier": {
     "category": "S",
     "budget_waived": []
