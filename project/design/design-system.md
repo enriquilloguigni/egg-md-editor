@@ -6,9 +6,9 @@
 - diálogo: modales sobre la ventana principal (exportar a PDF, propiedades del documento, buscar/reemplazar).
 - ayuda: ventana Acerca de y guía integrada de Markdown.
 
-Comando de captura (ventana-principal): sdd-visual-capture ventana-principal <SC> <salida>
-Comando de captura (diálogo): sdd-visual-capture diálogo <SC> <salida>
-Comando de captura (ayuda): sdd-visual-capture ayuda <SC> <salida>
+Comando de captura (ventana-principal): dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- ventana-principal <SC> <salida>
+Comando de captura (diálogo): dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- diálogo <SC> <salida>
+Comando de captura (ayuda): dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- ayuda <SC> <salida>
 
 ## Patrones por superficie
 
