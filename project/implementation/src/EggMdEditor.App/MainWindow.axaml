@@ -44,7 +44,33 @@
                 Tag="Menu.Format" />
       <MenuItem x:Name="ToolsMenu"
                 Header="{Binding ToolsMenuHeader}"
-                Tag="Menu.Tools" />
+                Tag="Menu.Tools">
+        <!-- OP-001 (T-008): selección de idioma mutuamente excluyente en
+             Herramientas → Idioma de la interfaz; relabeliza en caliente sin
+             reinicio y conserva ventana, menú y aviso (TR-002/TR-003). -->
+        <MenuItem x:Name="LanguageMenu"
+                  Header="{Binding LanguageMenuHeader}"
+                  Tag="Menu.Tools.Language">
+          <MenuItem x:Name="SpanishLanguageItem"
+                    Header="{Binding SpanishOptionHeader}"
+                    Tag="Language.es"
+                    ToggleType="Radio"
+                    GroupName="InterfaceLanguage"
+                    IsChecked="{Binding IsSpanish, Mode=OneWay}"
+                    Command="{Binding ChangeLanguageCommand}"
+                    CommandParameter="es"
+                    AutomationProperties.AutomationId="Language.es" />
+          <MenuItem x:Name="EnglishLanguageItem"
+                    Header="{Binding EnglishOptionHeader}"
+                    Tag="Language.en"
+                    ToggleType="Radio"
+                    GroupName="InterfaceLanguage"
+                    IsChecked="{Binding IsEnglish, Mode=OneWay}"
+                    Command="{Binding ChangeLanguageCommand}"
+                    CommandParameter="en"
+                    AutomationProperties.AutomationId="Language.en" />
+        </MenuItem>
+      </MenuItem>
       <MenuItem x:Name="HelpMenu"
                 Header="{Binding HelpMenuHeader}"
                 Tag="Menu.Help" />
