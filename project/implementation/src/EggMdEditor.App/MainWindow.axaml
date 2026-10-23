@@ -7,8 +7,26 @@
         Width="1280"
         Height="720">
 
-  <!-- SC-001 (T-006): ventana única con menú principal persistente de los
-       6 menús de FR-011, visibles y sin acciones conectadas (ADR-001). -->
+  <Window.Styles>
+    <!-- TK-004: tamaño y espaciado de los controles de la barra de formato. -->
+    <Style Selector="Button.format-control">
+      <Setter Property="MinWidth" Value="34" />
+      <Setter Property="Height" Value="30" />
+      <Setter Property="Padding" Value="8,2" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.format-control TextBlock">
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+  </Window.Styles>
+
+  <!-- SC-001 (T-006, T-007): ventana única con menú principal persistente de
+       los 6 menús de FR-011 y barra de formato con los controles de FR-012 en
+       orden de escritura (ENT-005), visibles y sin acciones conectadas
+       (ADR-001). -->
   <DockPanel>
 
     <Menu x:Name="MainMenu" DockPanel.Dock="Top">
@@ -31,6 +49,34 @@
                 Header="{Binding HelpMenuHeader}"
                 Tag="Menu.Help" />
     </Menu>
+
+    <!-- Barra de formato (ENT-005): un icono (VR-001), un aviso flotante
+         (VR-002) y un nombre accesible (NFR-009) por control, resueltos en
+         el idioma activo. Ningún control tiene comando: su parte visual no
+         está conectada a acciones en F-001 (ADR-001). -->
+    <Border x:Name="FormatBarContainer"
+            DockPanel.Dock="Top"
+            Padding="8,5">
+      <ItemsControl x:Name="FormatBar"
+                    ItemsSource="{Binding FormatBarControls}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="2" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="app:FormatBarControlDefinition">
+            <Button Classes="format-control"
+                    Tag="{Binding Key}"
+                    AutomationProperties.AutomationId="{Binding Key}"
+                    AutomationProperties.Name="{Binding Name}"
+                    ToolTip.Tip="{Binding Name}">
+              <TextBlock Text="{Binding Glyph}" />
+            </Button>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Border>
 
     <!-- Área de documento vacía en F-001 (BR-F001-008). -->
     <Border x:Name="DocumentArea" />
