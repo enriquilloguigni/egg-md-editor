@@ -193,6 +193,23 @@ public partial class MainWindow : Window
 
     private void OnCloseRequested(object? sender, EventArgs e) => Close();
 
+    /// <summary>
+    /// OP-006/TR-001: el cierre de SC-001 finaliza la sesión (ST-001 →
+    /// ST-002), también cuando lo origina el control de la barra de título y
+    /// no el atajo o el ViewModel. No queda estado transitorio activo.
+    /// </summary>
+    protected override void OnClosed(EventArgs e)
+    {
+        try
+        {
+            _viewModel.Session?.CloseWindow();
+        }
+        finally
+        {
+            base.OnClosed(e);
+        }
+    }
+
     private void CloseOpenMenuItem()
     {
         if (_lastOpenMenuItem is { IsSubMenuOpen: true } openItem)
