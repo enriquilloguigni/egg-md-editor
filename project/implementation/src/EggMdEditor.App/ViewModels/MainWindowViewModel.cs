@@ -19,6 +19,9 @@ namespace EggMdEditor.App;
 public partial class MainWindowViewModel : INotifyPropertyChanged
 {
     private ICommand? _changeLanguageCommand;
+    private ICommand? _changeThemeCommand;
+    private Theme _theme = Theme.Light;
+    private IThemeApplier? _themeApplier;
 
     /// <summary>Claves i18n de los 6 menús de FR-011, en el orden declarado.</summary>
     public static IReadOnlyList<string> MenuKeys { get; } = Array.AsReadOnly(
@@ -142,6 +145,82 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public ICommand ChangeLanguageCommand =>
         _changeLanguageCommand ??= new RelayCommand<string?>(code => TryChangeLanguage(code));
+
+    /// <summary>
+    /// Tema activo de la interfaz (ENT-003, OP-002). La aplicación lo aplica
+    /// de forma global (COM-003) para que todas las superficies de SC-001
+    /// repinten de forma consistente.
+    /// </summary>
+    public Theme CurrentTheme => Session?.Theme ?? Preferences?.Theme ?? _theme;
+
+    public bool IsLightTheme => CurrentTheme == Theme.Light;
+
+    public bool IsDarkTheme => CurrentTheme == Theme.Dark;
+
+    /// <summary>
+    /// Aplicador del tema de la aplicación (COM-003). La composición de la
+    /// aplicación lo inyecta; sin él OP-002 solo actualiza el estado de la
+    /// sesión y las preferencias.
+    /// </summary>
+    public IThemeApplier? ThemeApplier
+    {
+        get => _themeApplier;
+        set => _themeApplier = value;
+    }
+
+    /// <summary>
+    /// Comando de conmutación de tema (OP-002). El parámetro es el tema
+    /// destino {light|claro, dark|oscuro}; un valor no soportado no altera el
+    /// tema activo (TR-008/TR-009).
+    /// </summary>
+    public ICommand ChangeThemeCommand =>
+        _changeThemeCommand ??= new RelayCommand<string?>(theme => TryChangeTheme(theme));
+
+    /// <summary>
+    /// Conmuta el tema (OP-002, TR-008/TR-009): actualiza la sesión y las
+    /// preferencias (ENT-003); la aplicación aplica el tema a todas las
+    /// superficies (COM-003). Ante un tema no soportado se aborta sin cambio
+    /// parcial y se conserva el tema activo.
+    /// </summary>
+    public bool TryChangeTheme(Theme theme)
+    {
+        if (theme is not (Theme.Light or Theme.Dark))
+        {
+            return false;
+        }
+
+        if (Session is not null)
+        {
+            if (!Session.TrySetTheme(theme))
+            {
+                return false;
+            }
+        }
+        else if (Preferences is not null && !Preferences.TrySetTheme(theme))
+        {
+            return false;
+        }
+
+        _theme = theme;
+        ThemeApplier?.Apply(theme);
+        OnPropertyChanged(nameof(CurrentTheme));
+        OnPropertyChanged(nameof(IsLightTheme));
+        OnPropertyChanged(nameof(IsDarkTheme));
+        return true;
+    }
+
+    /// <summary>Conmuta el tema desde el selector de tema (OP-002).</summary>
+    public bool TryChangeTheme(string? theme)
+    {
+        return UiPreferences.TryParseTheme(theme, out var parsed) && TryChangeTheme(parsed);
+    }
+
+    /// <summary>
+    /// Alterna entre ST-009 (claro) y ST-010 (oscuro) según el tema activo
+    /// (TR-008/TR-009).
+    /// </summary>
+    public bool ToggleTheme() =>
+        TryChangeTheme(CurrentTheme == Theme.Dark ? Theme.Light : Theme.Dark);
 
     /// <summary>
     /// Conmuta el idioma en caliente (OP-001, TR-002/TR-003). Si el catálogo
