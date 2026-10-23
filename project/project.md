@@ -10,7 +10,7 @@ Editor de texto con paneles sincronizados WYSIWYG ↔ Markdown, barra de formato
 
 ## Dimensión
 
-Categoría: Pequeño (S)
+Categoría: Mediano (M)
 Ponderado: 5.50
 
 Alcance 30% 8
