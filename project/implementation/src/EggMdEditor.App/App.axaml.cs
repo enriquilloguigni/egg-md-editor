@@ -9,6 +9,7 @@ namespace EggMdEditor.App;
 public partial class App : Application
 {
     private ILoggerFactory? _loggerFactory;
+    private ApplicationThemeApplier? _themeApplier;
 
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
@@ -30,14 +31,29 @@ public partial class App : Application
             });
 
             var catalog = new I18nCatalog(_loggerFactory.CreateLogger<I18nCatalog>());
-            var session = new Session(catalog);
+
+            // ENT-003: en F-001 el tema no se persiste (FR-013 → F-010), así
+            // que cada arranque hereda el tema del SO. Se fija el tema
+            // efectivo en la sesión y en la aplicación para que ST-009/ST-010
+            // y las superficies de SC-001 queden alineados desde el primer
+            // pintado; OP-002 los conmuta después en caliente (COM-003).
+            var initialTheme = ApplicationThemeApplier.ResolveSystemTheme(this);
+            var session = new Session(catalog, new UiPreferences("es", initialTheme));
+            _themeApplier = new ApplicationThemeApplier(this);
+            _themeApplier.Attach(session);
+
             var viewModel = new MainWindowViewModel(session)
             {
                 Logger = _loggerFactory.CreateLogger<MainWindowViewModel>(),
+                ThemeApplier = _themeApplier,
             };
 
             desktop.MainWindow = new MainWindow(viewModel);
-            desktop.Exit += (_, _) => _loggerFactory?.Dispose();
+            desktop.Exit += (_, _) =>
+            {
+                _themeApplier?.Dispose();
+                _loggerFactory?.Dispose();
+            };
         }
 
         base.OnFrameworkInitializationCompleted();
