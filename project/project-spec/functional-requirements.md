@@ -56,18 +56,18 @@ El sistema debe persistir entre sesiones las preferencias del usuario: tema, zoo
 
 | unidad | cita | FR |
 |---|---|---|
-| U-01 (L1) | "menús de siempre —Archivo, Edición, Ver, Formato, Herramientas, Ayuda—" | FR-011, FR-012 |
-| U-02 (L3) | "dos paneles que ocupan el resto del espacio... dos vistas del mismo documento, sincronizadas en tiempo real" | FR-001 |
-| U-03 (L5) | "El panel izquierdo es el pensado para escribir con comodidad... editor WYSIWYG puro" | FR-001 |
-| U-04 (L7) | "El panel derecho... muestra el documento en Markdown estándar" | FR-001, FR-002 |
-| U-05 (L9) | "sincronización constante... correspondencia no es solo del contenido: también lo es de la posición" | FR-001, FR-009, FR-013 |
-| U-06 (L11) | "En Archivo empiezas con Nuevo..." | FR-004, FR-005 |
-| U-07 (L13) | "metadatos... bloque delimitado que abre el documento" | FR-006 |
-| U-08 (L15) | "En Edición está lo que tus manos ya saben hacer" | FR-007 |
-| U-09 (L17) | "menú contextual de edición" | FR-007, FR-008 |
-| U-10 (L19) | "En Formato está el corazón" | FR-002 |
-| U-11 (L21) | "Seguir con Formato es seguir insertando" | FR-002, FR-003 |
-| U-12 (L23) | "sección de elementos rápidos... Índice se genera solo" | FR-003 |
-| U-13 (L25) | "En Herramientas llevas la cuenta y el cuidado" | FR-008, FR-009 |
-| U-14 (L27) | "En Ayuda tienes el Acerca de" | FR-010 |
-| U-15 (L29) | "eliges cómo trabajar en cada momento" | FR-001 |
+| §1 | "menús de siempre —Archivo, Edición, Ver, Formato, Herramientas, Ayuda—" | FR-011, FR-012 |
+| §2 | "dos paneles que ocupan el resto del espacio... dos vistas del mismo documento, sincronizadas en tiempo real" | FR-001 |
+| §3 | "El panel izquierdo es el pensado para escribir con comodidad... editor WYSIWYG puro" | FR-001 |
+| §4 | "El panel derecho... muestra el documento en Markdown estándar" | FR-001, FR-002 |
+| §5 | "sincronización constante... correspondencia no es solo del contenido: también lo es de la posición" | FR-001, FR-009, FR-013 |
+| §6 | "En Archivo empiezas con Nuevo..." | FR-004, FR-005 |
+| §7 | "metadatos... bloque delimitado que abre el documento" | FR-006 |
+| §8 | "En Edición está lo que tus manos ya saben hacer" | FR-007 |
+| §9 | "menú contextual de edición" | FR-007, FR-008 |
+| §10 | "En Formato está el corazón" | FR-002 |
+| §11 | "Seguir con Formato es seguir insertando" | FR-002, FR-003 |
+| §12 | "sección de elementos rápidos... Índice se genera solo" | FR-003 |
+| §13 | "En Herramientas llevas la cuenta y el cuidado" | FR-008, FR-009 |
+| §14 | "En Ayuda tienes el Acerca de" | FR-010 |
+| §15 | "eliges cómo trabajar en cada momento" | FR-001 |
