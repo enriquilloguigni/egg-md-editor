@@ -19,7 +19,7 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
     public UiPreferences(string language, Theme theme)
     {
         _language = NormalizeLanguage(language);
-        _theme = theme;
+        _theme = NormalizeTheme(theme);
     }
 
     public UiPreferences(Theme theme)
@@ -148,6 +148,13 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
 
     public bool TrySetTheme(Theme theme)
     {
+        // OP-002: entrada {Claro,Oscuro}; un valor fuera de ese catálogo se
+        // rechaza sin cambio parcial (ENT-003, integridad de datos).
+        if (theme is not (Theme.Light or Theme.Dark))
+        {
+            return false;
+        }
+
         if (_theme == theme)
         {
             return true;
@@ -219,6 +226,14 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
 
     protected void OnPropertyChanged(string propertyName)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    /// <summary>
+    /// Normaliza el tema al catálogo de ENT-003 {Claro,Oscuro}. El valor por
+    /// defecto heredado del SO se resuelve en la composición de la aplicación
+    /// (App.axaml.cs), no aquí.
+    /// </summary>
+    public static Theme NormalizeTheme(Theme theme) =>
+        theme == Theme.Dark ? Theme.Dark : Theme.Light;
 
     public static string NormalizeLanguage(string? language)
     {
