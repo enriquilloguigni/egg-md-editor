@@ -18,4 +18,40 @@
   <data name="Menu.Help" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="barra.enfasis" xml:space="preserve">
+    <value>Emphasis</value>
+  </data>
+  <data name="barra.encabezados" xml:space="preserve">
+    <value>Headings</value>
+  </data>
+  <data name="barra.listas" xml:space="preserve">
+    <value>Lists</value>
+  </data>
+  <data name="barra.cita" xml:space="preserve">
+    <value>Quote</value>
+  </data>
+  <data name="barra.codigo" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="barra.enlace" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="barra.imagen" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="barra.tabla" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="barra.nota-al-pie" xml:space="preserve">
+    <value>Footnote</value>
+  </data>
+  <data name="barra.formula" xml:space="preserve">
+    <value>Formula</value>
+  </data>
+  <data name="barra.diagrama" xml:space="preserve">
+    <value>Diagram</value>
+  </data>
+  <data name="barra.indice" xml:space="preserve">
+    <value>Table of contents</value>
+  </data>
 </root>
