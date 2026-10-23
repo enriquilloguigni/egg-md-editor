@@ -4,7 +4,7 @@
   "phases": {
     "discovery": "in_progress",
     "project_spec": "in_progress",
-    "architecture": "pending",
+    "architecture": "in_progress",
     "roadmap": "pending"
   },
   "features": {},
@@ -76,7 +76,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-23T14:47:00.513Z",
+  "updated_at": "2026-10-23T14:51:45.646Z",
   "owner": "EG",
   "sources": [
     {
@@ -105,6 +105,19 @@
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "agente",
+      "decided_at": "2026-10-23",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "DESIGN_APPROVED",
+      "artifact": "project/architecture/, project/design/",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
       "decided_at": "2026-10-23",
       "approver": "EG",
       "norm": {
