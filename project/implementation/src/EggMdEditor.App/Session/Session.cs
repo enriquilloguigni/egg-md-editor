@@ -71,7 +71,7 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
     {
         _catalog = catalog ?? I18nCatalog.Instance;
         _language = UiPreferences.NormalizeLanguage(language);
-        _theme = theme;
+        _theme = UiPreferences.NormalizeTheme(theme);
         _menuState = menuState;
         _noticeVisible = noticeVisible;
         _windowOpen = windowOpen;
@@ -350,6 +350,13 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
     // Theme operations
     public bool TrySetTheme(Theme theme)
     {
+        // OP-002: entrada {Claro,Oscuro}; fuera de ese catálogo se aborta sin
+        // cambio parcial y las preferencias (ENT-003) conservan el tema activo.
+        if (theme is not (Theme.Light or Theme.Dark))
+        {
+            return false;
+        }
+
         if (_theme == theme)
         {
             _syncingPreferences = true;
