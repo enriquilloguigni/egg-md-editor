@@ -23,28 +23,41 @@
     </Style>
   </Window.Styles>
 
-  <!-- SC-001 (T-006, T-007): ventana única con menú principal persistente de
-       los 6 menús de FR-011 y barra de formato con los controles de FR-012 en
-       orden de escritura (ENT-005), visibles y sin acciones conectadas
-       (ADR-001). -->
+  <!-- SC-001 (T-006, T-007, T-010): ventana única con menú principal
+       persistente de los 6 menús de FR-011 y barra de formato con los
+       controles de FR-012 en orden de escritura (ENT-005), visibles y sin
+       acciones conectadas (ADR-001). T-010 declara la apertura/cierre del
+       menú (TR-004/TR-005, COM-006) y el aviso flotante por control
+       (TR-006/TR-007, COM-004); los manejadores solo actualizan el estado de
+       sesión, sin acciones de dominio. -->
   <DockPanel>
 
     <Menu x:Name="MainMenu" DockPanel.Dock="Top">
       <MenuItem x:Name="FileMenu"
                 Header="{Binding FileMenuHeader}"
-                Tag="Menu.File" />
+                Tag="Menu.File"
+                Click="OnMenuEntryClick"
+                SubmenuOpened="OnMenuSubmenuOpened" />
       <MenuItem x:Name="EditMenu"
                 Header="{Binding EditMenuHeader}"
-                Tag="Menu.Edit" />
+                Tag="Menu.Edit"
+                Click="OnMenuEntryClick"
+                SubmenuOpened="OnMenuSubmenuOpened" />
       <MenuItem x:Name="ViewMenu"
                 Header="{Binding ViewMenuHeader}"
-                Tag="Menu.View" />
+                Tag="Menu.View"
+                Click="OnMenuEntryClick"
+                SubmenuOpened="OnMenuSubmenuOpened" />
       <MenuItem x:Name="FormatMenu"
                 Header="{Binding FormatMenuHeader}"
-                Tag="Menu.Format" />
+                Tag="Menu.Format"
+                Click="OnMenuEntryClick"
+                SubmenuOpened="OnMenuSubmenuOpened" />
       <MenuItem x:Name="ToolsMenu"
                 Header="{Binding ToolsMenuHeader}"
-                Tag="Menu.Tools">
+                Tag="Menu.Tools"
+                Click="OnMenuEntryClick"
+                SubmenuOpened="OnMenuSubmenuOpened">
         <!-- OP-001 (T-008): selección de idioma mutuamente excluyente en
              Herramientas → Idioma de la interfaz; relabeliza en caliente sin
              reinicio y conserva ventana, menú y aviso (TR-002/TR-003). -->
@@ -73,7 +86,9 @@
       </MenuItem>
       <MenuItem x:Name="HelpMenu"
                 Header="{Binding HelpMenuHeader}"
-                Tag="Menu.Help" />
+                Tag="Menu.Help"
+                Click="OnMenuEntryClick"
+                SubmenuOpened="OnMenuSubmenuOpened" />
     </Menu>
 
     <!-- Barra de formato (ENT-005): un icono (VR-001), un aviso flotante
@@ -96,7 +111,9 @@
                     Tag="{Binding Key}"
                     AutomationProperties.AutomationId="{Binding Key}"
                     AutomationProperties.Name="{Binding Name}"
-                    ToolTip.Tip="{Binding Name}">
+                    ToolTip.Tip="{Binding Name}"
+                    PointerEntered="OnFormatControlPointerEntered"
+                    PointerExited="OnFormatControlPointerExited">
               <TextBlock Text="{Binding Glyph}" />
             </Button>
           </DataTemplate>
