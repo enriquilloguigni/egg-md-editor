@@ -55,7 +55,7 @@ public class MainViewModel : CommandDispatcher
 public partial class MainWindowViewModel : CommandDispatcher
 {
     public MainWindowViewModel() : base() { }
-    public MainWindowViewModel(Session? session) : base(session) { }
+    public MainWindowViewModel(Session? session) : base(session) { Catalog = session?.Catalog; }
     public MainWindowViewModel(II18nCatalog? catalog) : base(catalog) { }
     public MainWindowViewModel(UiPreferences? preferences) : base(preferences) { }
 }
