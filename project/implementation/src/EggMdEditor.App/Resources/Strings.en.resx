@@ -18,6 +18,15 @@
   <data name="Menu.Help" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="Menu.Tools.Language" xml:space="preserve">
+    <value>Interface language</value>
+  </data>
+  <data name="Language.Spanish" xml:space="preserve">
+    <value>Español</value>
+  </data>
+  <data name="Language.English" xml:space="preserve">
+    <value>English</value>
+  </data>
   <data name="barra.enfasis" xml:space="preserve">
     <value>Emphasis</value>
   </data>
