@@ -12,10 +12,70 @@
     "level": "project"
   },
   "tier": {
-    "category": "M",
+    "category": "S",
     "budget_waived": []
   },
-  "pending_decisions": [],
-  "updated_at": "2026-10-23T02:55:32.502Z",
+  "pending_decisions": [
+    {
+      "id": "PD-DISC-001",
+      "status": "resolved",
+      "question": "Stack: Avalonia UI, multiplataforma; las pruebas en diferentes plataformas quedan cubiertas por el framework y no son requeridas para la solución actual.",
+      "artifact": "project/discovery/discovery-context.md (PD-DISC-001)",
+      "blocks": [
+        "Architecture",
+        "Plan"
+      ],
+      "impact": "high",
+      "resolved_by": "humano"
+    },
+    {
+      "id": "PD-DISC-002",
+      "status": "resolved",
+      "question": "Re-puntuar criterios y recalcular categoría.",
+      "artifact": "project/discovery/discovery-context.md (PD-DISC-002)",
+      "blocks": [
+        "Roadmap",
+        "Plan"
+      ],
+      "impact": "high",
+      "resolved_by": "humano"
+    },
+    {
+      "id": "PD-DISC-003",
+      "status": "resolved",
+      "question": "LaTeX (KaTeX/MathJax) + Mermaid.",
+      "artifact": "project/discovery/discovery-context.md (PD-DISC-003)",
+      "blocks": [
+        "Spec",
+        "Implementation"
+      ],
+      "impact": "high",
+      "resolved_by": "humano"
+    },
+    {
+      "id": "PD-DISC-004",
+      "status": "resolved",
+      "question": "Metadatos: fijo + campos personalizados opcionales.",
+      "artifact": "project/discovery/discovery-context.md (PD-DISC-004)",
+      "blocks": [
+        "Spec"
+      ],
+      "impact": "high",
+      "resolved_by": "humano"
+    },
+    {
+      "id": "PD-DISC-005",
+      "status": "resolved",
+      "question": "Sin telemetría ni nube; actualizaciones manuales.",
+      "artifact": "project/discovery/discovery-context.md (PD-DISC-005)",
+      "blocks": [
+        "Scope",
+        "Architecture"
+      ],
+      "impact": "high",
+      "resolved_by": "humano"
+    }
+  ],
+  "updated_at": "2026-10-23T03:02:08.055Z",
   "owner": "EG"
 }
