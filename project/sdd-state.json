@@ -33,7 +33,8 @@
         "T-003": "done",
         "T-004": "done",
         "T-005": "done",
-        "T-006": "done"
+        "T-006": "done",
+        "T-007": "done"
       }
     }
   },
@@ -116,7 +117,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-23T22:12:11.516Z",
+  "updated_at": "2026-10-23T22:24:46.783Z",
   "owner": "EG",
   "sources": [
     {
