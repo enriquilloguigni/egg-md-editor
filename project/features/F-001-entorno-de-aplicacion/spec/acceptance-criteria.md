@@ -1,9 +1,9 @@
 # Acceptance criteria — F-001 Entorno de aplicación
 
 AC-001 — Arranque con menú y barra completos (FR-011, FR-012)
-Dado: la aplicación se ejecuta localmente sin red ni servicios externos (BR-012, NFR-004).
+Dado: la aplicación se ejecuta localmente sin red ni servicios externos.
 Cuando: el usuario lanza la aplicación.
-Entonces: se abre SC-001 sin pantalla intermedia ni autenticación; muestra los 6 menús de FR-011 y el 100 % de los controles de FR-012 con icono y aviso flotante; el área de documento queda vacía (BR-F001-008); cada icono expone nombre accesible (NFR-009).
+Entonces: se abre SC-001 sin pantalla intermedia ni autenticación; muestra los 6 menús y el 100 % de los controles con icono y aviso flotante; el área de documento queda vacía (BR-F001-008); cada icono expone nombre accesible (NFR-009).
 
 AC-002 — Idioma por defecto español y conmutación en caliente (FR-010)
 Dado: SC-001 abierta.
@@ -37,7 +37,20 @@ Entonces: la aplicación termina sin procesos residuales; la elección de idioma
 
 DS-001 — Superficie completa y conmutable (FR-010, FR-011, FR-012)
 Métrica:
-- 100 % de las entradas de FR-011 y de los controles de FR-012 visibles en SC-001 en el primer arranque (tasa = 100 %).
+- 100 % de las entradas y de los controles visibles en el primer arranque (tasa = 100 %).
 - Conmutación es/en completa sin reinicio ni pérdida de estado (observable: ventana y estado conservados).
 - 0 procesos residuales tras el cierre de SC-001.
 - 0 claves i18n sin resolver en el idioma activo (fallback español si falta, ERR-004).
+
+## Referencias de trazabilidad
+
+| Criterio | IDs |
+|---|---|
+| AC-001 | FR-011, FR-012, BR-012, NFR-004, SC-001, BR-F001-008, NFR-009 |
+| AC-002 | FR-010, SC-001, BR-013, ERR-003 |
+| AC-003 | FR-011, FR-012, SC-001, ADR-001, BR-F001-002 |
+| AC-004 | FR-010, SC-001, F-001, BR-F001-003 |
+| AC-005 | BR-001, SC-001, A-002, COM-005 |
+| AC-006 | ERR-001, ERR-002, SC-001, LOG-001 |
+| AC-007 | FR-010, SC-001, BR-F001-006, FR-013, F-010 |
+| DS-001 | FR-010, FR-011, FR-012, SC-001, ERR-004 |
