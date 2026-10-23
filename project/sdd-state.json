@@ -2,7 +2,7 @@
   "schema": "sdd-state/v1",
   "project": "egg-md-editor",
   "phases": {
-    "discovery": "pending",
+    "discovery": "in_progress",
     "project_spec": "pending",
     "architecture": "pending",
     "roadmap": "pending"
@@ -12,7 +12,7 @@
     "level": "project"
   },
   "tier": {
-    "category": "S",
+    "category": "M",
     "budget_waived": []
   },
   "pending_decisions": [
@@ -76,6 +76,28 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-23T03:02:08.055Z",
-  "owner": "EG"
+  "updated_at": "2026-10-23T14:31:00.387Z",
+  "owner": "EG",
+  "sources": [
+    {
+      "id": "FUENTE-001",
+      "path": "requerimiento.txt",
+      "sha256": "f8308bdeac902589aa4eaaef920ffb6368046e3070cf2e78c813dcfde3de6171"
+    }
+  ],
+  "gate_history": [
+    {
+      "name": "DISCOVERY_COMPLETE",
+      "artifact": "project/discovery/discovery-context.md",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-23",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    }
+  ]
 }
