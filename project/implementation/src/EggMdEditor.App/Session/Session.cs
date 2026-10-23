@@ -8,7 +8,7 @@ namespace EggMdEditor.App;
 /// Sesión de aplicación en memoria (ENT-001): idioma, tema, estado de menú y aviso.
 /// Singleton por proceso; se libera al cerrar.
 /// </summary>
-public class Session : INotifyPropertyChanged, ISession
+public class Session : INotifyPropertyChanged, ISession, IDisposable
 {
     private static readonly Lazy<Session> _instance = new(() => new Session());
 
@@ -18,7 +18,8 @@ public class Session : INotifyPropertyChanged, ISession
     private bool _noticeVisible;
     private bool _windowOpen;
     private II18nCatalog _catalog;
-    private readonly UiPreferences _preferences;
+    private UiPreferences _preferences;
+    private bool _syncingPreferences;
 
     public Session()
         : this(I18nCatalog.Instance, "es", Theme.Light, MenuState.Closed, false, true)
@@ -35,8 +36,16 @@ public class Session : INotifyPropertyChanged, ISession
     {
         if (preferences is not null)
         {
-            _preferences.Language = preferences.Language;
-            _preferences.Theme = preferences.Theme;
+            _syncingPreferences = true;
+            try
+            {
+                _preferences.Language = preferences.Language;
+                _preferences.Theme = preferences.Theme;
+            }
+            finally
+            {
+                _syncingPreferences = false;
+            }
         }
     }
 
@@ -45,8 +54,16 @@ public class Session : INotifyPropertyChanged, ISession
     {
         if (preferences is not null)
         {
-            _preferences.Language = preferences.Language;
-            _preferences.Theme = preferences.Theme;
+            _syncingPreferences = true;
+            try
+            {
+                _preferences.Language = preferences.Language;
+                _preferences.Theme = preferences.Theme;
+            }
+            finally
+            {
+                _syncingPreferences = false;
+            }
         }
     }
 
@@ -59,6 +76,7 @@ public class Session : INotifyPropertyChanged, ISession
         _noticeVisible = noticeVisible;
         _windowOpen = windowOpen;
         _preferences = new UiPreferences(_language, _theme);
+        _preferences.PropertyChanged += OnPreferencesPropertyChanged;
 
         // Sync catalog best-effort without throwing on construction.
         try { _catalog.TrySetLanguage(_language); } catch { /* ignore */ }
@@ -80,7 +98,29 @@ public class Session : INotifyPropertyChanged, ISession
         set => _catalog = value ?? I18nCatalog.Instance;
     }
 
-    public UiPreferences Preferences => _preferences;
+    public UiPreferences Preferences
+    {
+        get => _preferences;
+        set
+        {
+            if (value is null)
+            {
+                return;
+            }
+
+            if (_preferences is not null)
+            {
+                _preferences.PropertyChanged -= OnPreferencesPropertyChanged;
+            }
+
+            _preferences = value;
+            _preferences.PropertyChanged += OnPreferencesPropertyChanged;
+
+            // Sync language/theme best-effort without partial change.
+            TrySetLanguage(_preferences.Language);
+            TrySetTheme(_preferences.Theme);
+        }
+    }
 
     public string Language
     {
@@ -267,12 +307,14 @@ public class Session : INotifyPropertyChanged, ISession
 
         if (string.Equals(_language, code, StringComparison.Ordinal))
         {
-            _preferences.TrySetLanguage(code);
+            _syncingPreferences = true;
+            try { _preferences.TrySetLanguage(code); } finally { _syncingPreferences = false; }
             return true;
         }
 
         _language = code;
-        _preferences.TrySetLanguage(code);
+        _syncingPreferences = true;
+        try { _preferences.TrySetLanguage(code); } finally { _syncingPreferences = false; }
         OnPropertyChanged(nameof(Language));
         OnPropertyChanged(nameof(CurrentLanguage));
         OnPropertyChanged(nameof(ActiveLanguage));
@@ -282,6 +324,8 @@ public class Session : INotifyPropertyChanged, ISession
     }
 
     public bool TrySetLanguage(Language language) => TrySetLanguage(ToCode(language));
+    public bool TrySetLanguage(AppLanguage language) => TrySetLanguage(language == AppLanguage.English || language == AppLanguage.En ? "en" : "es");
+    public bool TrySetLanguage(UiLanguage language) => TrySetLanguage(language == UiLanguage.English || language == UiLanguage.En ? "en" : "es");
 
     public void SetLanguage(string language)
     {
@@ -292,6 +336,8 @@ public class Session : INotifyPropertyChanged, ISession
     }
 
     public void SetLanguage(Language language) => SetLanguage(ToCode(language));
+    public void SetLanguage(AppLanguage language) => SetLanguage(language == AppLanguage.English || language == AppLanguage.En ? "en" : "es");
+    public void SetLanguage(UiLanguage language) => SetLanguage(language == UiLanguage.English || language == UiLanguage.En ? "en" : "es");
 
     public void ChangeLanguage(string language) => SetLanguage(language);
     public void ChangeLanguage(Language language) => SetLanguage(language);
@@ -306,18 +352,36 @@ public class Session : INotifyPropertyChanged, ISession
     {
         if (_theme == theme)
         {
-            _preferences.TrySetTheme(theme);
+            _syncingPreferences = true;
+            try { _preferences.TrySetTheme(theme); } finally { _syncingPreferences = false; }
             return true;
         }
 
         _theme = theme;
-        _preferences.TrySetTheme(theme);
+        _syncingPreferences = true;
+        try { _preferences.TrySetTheme(theme); } finally { _syncingPreferences = false; }
         OnPropertyChanged(nameof(Theme));
         OnPropertyChanged(nameof(CurrentTheme));
         OnPropertyChanged(nameof(ActiveTheme));
         OnPropertyChanged(nameof(Tema));
         return true;
     }
+
+    public bool TrySetTheme(AppTheme theme) => TrySetTheme((Theme)theme);
+    public bool TrySetTheme(ThemeMode theme) => TrySetTheme((Theme)theme);
+    public bool TrySetTheme(ThemeVariant theme) => TrySetTheme((Theme)theme);
+
+    public void SetTheme(AppTheme theme) => SetTheme((Theme)theme);
+    public void SetTheme(ThemeMode theme) => SetTheme((Theme)theme);
+    public void SetTheme(ThemeVariant theme) => SetTheme((Theme)theme);
+
+    public void ChangeTheme(AppTheme theme) => SetTheme(theme);
+    public void ChangeTheme(ThemeMode theme) => SetTheme(theme);
+    public void ChangeTheme(ThemeVariant theme) => SetTheme(theme);
+
+    public void SwitchTheme(AppTheme theme) => SetTheme(theme);
+    public void SwitchTheme(ThemeMode theme) => SetTheme(theme);
+    public void SwitchTheme(ThemeVariant theme) => SetTheme(theme);
 
     public bool TrySetTheme(string? theme)
     {
@@ -373,6 +437,18 @@ public class Session : INotifyPropertyChanged, ISession
     public bool TrySetMenuState(MenuState state)
     {
         MenuState = state;
+        return true;
+    }
+
+    public bool SetMenuState(MenuStatus state)
+    {
+        MenuState = (MenuState)state;
+        return true;
+    }
+
+    public bool TrySetMenuState(MenuStatus state)
+    {
+        MenuState = (MenuState)state;
         return true;
     }
 
@@ -437,6 +513,30 @@ public class Session : INotifyPropertyChanged, ISession
         return true;
     }
 
+    public bool SetNotice(NoticeVisibility state)
+    {
+        NoticeVisible = state == NoticeVisibility.Visible;
+        return true;
+    }
+
+    public bool TrySetNotice(NoticeVisibility state)
+    {
+        NoticeVisible = state == NoticeVisibility.Visible;
+        return true;
+    }
+
+    public bool SetNotice(TooltipState state)
+    {
+        NoticeVisible = state == TooltipState.Visible;
+        return true;
+    }
+
+    public bool TrySetNotice(TooltipState state)
+    {
+        NoticeVisible = state == TooltipState.Visible;
+        return true;
+    }
+
     public bool SetAviso(bool visible) => SetNotice(visible);
     public void MostrarAviso() => ShowNotice();
     public void OcultarAviso() => HideNotice();
@@ -458,6 +558,44 @@ public class Session : INotifyPropertyChanged, ISession
 
     protected void OnPropertyChanged(string propertyName)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    private void OnPreferencesPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (_syncingPreferences)
+        {
+            return;
+        }
+
+        if (e.PropertyName == nameof(UiPreferences.Language)
+            || e.PropertyName == nameof(UiPreferences.CurrentLanguage)
+            || e.PropertyName == nameof(UiPreferences.ActiveLanguage)
+            || e.PropertyName == nameof(UiPreferences.LanguageCode)
+            || e.PropertyName == nameof(UiPreferences.Idioma))
+        {
+            _syncingPreferences = true;
+            try { TrySetLanguage(_preferences.Language); }
+            finally { _syncingPreferences = false; }
+            return;
+        }
+
+        if (e.PropertyName == nameof(UiPreferences.Theme)
+            || e.PropertyName == nameof(UiPreferences.CurrentTheme)
+            || e.PropertyName == nameof(UiPreferences.ActiveTheme)
+            || e.PropertyName == nameof(UiPreferences.Tema))
+        {
+            _syncingPreferences = true;
+            try { TrySetTheme(_preferences.Theme); }
+            finally { _syncingPreferences = false; }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_preferences is not null)
+        {
+            _preferences.PropertyChanged -= OnPreferencesPropertyChanged;
+        }
+    }
 
     public static string ToCode(Language language) => language switch
     {
@@ -489,7 +627,7 @@ public interface ISession
     bool IsMenuOpen { get; set; }
     bool NoticeVisible { get; set; }
     bool IsNoticeVisible { get; set; }
-    UiPreferences Preferences { get; }
+    UiPreferences Preferences { get; set; }
     II18nCatalog Catalog { get; set; }
 
     bool TrySetLanguage(string? language);
