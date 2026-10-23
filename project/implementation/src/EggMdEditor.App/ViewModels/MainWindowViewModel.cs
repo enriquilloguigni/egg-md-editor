@@ -22,6 +22,10 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     private ICommand? _changeThemeCommand;
     private Theme _theme = Theme.Light;
     private IThemeApplier? _themeApplier;
+    private MenuState _menuState = MenuState.Closed;
+    private string? _openMenuKey;
+    private bool _noticeVisible;
+    private string? _activeNoticeKey;
 
     /// <summary>Claves i18n de los 6 menús de FR-011, en el orden declarado.</summary>
     public static IReadOnlyList<string> MenuKeys { get; } = Array.AsReadOnly(
@@ -223,6 +227,206 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         TryChangeTheme(CurrentTheme == Theme.Dark ? Theme.Light : Theme.Dark);
 
     /// <summary>
+    /// Estado del menú (ENT-001/ENT-004, ST-005/ST-006). Sin sesión se
+    /// conserva en el propio ViewModel para que la superficie siga siendo
+    /// operable en pruebas y en el constructor sin argumentos.
+    /// </summary>
+    public MenuState MenuState => Session?.MenuState ?? _menuState;
+
+    public bool IsMenuOpen => MenuState == MenuState.Open;
+
+    /// <summary>
+    /// Entrada de menú desplegada (una de las 6 de ENT-004), o <c>null</c> si
+    /// el menú está cerrado. No forma parte de los atributos de ENT-001: es
+    /// la entrada concreta que originó ST-006.
+    /// </summary>
+    public string? OpenMenuKey => IsMenuOpen ? _openMenuKey : null;
+
+    /// <summary>
+    /// OP-003/TR-004: abre una entrada de menú si la ventana está abierta
+    /// (COM-006). La entrada debe pertenecer a ENT-004; una entrada
+    /// desconocida no altera el estado.
+    /// </summary>
+    public bool OpenMenu(string? menuEntry)
+    {
+        var key = NormalizeMenuKey(menuEntry);
+        if (key is null)
+        {
+            return false;
+        }
+
+        if (Session is not null)
+        {
+            if (!Session.TryOpenMenu())
+            {
+                return false;
+            }
+        }
+        else
+        {
+            _menuState = MenuState.Open;
+        }
+
+        _openMenuKey = key;
+        RaiseMenuChanged();
+        return true;
+    }
+
+    /// <summary>
+    /// OP-003/TR-005: cierra el menú (Esc o clic fuera). Si se indica una
+    /// entrada, solo se cierra cuando es la que está desplegada; así el
+    /// cierre de una entrada ajena no altera el estado (COM-006).
+    /// </summary>
+    public bool CloseMenu(string? menuEntry = null)
+    {
+        if (menuEntry is not null)
+        {
+            var key = NormalizeMenuKey(menuEntry);
+            if (key is null)
+            {
+                return false;
+            }
+
+            if (_openMenuKey is not null
+                && !string.Equals(_openMenuKey, key, StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        if (!IsMenuOpen)
+        {
+            _openMenuKey = null;
+            return false;
+        }
+
+        if (Session is not null)
+        {
+            Session.TryCloseMenu();
+        }
+        else
+        {
+            _menuState = MenuState.Closed;
+        }
+
+        _openMenuKey = null;
+        RaiseMenuChanged();
+        return true;
+    }
+
+    /// <summary>
+    /// Abre la entrada indicada o cierra la que ya está desplegada (clic
+    /// repetido sobre la misma entrada de ENT-004).
+    /// </summary>
+    public bool ToggleMenu(string? menuEntry)
+    {
+        var key = NormalizeMenuKey(menuEntry);
+        if (key is null)
+        {
+            return false;
+        }
+
+        if (IsMenuOpen && string.Equals(_openMenuKey, key, StringComparison.Ordinal))
+        {
+            return CloseMenu(key);
+        }
+
+        return OpenMenu(key);
+    }
+
+    /// <summary>
+    /// Aviso flotante visible (ENT-001, ST-007/ST-008).
+    /// </summary>
+    public bool NoticeVisible => Session?.NoticeVisible ?? _noticeVisible;
+
+    public bool IsNoticeVisible => NoticeVisible;
+
+    /// <summary>
+    /// Control de la barra de formato (ENT-005) que originó el aviso
+    /// visible, o <c>null</c> si el aviso está oculto.
+    /// </summary>
+    public string? ActiveNoticeKey => _activeNoticeKey;
+
+    /// <summary>
+    /// Texto i18n del aviso flotante (VR-002): se resuelve en el idioma
+    /// activo y se relabeliza en caliente (BR-013). Vacío si está oculto.
+    /// </summary>
+    public string VisibleNotice =>
+        NoticeVisible && _activeNoticeKey is not null
+            ? ResolveCatalog().Get(_activeNoticeKey)
+            : string.Empty;
+
+    public string NoticeText => VisibleNotice;
+
+    /// <summary>
+    /// OP-004/TR-006 (COM-004): muestra el aviso flotante de un control
+    /// válido de ENT-005. Un control desconocido no altera el aviso.
+    /// </summary>
+    public bool ShowNotice(string? controlKey)
+    {
+        var key = NormalizeFormatBarKey(controlKey);
+        if (key is null)
+        {
+            return false;
+        }
+
+        if (Session is not null)
+        {
+            Session.ShowNotice();
+        }
+        else
+        {
+            _noticeVisible = true;
+        }
+
+        _activeNoticeKey = key;
+        RaiseNoticeChanged();
+        return true;
+    }
+
+    /// <summary>
+    /// OP-004/TR-007: oculta el aviso. Si se indica un control, solo se
+    /// oculta cuando es el control apuntado; retirar el puntero de un control
+    /// distinto no oculta el aviso de otro control.
+    /// </summary>
+    public bool HideNotice(string? controlKey = null)
+    {
+        if (controlKey is not null)
+        {
+            var key = NormalizeFormatBarKey(controlKey);
+            if (key is null)
+            {
+                return false;
+            }
+
+            if (_activeNoticeKey is not null
+                && !string.Equals(_activeNoticeKey, key, StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        if (!NoticeVisible)
+        {
+            _activeNoticeKey = null;
+            return false;
+        }
+
+        if (Session is not null)
+        {
+            Session.HideNotice();
+        }
+        else
+        {
+            _noticeVisible = false;
+        }
+
+        _activeNoticeKey = null;
+        RaiseNoticeChanged();
+        return true;
+    }
+
+    /// <summary>
     /// Conmuta el idioma en caliente (OP-001, TR-002/TR-003). Si el catálogo
     /// destino no carga se aborta sin cambio parcial: no se notifica ningún
     /// cambio a la UI y se conservan idioma, ventana, menú y aviso (ERR-003).
@@ -309,6 +513,50 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(LanguageMenuHeader));
         OnPropertyChanged(nameof(SpanishOptionHeader));
         OnPropertyChanged(nameof(EnglishOptionHeader));
+        // BR-F001-005: el aviso flotante visible se conserva y se relabeliza
+        // en caliente junto con el resto de la superficie.
+        OnPropertyChanged(nameof(VisibleNotice));
+        OnPropertyChanged(nameof(NoticeText));
+    }
+
+    private void RaiseMenuChanged()
+    {
+        OnPropertyChanged(nameof(MenuState));
+        OnPropertyChanged(nameof(IsMenuOpen));
+        OnPropertyChanged(nameof(OpenMenuKey));
+    }
+
+    private void RaiseNoticeChanged()
+    {
+        OnPropertyChanged(nameof(NoticeVisible));
+        OnPropertyChanged(nameof(IsNoticeVisible));
+        OnPropertyChanged(nameof(ActiveNoticeKey));
+        OnPropertyChanged(nameof(VisibleNotice));
+        OnPropertyChanged(nameof(NoticeText));
+    }
+
+    private static string? NormalizeMenuKey(string? menuEntry)
+    {
+        if (menuEntry is null)
+        {
+            return null;
+        }
+
+        return MenuKeys.Any(key => string.Equals(key, menuEntry, StringComparison.Ordinal))
+            ? menuEntry
+            : null;
+    }
+
+    private static string? NormalizeFormatBarKey(string? controlKey)
+    {
+        if (controlKey is null)
+        {
+            return null;
+        }
+
+        return FormatBarKeys.Any(key => string.Equals(key, controlKey, StringComparison.Ordinal))
+            ? controlKey
+            : null;
     }
 
     private void LogLanguageSwitch(string previousLanguage, string currentLanguage)
