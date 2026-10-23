@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Menu.File" xml:space="preserve">
+    <value>Archivo</value>
+  </data>
+  <data name="Menu.Edit" xml:space="preserve">
+    <value>Edición</value>
+  </data>
+  <data name="Menu.View" xml:space="preserve">
+    <value>Ver</value>
+  </data>
+  <data name="Menu.Format" xml:space="preserve">
+    <value>Formato</value>
+  </data>
+  <data name="Menu.Tools" xml:space="preserve">
+    <value>Herramientas</value>
+  </data>
+  <data name="Menu.Help" xml:space="preserve">
+    <value>Ayuda</value>
+  </data>
+  <data name="Common.Ok" xml:space="preserve">
+    <value>Aceptar</value>
+  </data>
+</root>
