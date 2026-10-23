@@ -10,14 +10,14 @@ Los editores actuales obligan a elegir entre WYSIWYG sin control de sintaxis o M
 In scope:
 - Ventana de escritorio con menús Archivo/Edición/Ver/Formato/Herramientas/Ayuda y barra de formato.
 - Dos paneles sincronizados en tiempo real: WYSIWYG (izquierda) y Markdown (derecha), con sincronización de posición y resaltado pasajero.
-- Formato: énfasis, encabezados H1-H6 (promover/degradar), listas (viñetas, numeradas, tareas), citas, código inline/bloque, enlaces (internos y externos), imágenes, tablas, notas al pie, fórmulas (LaTeX), diagramas (Mermaid), índice auto.
+- Formato: énfasis, encabezados H1-H6 (promover/degradar), listas (viñetas, numeradas, tareas), citas, código inline/bloque, enlaces (internos y externos), imágenes, tablas, notas al pie, fórmulas (LaTeX), diagramas (Mermaid), índice auto, Insertar rápido (bloques frecuentes), escape de sintaxis con barra invertida.
 - Menú contextual de edición y énfasis rápidos.
 - Archivo: Nuevo/Abrir (drag&drop)/Guardar/Guardar como, 10 recientes, autoguardado, UTF-8, finales de línea, exportar a PDF.
 - Metadatos (front matter) con esquema fijo (título, autor, fecha, idioma) + campos personalizados opcionales; ficha WYSIWYG y diálogo de propiedades; idioma gobierna ortografía.
-- Edición: deshacer/rehacer, cortar/copiar/pegar, selección avanzada, buscar/reemplazar, ir a línea, contador.
-- Ver: mostrar/ocultar barra/paneles, zoom, ajuste de línea, scroll sincronizado, pantalla completa, modo foco, tema, fuente, idioma.
+- Edición: deshacer/rehacer, cortar/copiar/pegar, selección avanzada, buscar/reemplazar, ir a línea, indicador de posición (línea/columna).
+- Ver: mostrar/ocultar barra/paneles, zoom, ajuste de línea, scroll sincronizado, pantalla completa, modo foco, tema, fuente, idioma, idioma de la interfaz, plegado de secciones, contador de palabras y caracteres.
 - Ortografía en ambos paneles con diccionario personal.
-- Ayuda: Acerca de, guía Markdown integrada, atajos; Insertar rápido (bloques frecuentes).
+- Ayuda: Acerca de, guía Markdown integrada, atajos.
 Out of scope:
 - Colaboración multi-usuario y sincronización en la nube.
 - Versionado/control de versiones integrado de documentos.
