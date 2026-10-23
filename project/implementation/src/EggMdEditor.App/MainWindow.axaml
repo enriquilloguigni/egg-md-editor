@@ -1,5 +1,40 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:app="using:EggMdEditor.App"
         x:Class="EggMdEditor.App.MainWindow"
-        Title="egg-md-editor">
+        x:DataType="app:MainWindowViewModel"
+        Title="Egg MD Editor"
+        Width="1280"
+        Height="720">
+
+  <!-- SC-001 (T-006): ventana única con menú principal persistente de los
+       6 menús de FR-011, visibles y sin acciones conectadas (ADR-001). -->
+  <DockPanel>
+
+    <Menu x:Name="MainMenu" DockPanel.Dock="Top">
+      <MenuItem x:Name="FileMenu"
+                Header="{Binding FileMenuHeader}"
+                Tag="Menu.File" />
+      <MenuItem x:Name="EditMenu"
+                Header="{Binding EditMenuHeader}"
+                Tag="Menu.Edit" />
+      <MenuItem x:Name="ViewMenu"
+                Header="{Binding ViewMenuHeader}"
+                Tag="Menu.View" />
+      <MenuItem x:Name="FormatMenu"
+                Header="{Binding FormatMenuHeader}"
+                Tag="Menu.Format" />
+      <MenuItem x:Name="ToolsMenu"
+                Header="{Binding ToolsMenuHeader}"
+                Tag="Menu.Tools" />
+      <MenuItem x:Name="HelpMenu"
+                Header="{Binding HelpMenuHeader}"
+                Tag="Menu.Help" />
+    </Menu>
+
+    <!-- Área de documento vacía en F-001 (BR-F001-008). -->
+    <Border x:Name="DocumentArea" />
+
+  </DockPanel>
+
 </Window>
