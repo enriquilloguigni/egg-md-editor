@@ -7,7 +7,10 @@ Tipo: Síncrono (invocación directa).
 Información enviada: referencia de comando disponible.
 Información recibida: sin efecto observable si no hay acción conectada (ADR-001).
 Propósito: un único punto de despacho para menú, barra y atajos (FR-011, FR-012).
-Condiciones: ventana abierta; comando registrado en ENT-007.
+Condiciones: ventana abierta; comando registrado.
+
+Referencias:
+- ENT-007 (condiciones — comando registrado).
 
 ## COM-002 — Relabelizado por idioma
 Origen: Selector de idioma (ENT-003).
