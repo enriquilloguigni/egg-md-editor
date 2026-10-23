@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EggMdEditor.App/EggMdEditor.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EggMdEditor.App.Tests/EggMdEditor.App.Tests.csproj" />
+  </Folder>
+</Solution>
