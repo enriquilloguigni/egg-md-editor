@@ -6,7 +6,7 @@ namespace EggMdEditor.App;
 /// <summary>
 /// Preferencias de UI en memoria (ENT-003): idioma y tema. Sin persistencia en F-001.
 /// </summary>
-public class UiPreferences : INotifyPropertyChanged, IUiPreferences
+public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
 {
     private string _language;
     private Theme _theme;
@@ -78,7 +78,7 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences
     public Theme Theme
     {
         get => _theme;
-        set => _theme = value;
+        set => TrySetTheme(value);
     }
 
     public Theme CurrentTheme
@@ -118,6 +118,18 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences
 
     public bool TrySetLanguage(Language language) => TrySetLanguage(ToCode(language));
 
+    public bool TrySetLanguage(AppLanguage language) => TrySetLanguage(language == AppLanguage.English || language == AppLanguage.En ? "en" : "es");
+    public bool TrySetLanguage(UiLanguage language) => TrySetLanguage(language == UiLanguage.English || language == UiLanguage.En ? "en" : "es");
+
+    public void SetLanguage(AppLanguage language) => SetLanguage(language == AppLanguage.English || language == AppLanguage.En ? "en" : "es");
+    public void SetLanguage(UiLanguage language) => SetLanguage(language == UiLanguage.English || language == UiLanguage.En ? "en" : "es");
+
+    public void ChangeLanguage(AppLanguage language) => SetLanguage(language);
+    public void ChangeLanguage(UiLanguage language) => SetLanguage(language);
+
+    public void SwitchLanguage(AppLanguage language) => SetLanguage(language);
+    public void SwitchLanguage(UiLanguage language) => SetLanguage(language);
+
     public void SetLanguage(string language)
     {
         if (!TrySetLanguage(language))
@@ -147,6 +159,22 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences
         OnPropertyChanged(nameof(ActiveTheme));
         return true;
     }
+
+    public bool TrySetTheme(AppTheme theme) => TrySetTheme((Theme)theme);
+    public bool TrySetTheme(ThemeMode theme) => TrySetTheme((Theme)theme);
+    public bool TrySetTheme(ThemeVariant theme) => TrySetTheme((Theme)theme);
+
+    public void SetTheme(AppTheme theme) => SetTheme((Theme)theme);
+    public void SetTheme(ThemeMode theme) => SetTheme((Theme)theme);
+    public void SetTheme(ThemeVariant theme) => SetTheme((Theme)theme);
+
+    public void ChangeTheme(AppTheme theme) => SetTheme(theme);
+    public void ChangeTheme(ThemeMode theme) => SetTheme(theme);
+    public void ChangeTheme(ThemeVariant theme) => SetTheme(theme);
+
+    public void SwitchTheme(AppTheme theme) => SetTheme(theme);
+    public void SwitchTheme(ThemeMode theme) => SetTheme(theme);
+    public void SwitchTheme(ThemeVariant theme) => SetTheme(theme);
 
     public bool TrySetTheme(string? theme)
     {
@@ -186,6 +214,8 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences
     }
 
     public UiPreferences Clone() => new UiPreferences(_language, _theme);
+
+    public void Dispose() { }
 
     protected void OnPropertyChanged(string propertyName)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -250,7 +280,7 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences
 
     public static string ToCode(Language language) => language switch
     {
-        EggMdEditor.App.Language.English or EggMdEditor.App.Language.En or EggMdEditor.App.Language.Ingles => "en",
+        EggMdEditor.App.Language.English or EggMdEditor.App.Language.En or EggMdEditor.App.Language.Ingles or EggMdEditor.App.Language.Inglés => "en",
         _ => "es",
     };
 
@@ -263,9 +293,14 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences
 public interface IUiPreferences
 {
     string Language { get; set; }
+    string Idioma { get; set; }
     string CurrentLanguage { get; set; }
+    string ActiveLanguage { get; set; }
+    string LanguageCode { get; set; }
     Theme Theme { get; set; }
+    Theme Tema { get; set; }
     Theme CurrentTheme { get; set; }
+    Theme ActiveTheme { get; set; }
     bool TrySetLanguage(string? language);
     bool TrySetLanguage(Language language);
     void SetLanguage(string language);
