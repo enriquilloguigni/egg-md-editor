@@ -187,12 +187,19 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
         get => _menuState;
         set
         {
+            // OP-003: el estado del menú solo admite {Cerrado, Desplegado}
+            // (TR-004/TR-005). Un valor fuera del catálogo no altera el estado.
+            if (value is not (MenuState.Closed or MenuState.Open))
+            {
+                return;
+            }
+
             _menuState = value;
             OnPropertyChanged(nameof(MenuState));
             OnPropertyChanged(nameof(CurrentMenuState));
             OnPropertyChanged(nameof(EstadoMenu));
             OnPropertyChanged(nameof(IsMenuOpen));
-            OnPropertyChanged(nameof(IsMenuOpen));
+            OnPropertyChanged(nameof(IsMenuClosed));
         }
     }
 
@@ -432,31 +439,60 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
     public void CloseMenu() => MenuState = MenuState.Closed;
     public void ToggleMenu() => MenuState = _menuState == MenuState.Closed ? MenuState.Open : MenuState.Closed;
 
-    public bool OpenMenuEntry() { OpenMenu(); return true; }
-    public bool CloseMenuEntry() { CloseMenu(); return true; }
-
-    public bool SetMenuState(MenuState state)
+    /// <summary>
+    /// OP-003/TR-004: abre el menú si la ventana está abierta. Un menú
+    /// desplegado permanece desplegado (la entrada concreta la conserva la
+    /// vista/ViewModel).
+    /// </summary>
+    public bool TryOpenMenu()
     {
-        MenuState = state;
+        if (!_windowOpen)
+        {
+            return false;
+        }
+
+        MenuState = MenuState.Open;
+        return IsMenuOpen;
+    }
+
+    /// <summary>
+    /// OP-003/TR-005: cierra el menú solo si está desplegado.
+    /// </summary>
+    public bool TryCloseMenu()
+    {
+        if (_menuState != MenuState.Open)
+        {
+            return false;
+        }
+
+        MenuState = MenuState.Closed;
         return true;
     }
 
+    public bool OpenMenuEntry() { OpenMenu(); return true; }
+    public bool CloseMenuEntry() { CloseMenu(); return true; }
+
+    public bool SetMenuState(MenuState state) => TrySetMenuState(state);
+
     public bool TrySetMenuState(MenuState state)
     {
+        if (state is not (MenuState.Closed or MenuState.Open))
+        {
+            return false;
+        }
+
         MenuState = state;
         return true;
     }
 
     public bool SetMenuState(MenuStatus state)
     {
-        MenuState = (MenuState)state;
-        return true;
+        return TrySetMenuState((MenuState)state);
     }
 
     public bool TrySetMenuState(MenuStatus state)
     {
-        MenuState = (MenuState)state;
-        return true;
+        return TrySetMenuState((MenuState)state);
     }
 
     public bool SetMenuState(string? state)
@@ -653,6 +689,8 @@ public interface ISession
     void OpenMenu();
     void CloseMenu();
     void ToggleMenu();
+    bool TryOpenMenu();
+    bool TryCloseMenu();
     bool SetMenuState(MenuState state);
 
     void ShowNotice();
