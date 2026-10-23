@@ -30,7 +30,8 @@
       "tasks": {
         "T-001": "done",
         "T-002": "done",
-        "T-003": "done"
+        "T-003": "done",
+        "T-004": "done"
       }
     }
   },
@@ -113,7 +114,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-23T19:52:19.097Z",
+  "updated_at": "2026-10-23T19:55:15.978Z",
   "owner": "EG",
   "sources": [
     {
