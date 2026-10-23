@@ -1,6 +1,14 @@
 # Business Rules — F-001 Entorno de aplicación
 
-Referencia (heredada, no reproducida): `BR-001` — un único documento por instancia; `BR-012` — aplicación 100 % local y offline; `BR-013` — interfaz en español o inglés (default español); `FR-010` — localización y ayuda; `FR-011` — menú principal persistente; `FR-012` — barra de formato con icono y aviso (solo su parte visual en F-001, ADR-001). Textos en Project Spec vigente.
+Referencia (heredada, no reproducida): textos en Project Spec vigente.
+
+Referencias heredadas:
+- `BR-001` — un único documento por instancia
+- `BR-012` — aplicación 100 % local y offline
+- `BR-013` — interfaz en español o inglés (default español)
+- `FR-010` — localización y ayuda
+- `FR-011` — menú principal persistente
+- `FR-012` — barra de formato con icono y aviso (solo su parte visual en F-001, `ADR-001`)
 
 ```
 | id | condición | regla | consecuencia |
