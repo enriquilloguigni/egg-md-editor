@@ -1,4 +1,4 @@
-# egg-md-editor (edited)
+# egg-md-editor
 
 ## Proyecto
 
@@ -10,14 +10,14 @@ Editor de texto con paneles sincronizados WYSIWYG ↔ Markdown, barra de formato
 
 ## Dimensión
 
-Categoría: Pequeño (S)
-Ponderado: 4.30
+Categoría: Mediano (M)
+Ponderado: 6.10
 
-Alcance 30% 8
-Integraciones 20% 1
-Riesgo regulatorio 10% 2
-Superficie 20% 5
-Novedad técnica 10% 4
+Alcance 30% 10
+Integraciones 20% 2
+Riesgo regulatorio 10% 3
+Superficie 20% 8
+Novedad técnica 10% 7
 Brownfield 10% 1
 
 ## Estado
