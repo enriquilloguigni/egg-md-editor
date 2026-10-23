@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace EggMdEditor.App.I18n;
 
@@ -16,18 +18,30 @@ public sealed class I18nCatalog : II18nCatalog
 
     private readonly Dictionary<string, Dictionary<string, string>> _resources;
     private readonly string _fallbackLanguage;
+    private readonly ILogger _logger;
     private string _currentLanguage;
 
     public I18nCatalog()
-        : this(LoadEmbeddedResources(), Spanish, Spanish)
+        : this(LoadEmbeddedResources(), Spanish, Spanish, null)
+    {
+    }
+
+    /// <summary>
+    /// Crea el catálogo embebido con el registro técnico de LOG-002 (ERR-003).
+    /// </summary>
+    public I18nCatalog(ILogger logger)
+        : this(LoadEmbeddedResources(), Spanish, Spanish, logger)
     {
     }
 
     public I18nCatalog(
         IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> resources,
         string defaultLanguage = Spanish,
-        string fallbackLanguage = Spanish)
+        string fallbackLanguage = Spanish,
+        ILogger? logger = null)
     {
+        _logger = logger ?? NullLogger.Instance;
+
         _resources = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
         if (resources is not null)
         {
@@ -163,6 +177,12 @@ public sealed class I18nCatalog : II18nCatalog
         var code = NormalizeLanguage(language);
         if (!_resources.ContainsKey(code))
         {
+            // ERR-003/LOG-002: el catálogo destino no carga; se aborta sin
+            // cambio parcial y se registra el fallo (sin aviso visible).
+            _logger.LogError(
+                "No se pudo cargar el catálogo i18n del idioma destino '{TargetLanguage}'; se aborta la conmutación y se conserva '{CurrentLanguage}'.",
+                language,
+                _currentLanguage);
             return false;
         }
 
