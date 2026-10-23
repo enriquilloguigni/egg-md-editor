@@ -151,4 +151,35 @@ public class I18nCatalogTests
         Assert.True(catalog.TryGet("Common.Ok", "en", out var ok));
         Assert.Equal("Aceptar", ok);
     }
+
+    [Fact]
+    public void EmptyTargetCatalog_IsNotLoadedAndTheSwitchAbortsWithoutPartialChange()
+    {
+        var resources = new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["es"] = new Dictionary<string, string> { ["K"] = "Hola" },
+            ["en"] = new Dictionary<string, string>(),
+        };
+        var catalog = new I18nCatalog(resources, "es", "es");
+
+        // ERR-003: el catálogo destino no carga; se conserva el idioma activo.
+        Assert.False(catalog.TrySetLanguage("en"));
+        Assert.Equal("es", catalog.CurrentLanguage);
+        Assert.Equal("Hola", catalog.Get("K"));
+    }
+
+    [Fact]
+    public void EmptyTranslation_FallsBackToSpanishAndCountsAsUnresolved()
+    {
+        var resources = new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["es"] = new Dictionary<string, string> { ["K"] = "Hola" },
+            ["en"] = new Dictionary<string, string> { ["K"] = string.Empty },
+        };
+        var catalog = new I18nCatalog(resources, "en", "es");
+
+        // ERR-004: un texto vacío no resuelve la clave en el idioma activo.
+        Assert.Equal("Hola", catalog.Get("K"));
+        Assert.Contains("K", catalog.GetUnresolvedKeys());
+    }
 }
