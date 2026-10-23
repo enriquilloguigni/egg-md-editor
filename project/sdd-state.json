@@ -28,7 +28,8 @@
       "spec_version": "v1",
       "plan_version": "v1",
       "tasks": {
-        "T-001": "done"
+        "T-001": "done",
+        "T-002": "done"
       }
     }
   },
@@ -111,7 +112,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-23T19:34:47.352Z",
+  "updated_at": "2026-10-23T19:51:08.016Z",
   "owner": "EG",
   "sources": [
     {
