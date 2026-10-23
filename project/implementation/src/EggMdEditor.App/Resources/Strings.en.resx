@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Menu.File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Menu.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Menu.View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="Menu.Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="Menu.Tools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="Menu.Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+</root>
