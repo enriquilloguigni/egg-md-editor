@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
+using EggMdEditor.App.Startup;
 
 namespace EggMdEditor.App;
 
@@ -14,15 +15,28 @@ public partial class MainWindow : Window
     private readonly ShortcutHandler _shortcutHandler;
     private MenuItem? _lastOpenMenuItem;
 
+    /// <summary>
+    /// Ciclo de vida técnico del proceso (LOG-003, ERR-005). La composición de
+    /// la aplicación lo inyecta; sin él el cierre mantiene el mismo
+    /// comportamiento, solo que sin registro técnico.
+    /// </summary>
+    public ApplicationLifecycle? Lifecycle { get; set; }
+
     public MainWindow()
-        : this(new MainWindowViewModel())
+        : this(new MainWindowViewModel(), null)
     {
     }
 
     public MainWindow(MainWindowViewModel viewModel)
+        : this(viewModel, null)
+    {
+    }
+
+    public MainWindow(MainWindowViewModel viewModel, ApplicationLifecycle? lifecycle)
     {
         ArgumentNullException.ThrowIfNull(viewModel);
 
+        Lifecycle = lifecycle;
         InitializeComponent();
         _viewModel = viewModel;
         _shortcutHandler = new ShortcutHandler(viewModel);
@@ -200,9 +214,20 @@ public partial class MainWindow : Window
     /// </summary>
     protected override void OnClosed(EventArgs e)
     {
+        // LOG-003 (inicio del cierre): debe quedar registrado antes de
+        // liberar la sesión. En un arranque fallido no hay cierre que anotar.
+        Lifecycle?.BeginShutdown();
+
         try
         {
             _viewModel.Session?.CloseWindow();
+        }
+        catch (Exception exception)
+        {
+            // ERR-005: el cierre falla, pero el proceso termina igualmente y
+            // sin rollback; el mensaje en español y LOG-003 quedan a cargo
+            // del ciclo de vida.
+            Lifecycle?.ReportShutdownFailure(exception);
         }
         finally
         {
