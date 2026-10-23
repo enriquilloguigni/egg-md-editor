@@ -17,8 +17,7 @@ In scope:
 - Edición: deshacer/rehacer, cortar/copiar/pegar, selección avanzada, buscar/reemplazar, ir a línea, contador.
 - Ver: mostrar/ocultar barra/paneles, zoom, ajuste de línea, scroll sincronizado, pantalla completa, modo foco, tema, fuente, idioma.
 - Ortografía en ambos paneles con diccionario personal.
-- Ayuda: Acerca de, guía Markdown integrada, atajos.
-- Insertar rápido (bloques frecuentes).
+- Ayuda: Acerca de, guía Markdown integrada, atajos; Insertar rápido (bloques frecuentes).
 Out of scope:
 - Colaboración multi-usuario y sincronización en la nube.
 - Versionado/control de versiones integrado de documentos.
@@ -29,14 +28,14 @@ Out of scope:
 - Telemetría, actualizaciones automáticas y servicios en la nube.
 - Pruebas en múltiples plataformas (cubiertas por Avalonia; no requeridas para la solución actual).
 Criterio de cierre: el proyecto termina cuando no existen nuevas features y la verificación es exitosa (project.md).
-Dimensionado (confirmado, categoría S):
+Dimensionado (confirmado, categoría M):
 - Alcance (30%): 8 — 9-10 features / 3 módulos.
 - Integraciones (20%): 2 — 1 integración simple.
 - Riesgo regulatorio (10%): 3 — datos de usuario básico.
 - Superficie (20%): 8 — 16-20 pantallas/dialogos, 1 actor.
 - Novedad técnica (10%): 7 — varias tecnologías nuevas combinadas.
 - Brownfield (10%): 1 — greenfield, sin código previo.
-- Ponderado: 5.50 → categoría S.
+- Ponderado: 5.50 → categoría M.
 ## Constraints
 C-001 — Interfaz de escritorio con menús clásicos y barra de formato de doble naturaleza (izquierda: efecto visual; derecha: sintaxis) (source: requerimiento.txt; status: confirmed).
 C-002 — Sincronización en tiempo real bidireccional entre ambos paneles sin botón de actualizar (source: requerimiento.txt; status: confirmed).
