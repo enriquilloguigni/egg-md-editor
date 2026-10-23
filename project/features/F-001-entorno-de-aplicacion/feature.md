@@ -32,4 +32,4 @@ Ninguna — F-001 no depende de ninguna otra Feature (roadmap v1).
 
 ## Estado
 
-planned — feature.md redactado; spec pendiente.
+planned — spec v1 y plan v1 vigentes; PLAN_REVIEW pendiente.
