@@ -55,7 +55,13 @@ public sealed class I18nCatalog : II18nCatalog
                         copy[k] = v;
                     }
                 }
-                _resources[lang] = copy;
+
+                // ERR-003: un catálogo sin textos no se considera cargado; la
+                // conmutación a ese idioma se abortará sin cambio parcial.
+                if (copy.Count > 0)
+                {
+                    _resources[lang] = copy;
+                }
             }
         }
 
@@ -74,6 +80,13 @@ public sealed class I18nCatalog : II18nCatalog
 
     public static I18nCatalog Instance { get; } = new I18nCatalog();
 
+    /// <summary>
+    /// Identificador de la sesión técnica (LOG-002). La composición de la
+    /// aplicación lo fija para que el registro de ERR-003 sea correlacionable;
+    /// sin sesión compuesta puede ser <c>null</c>.
+    /// </summary>
+    public string? SessionId { get; set; }
+
     public string CurrentLanguage => _currentLanguage;
     public string Language => _currentLanguage;
     public string FallbackLanguage => _fallbackLanguage;
@@ -90,14 +103,14 @@ public sealed class I18nCatalog : II18nCatalog
 
         if (_resources.TryGetValue(_currentLanguage, out var current)
             && current.TryGetValue(key, out var value)
-            && value is not null)
+            && !string.IsNullOrWhiteSpace(value))
         {
             return value;
         }
 
         if (_resources.TryGetValue(_fallbackLanguage, out var fallback)
             && fallback.TryGetValue(key, out var fallbackValue)
-            && fallbackValue is not null)
+            && !string.IsNullOrWhiteSpace(fallbackValue))
         {
             return fallbackValue;
         }
@@ -123,7 +136,7 @@ public sealed class I18nCatalog : II18nCatalog
 
         if (_resources.TryGetValue(_currentLanguage, out var current)
             && current.TryGetValue(key, out var v)
-            && v is not null)
+            && !string.IsNullOrWhiteSpace(v))
         {
             value = v;
             return true;
@@ -132,7 +145,7 @@ public sealed class I18nCatalog : II18nCatalog
         // fallback
         if (_resources.TryGetValue(_fallbackLanguage, out var fb)
             && fb.TryGetValue(key, out var fv)
-            && fv is not null)
+            && !string.IsNullOrWhiteSpace(fv))
         {
             value = fv;
             return true;
@@ -153,7 +166,7 @@ public sealed class I18nCatalog : II18nCatalog
 
         if (_resources.TryGetValue(code, out var dict)
             && dict.TryGetValue(key, out var v)
-            && v is not null)
+            && !string.IsNullOrWhiteSpace(v))
         {
             value = v;
             return true;
@@ -162,7 +175,7 @@ public sealed class I18nCatalog : II18nCatalog
         // fallback to spanish
         if (_resources.TryGetValue(_fallbackLanguage, out var fb)
             && fb.TryGetValue(key, out var fv)
-            && fv is not null)
+            && !string.IsNullOrWhiteSpace(fv))
         {
             value = fv;
             return true;
@@ -180,9 +193,14 @@ public sealed class I18nCatalog : II18nCatalog
             // ERR-003/LOG-002: el catálogo destino no carga; se aborta sin
             // cambio parcial y se registra el fallo (sin aviso visible).
             _logger.LogError(
-                "No se pudo cargar el catálogo i18n del idioma destino '{TargetLanguage}'; se aborta la conmutación y se conserva '{CurrentLanguage}'.",
-                language,
-                _currentLanguage);
+                "No se pudo cargar el catálogo i18n. Hora: {Timestamp:O}. " +
+                "Sesión: {SessionId}. Idioma origen: {CurrentLanguage}; " +
+                "idioma destino: {TargetLanguage}. Se aborta la conmutación y " +
+                "se conserva el idioma activo.",
+                DateTimeOffset.UtcNow,
+                SessionId ?? "sin-sesion",
+                _currentLanguage,
+                language);
             return false;
         }
 
@@ -212,7 +230,9 @@ public sealed class I18nCatalog : II18nCatalog
         var result = new List<string>();
         foreach (var k in fallback.Keys)
         {
-            if (!current.ContainsKey(k))
+            // ERR-004: una clave ausente o con texto vacío no está resuelta
+            // en el idioma activo; se resuelve con el fallback español.
+            if (!current.TryGetValue(k, out var value) || string.IsNullOrWhiteSpace(value))
             {
                 result.Add(k);
             }
@@ -291,7 +311,11 @@ public sealed class I18nCatalog : II18nCatalog
                     english[k] = v;
                 }
             }
-            result[English] = english;
+
+            if (english.Count > 0)
+            {
+                result[English] = english;
+            }
         }
 
         return new Dictionary<string, IReadOnlyDictionary<string, string>>(
