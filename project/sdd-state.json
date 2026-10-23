@@ -2,17 +2,17 @@
   "schema": "sdd-state/v1",
   "project": "egg-md-editor",
   "phases": {
-    "discovery": "in_progress",
-    "project_spec": "in_progress",
-    "architecture": "in_progress",
-    "roadmap": "in_progress"
+    "discovery": "done",
+    "project_spec": "done",
+    "architecture": "done",
+    "roadmap": "done"
   },
   "features": {},
   "current": {
     "level": "project"
   },
   "tier": {
-    "category": "S",
+    "category": "M",
     "budget_waived": []
   },
   "pending_decisions": [
@@ -87,7 +87,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-23T15:04:26.729Z",
+  "updated_at": "2026-10-23T15:18:15.284Z",
   "owner": "EG",
   "sources": [
     {
