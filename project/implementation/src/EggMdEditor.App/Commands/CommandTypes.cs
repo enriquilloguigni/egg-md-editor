@@ -75,6 +75,12 @@ public class SharedCommand
     public string Command { get; set; } = string.Empty;
     public string CommandName { get; set; } = string.Empty;
     public string Action { get; set; } = string.Empty;
+    public string Argument { get; set; } = string.Empty;
+    public string Parameter
+    {
+        get => Argument;
+        set => Argument = value ?? string.Empty;
+    }
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public bool IsAvailable { get; set; }
@@ -177,6 +183,12 @@ public class Shortcut
     public string Command { get; set; } = string.Empty;
     public string CommandName { get; set; } = string.Empty;
     public string Action { get; set; } = string.Empty;
+    public string Argument { get; set; } = string.Empty;
+    public string Parameter
+    {
+        get => Argument;
+        set => Argument = value ?? string.Empty;
+    }
     public SharedCommand? CommandRef { get; set; }
     public bool Active { get; set; } = true;
     public bool Enabled { get; set; } = true;
