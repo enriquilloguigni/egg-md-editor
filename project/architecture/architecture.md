@@ -52,6 +52,7 @@
 - Idiomas de UI v1: español e inglés, default español; tema claro/oscuro, modo foco y zoom son atributos de la aplicación (A-005).
 - Un documento por instancia, sin multi-ventana (A-002, BR-001).
 - Autoguardado cada 30 s con recuperación automática al abrir (A-009, BR-008).
+Comando de prueba: dotnet test project/implementation/tests/EggMdEditor.App.Tests/EggMdEditor.App.Tests.csproj
 
 ## Constraints
 
