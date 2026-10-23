@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -10,6 +11,7 @@ namespace EggMdEditor.App;
 public partial class MainWindow : Window
 {
     private readonly MainWindowViewModel _viewModel;
+    private readonly ShortcutHandler _shortcutHandler;
     private MenuItem? _lastOpenMenuItem;
 
     public MainWindow()
@@ -23,7 +25,12 @@ public partial class MainWindow : Window
 
         InitializeComponent();
         _viewModel = viewModel;
+        _shortcutHandler = new ShortcutHandler(viewModel);
         DataContext = viewModel;
+
+        // OP-005/OP-006: el atajo de cierre disponible en F-001 solicita el
+        // cierre de la ventana; el ViewModel no conoce la plataforma.
+        _viewModel.CloseRequested += OnCloseRequested;
 
         // OP-003/TR-004/TR-005 (COM-006): el cierre del menú se refleja en
         // cuanto la entrada deja de estar desplegada, tanto si lo cierra el
@@ -148,24 +155,87 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// TR-005: Esc cierra el menú desplegado y devuelve el foco a la entrada
-    /// que lo abrió, sin ejecutar ninguna acción de dominio (ADR-001).
+    /// OP-005/BR-F001-003: handler de atajos de SC-001. Alt+letra abre la
+    /// entrada correspondiente de ENT-004 (TR-004), Esc cierra el menú
+    /// desplegado (TR-005) y Ctrl+W cierra la ventana (TR-001). Cualquier
+    /// otro atajo o uno cuya acción no exista en F-001 queda inerte, sin
+    /// efecto observable sobre el documento (ADR-001).
     /// </summary>
     private void OnWindowKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.Key != Key.Escape || !_viewModel.IsMenuOpen)
+        if (e.Key == Key.Escape && e.KeyModifiers == KeyModifiers.None)
         {
+            if (!_viewModel.IsMenuOpen || !_viewModel.DispatchShortcut("Esc"))
+            {
+                return;
+            }
+
+            CloseOpenMenuItem();
+            _lastOpenMenuItem?.Focus();
+            e.Handled = true;
             return;
         }
 
+        if (!_shortcutHandler.TryHandle(e, out var shortcut))
+        {
+            // Atajo no registrado, inactivo o de una acción que pertenece a
+            // otra Feature: se deja pasar sin efecto (BR-F001-003).
+            return;
+        }
+
+        if (string.Equals(shortcut?.Command, CommandNames.OpenMenu, StringComparison.OrdinalIgnoreCase))
+        {
+            FocusMenuEntry(shortcut?.Argument);
+        }
+
+        e.Handled = true;
+    }
+
+    private void OnCloseRequested(object? sender, EventArgs e) => Close();
+
+    private void CloseOpenMenuItem()
+    {
         if (_lastOpenMenuItem is { IsSubMenuOpen: true } openItem)
         {
             openItem.Close();
         }
+    }
 
-        _viewModel.CloseMenu();
-        _lastOpenMenuItem?.Focus();
-        e.Handled = true;
+    /// <summary>
+    /// TR-004: deja el foco en la entrada de menú abierta por Alt+letra y,
+    /// si tiene submenú, lo despliega para que el estado de sesión y la
+    /// superficie visible coincidan.
+    /// </summary>
+    private void FocusMenuEntry(string? menuKey)
+    {
+        if (string.IsNullOrWhiteSpace(menuKey))
+        {
+            return;
+        }
+
+        var item = MainMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(menuItem =>
+                string.Equals(menuItem.Tag as string, menuKey, StringComparison.Ordinal));
+        if (item is null)
+        {
+            return;
+        }
+
+        if (_lastOpenMenuItem is not null
+            && !ReferenceEquals(_lastOpenMenuItem, item)
+            && _lastOpenMenuItem.IsSubMenuOpen)
+        {
+            _lastOpenMenuItem.Close();
+        }
+
+        _lastOpenMenuItem = item;
+        if (item.HasSubMenu)
+        {
+            item.IsSubMenuOpen = true;
+        }
+
+        item.Focus();
     }
 
     private bool IsTopLevelMenu(MenuItem item) => MainMenu.Items.Contains(item);
