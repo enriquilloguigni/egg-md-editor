@@ -26,6 +26,8 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     private string? _openMenuKey;
     private bool _noticeVisible;
     private string? _activeNoticeKey;
+    private readonly List<string> _menuShortcutCombinations = new();
+    private bool _registeringShortcuts;
 
     /// <summary>Claves i18n de los 6 menús de FR-011, en el orden declarado.</summary>
     public static IReadOnlyList<string> MenuKeys { get; } = Array.AsReadOnly(
@@ -121,6 +123,70 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     public string FormatMenuHeader => Menus[3].Header;
     public string ToolsMenuHeader => Menus[4].Header;
     public string HelpMenuHeader => Menus[5].Header;
+
+    /// <summary>
+    /// Atajos Alt+letra que abren las entradas de ENT-004 en el idioma
+    /// activo (OP-005): la letra es el mnemónico del rótulo visible, con
+    /// desambiguación determinista cuando dos entradas comparten inicial.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> MenuShortcuts => BuildMenuShortcuts();
+
+    /// <summary>
+    /// Solicitud de cierre de SC-001 desde un atajo disponible (OP-005,
+    /// OP-006). La vista decide cómo cerrar la ventana; el ViewModel no
+    /// conoce la plataforma.
+    /// </summary>
+    public event EventHandler? CloseRequested;
+
+    /// <summary>
+    /// Registra en ENT-007 solo los atajos de acciones disponibles en F-001
+    /// (BR-F001-003): Alt+letra para las entradas del menú, Esc para cerrar
+    /// el menú y Ctrl+W para cerrar la ventana. El resto de acciones no se
+    /// registra y queda inerte (ADR-001). Se re-ejecuta al conmutar idioma
+    /// para que los mnemónicos sigan al rótulo activo.
+    /// </summary>
+    public void RegisterAvailableShortcuts()
+    {
+        if (_registeringShortcuts)
+        {
+            return;
+        }
+
+        _registeringShortcuts = true;
+        try
+        {
+            foreach (var combination in _menuShortcutCombinations)
+            {
+                RemoveShortcut(combination);
+            }
+
+            _menuShortcutCombinations.Clear();
+
+            foreach (var (combination, menuKey) in MenuShortcuts)
+            {
+                var command = new SharedCommand(CommandNames.OpenMenu) { Argument = menuKey };
+                RegisterShortcut(new Shortcut(combination, command));
+                _menuShortcutCombinations.Add(combination);
+            }
+
+            RegisterOrUpdateShortcut(ShortcutNames.Escape, CommandNames.CloseMenu);
+            RegisterOrUpdateShortcut(ShortcutNames.Close, CommandNames.Close);
+        }
+        finally
+        {
+            _registeringShortcuts = false;
+        }
+    }
+
+    /// <summary>
+    /// OP-005/OP-006: solicita el cierre de SC-001; la vista conecta el
+    /// evento con el cierre real de la ventana.
+    /// </summary>
+    public void RequestClose()
+    {
+        Session?.CloseWindow();
+        CloseRequested?.Invoke(this, EventArgs.Empty);
+    }
 
     /// <summary>Idioma activo de la interfaz (BR-F001-004).</summary>
     public string CurrentLanguage => ResolveCatalog().CurrentLanguage;
@@ -478,6 +544,9 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         }
 
         RaiseLanguageChanged();
+        // BR-F001-005: los atajos disponibles se conservan, pero los
+        // mnemónicos Alt+letra siguen al rótulo del idioma activo.
+        RegisterAvailableShortcuts();
         LogLanguageSwitch(previousLanguage, catalog.CurrentLanguage);
         return true;
     }
@@ -612,6 +681,122 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
                 // Rollback best-effort.
             }
         }
+    }
+
+    /// <summary>
+    /// Ejecuta las acciones de F-001 por el mismo dispatcher compartido que
+    /// usan menú, barra y atajos (COM-001). Cualquier comando de otra Feature
+    /// se delega a la base, que lo deja inerte (BR-F001-003, ADR-001).
+    /// </summary>
+    protected override bool ExecuteAvailableCommand(SharedCommand command, string? argument)
+    {
+        switch (NormalizeCommandName(ResolveCommandName(command)))
+        {
+            case "openmenu":
+                return OpenMenu(argument);
+            case "closemenu":
+            case "escape":
+            case "esc":
+                return CloseMenu();
+            case "togglemenu":
+                return argument is null
+                    ? IsMenuOpen && CloseMenu()
+                    : ToggleMenu(argument);
+            case "close":
+            case "closewindow":
+            case "exit":
+            case "quit":
+                RequestClose();
+                return true;
+            case "changelanguage":
+            case "switchlanguage":
+                return TryChangeLanguage(argument);
+            case "changetheme":
+                return TryChangeTheme(argument);
+            case "toggletheme":
+                return ToggleTheme();
+            case "shownotice":
+                return ShowNotice(argument);
+            case "hidenotice":
+            case "hidetooltip":
+                return HideNotice(argument);
+            case "togglenotice":
+                return NoticeVisible ? HideNotice() : ShowNotice(argument);
+            case "requestfocus":
+                Session?.RequestFocus();
+                return true;
+            default:
+                return base.ExecuteAvailableCommand(command, argument);
+        }
+    }
+
+    private IReadOnlyDictionary<string, string> BuildMenuShortcuts()
+    {
+        var catalog = ResolveCatalog();
+        var used = new HashSet<char>();
+        var shortcuts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var menuKey in MenuKeys)
+        {
+            var letter = SelectMnemonicLetter(catalog.Get(menuKey), used);
+            if (letter is null)
+            {
+                continue;
+            }
+
+            used.Add(letter.Value);
+            shortcuts[$"Alt+{letter.Value}"] = menuKey;
+        }
+
+        return shortcuts;
+    }
+
+    /// <summary>
+    /// Elige la primera letra del rótulo aún libre: así cada menú recibe un
+    /// Alt+letra único por idioma (p. ej. en español «Ayuda» usa Y porque A ya
+    /// pertenece a «Archivo»; en inglés «Format» usa O porque F es «File»).
+    /// </summary>
+    private static char? SelectMnemonicLetter(string? header, HashSet<char> used)
+    {
+        if (string.IsNullOrEmpty(header))
+        {
+            return null;
+        }
+
+        foreach (var character in header)
+        {
+            if (!char.IsLetter(character))
+            {
+                continue;
+            }
+
+            var upper = char.ToUpperInvariant(character);
+            if (upper > 'Z' || used.Contains(upper))
+            {
+                continue;
+            }
+
+            return upper;
+        }
+
+        return null;
+    }
+
+    private void RegisterOrUpdateShortcut(string combination, string commandName)
+    {
+        var existing = ResolveShortcut(combination);
+        if (existing is not null)
+        {
+            existing.Command = commandName;
+            existing.CommandName = commandName;
+            existing.Action = commandName;
+            existing.Active = true;
+            existing.Enabled = true;
+            existing.IsAvailable = Shortcut.IsAvailableCommandPublic(commandName);
+            return;
+        }
+
+        RegisterShortcut(new Shortcut(combination, commandName));
     }
 
     private II18nCatalog ResolveCatalog() => Catalog ?? Session?.Catalog ?? I18nCatalog.Instance;
