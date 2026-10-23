@@ -585,8 +585,15 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
     public void OcultarAviso() => HideNotice();
 
     // Window operations
+    /// <summary>
+    /// OP-006/TR-001: cerrar la ventana finaliza la sesión (ST-001 → ST-002).
+    /// No queda estado transitorio activo —el menú vuelve a cerrado y el
+    /// aviso a oculto— y no se persiste nada (FR-013). Es idempotente.
+    /// </summary>
     public void CloseWindow()
     {
+        MenuState = MenuState.Closed;
+        NoticeVisible = false;
         _windowOpen = false;
         OnPropertyChanged(nameof(WindowOpen));
         OnPropertyChanged(nameof(IsWindowOpen));
