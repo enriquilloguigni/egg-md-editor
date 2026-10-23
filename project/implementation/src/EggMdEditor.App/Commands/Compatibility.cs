@@ -54,10 +54,17 @@ public class MainViewModel : CommandDispatcher
 
 public partial class MainWindowViewModel : CommandDispatcher
 {
-    public MainWindowViewModel() : base() { }
-    public MainWindowViewModel(Session? session) : base(session) { Catalog = session?.Catalog; }
-    public MainWindowViewModel(II18nCatalog? catalog) : base(catalog) { }
-    public MainWindowViewModel(UiPreferences? preferences) : base(preferences) { }
+    public MainWindowViewModel() : base() => RegisterAvailableShortcuts();
+
+    public MainWindowViewModel(Session? session) : base(session)
+    {
+        Catalog = session?.Catalog;
+        RegisterAvailableShortcuts();
+    }
+
+    public MainWindowViewModel(II18nCatalog? catalog) : base(catalog) => RegisterAvailableShortcuts();
+
+    public MainWindowViewModel(UiPreferences? preferences) : base(preferences) => RegisterAvailableShortcuts();
 }
 
 public class EditorViewModel : CommandDispatcher
