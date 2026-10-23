@@ -12,7 +12,7 @@
     "level": "project"
   },
   "tier": {
-    "category": "M",
+    "category": "S",
     "budget_waived": []
   },
   "pending_decisions": [
@@ -74,9 +74,20 @@
       ],
       "impact": "high",
       "resolved_by": "humano"
+    },
+    {
+      "id": "PD-ROAD-001",
+      "status": "resolved",
+      "question": "Re-puntuar C1 (Alcance) de 10 a 8 (ponderado 6.10 → 5.50, categoría S).",
+      "artifact": "project/roadmap/roadmap.md (v1) + project/project.md (Dimensión)",
+      "blocks": [
+        "ROADMAP_APPROVED"
+      ],
+      "impact": "medium",
+      "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-23T14:51:45.646Z",
+  "updated_at": "2026-10-23T15:04:03.547Z",
   "owner": "EG",
   "sources": [
     {
