@@ -54,7 +54,7 @@ El sistema debe persistir entre sesiones las preferencias del usuario: tema, zoo
 
 ## Fidelidad fuente
 
-| Unidad | Cita literal (requerimiento.txt) | FR |
+| unidad | cita | FR |
 |---|---|---|
 | U-01 (L1) | "menús de siempre —Archivo, Edición, Ver, Formato, Herramientas, Ayuda—" | FR-011, FR-012 |
 | U-02 (L3) | "dos paneles que ocupan el resto del espacio... dos vistas del mismo documento, sincronizadas en tiempo real" | FR-001 |
@@ -72,4 +72,22 @@ El sistema debe persistir entre sesiones las preferencias del usuario: tema, zoo
 | U-14 (L27) | "En Ayuda tienes el Acerca de" | FR-010 |
 | U-15 (L29) | "eliges cómo trabajar en cada momento" | FR-001 |
 
-Cobertura inversa: FR-001 ← U-02, U-03, U-04, U-05, U-15; FR-002 ← U-04, U-10, U-11; FR-003 ← U-11, U-12; FR-004 ← U-06; FR-005 ← U-06; FR-006 ← U-07; FR-007 ← U-08, U-09; FR-008 ← U-09, U-13; FR-009 ← U-05, U-13; FR-010 ← U-14; FR-011 ← U-01; FR-012 ← U-01; FR-013 ← U-05. Cobertura: 15/15 unidades y 13/13 FR.
+Cobertura inversa (referencias):
+
+| FR | Unidades fuente |
+|---|---|
+| FR-001 | U-02, U-03, U-04, U-05, U-15 |
+| FR-002 | U-04, U-10, U-11 |
+| FR-003 | U-11, U-12 |
+| FR-004 | U-06 |
+| FR-005 | U-06 |
+| FR-006 | U-07 |
+| FR-007 | U-08, U-09 |
+| FR-008 | U-09, U-13 |
+| FR-009 | U-05, U-13 |
+| FR-010 | U-14 |
+| FR-011 | U-01 |
+| FR-012 | U-01 |
+| FR-013 | U-05 |
+
+Cobertura: 15/15 unidades y 13/13 FR.
