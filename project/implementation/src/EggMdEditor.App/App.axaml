@@ -2,6 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="EggMdEditor.App.App"
              RequestedThemeVariant="Default">
+    <!-- T-002/T-009 (ENT-003, OP-002): FluentTheme claro/oscuro. "Default"
+         hereda el tema del SO; App.axaml.cs resuelve el tema efectivo al
+         arrancar y la conmutación de la sesión lo fija después (COM-003). -->
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
