@@ -52,7 +52,7 @@ public class MainViewModel : CommandDispatcher
     public MainViewModel(UiPreferences? preferences) : base(preferences) { }
 }
 
-public class MainWindowViewModel : CommandDispatcher
+public partial class MainWindowViewModel : CommandDispatcher
 {
     public MainWindowViewModel() : base() { }
     public MainWindowViewModel(Session? session) : base(session) { }
