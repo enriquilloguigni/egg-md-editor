@@ -210,6 +210,13 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     public ILogger? Logger { get; set; }
 
     /// <summary>
+    /// Identificador de la sesión técnica (LOG-002), compartido con el resto
+    /// de registros del proceso. Sin sesión compuesta (pruebas) puede ser
+    /// <c>null</c>.
+    /// </summary>
+    public string? SessionId { get; set; }
+
+    /// <summary>
     /// Comando del selector de idioma (Herramientas → Idioma de la interfaz).
     /// El parámetro es el código destino {es,en}.
     /// </summary>
@@ -506,7 +513,10 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         if (code is not ("es" or "en"))
         {
             Logger?.LogError(
-                "No se pudo conmutar el idioma a '{TargetLanguage}': no es un idioma soportado; se conserva '{CurrentLanguage}'.",
+                "No se pudo conmutar el idioma. Hora: {Timestamp:O}. Sesión: {SessionId}. " +
+                "Idioma destino: {TargetLanguage}; no es un idioma soportado. Se conserva: {CurrentLanguage}.",
+                DateTimeOffset.UtcNow,
+                SessionId ?? "sin-sesion",
                 language,
                 previousLanguage);
             RestoreLanguageSelection();
@@ -524,7 +534,10 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         {
             Logger?.LogError(
                 exception,
-                "Fallo al cargar el catálogo i18n del idioma destino '{TargetLanguage}'; se conserva '{CurrentLanguage}'.",
+                "Fallo al cargar el catálogo i18n. Hora: {Timestamp:O}. Sesión: {SessionId}. " +
+                "Idioma destino: {TargetLanguage}. Se conserva: {CurrentLanguage}.",
+                DateTimeOffset.UtcNow,
+                SessionId ?? "sin-sesion",
                 code,
                 previousLanguage);
             RollbackLanguage(catalog, previousLanguage);
@@ -640,7 +653,11 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         {
             // LOG-002: Warning si quedan claves i18n sin resolver (ERR-004).
             Logger.LogWarning(
-                "Conmutación de idioma completada: {SourceLanguage} -> {TargetLanguage}; {UnresolvedCount} claves i18n sin resolver: {UnresolvedKeys}.",
+                "Conmutación de idioma completada con fallback. Hora: {Timestamp:O}. " +
+                "Sesión: {SessionId}. Idioma: {SourceLanguage} -> {TargetLanguage}; " +
+                "{UnresolvedCount} claves i18n sin resolver: {UnresolvedKeys}.",
+                DateTimeOffset.UtcNow,
+                SessionId ?? "sin-sesion",
                 previousLanguage,
                 currentLanguage,
                 unresolvedKeys.Count,
@@ -650,7 +667,10 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
 
         // LOG-002: Debug si la conmutación es exitosa y completa.
         Logger.LogDebug(
-            "Conmutación de idioma completada: {SourceLanguage} -> {TargetLanguage}.",
+            "Conmutación de idioma completada. Hora: {Timestamp:O}. Sesión: {SessionId}. " +
+            "Idioma: {SourceLanguage} -> {TargetLanguage}.",
+            DateTimeOffset.UtcNow,
+            SessionId ?? "sin-sesion",
             previousLanguage,
             currentLanguage);
     }
