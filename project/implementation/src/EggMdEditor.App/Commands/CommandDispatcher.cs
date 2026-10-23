@@ -325,100 +325,279 @@ public class CommandDispatcher
         ShortcutsRegistry.Clear();
     }
 
-    // ---- Dispatch (no actions connected in F-001) ----
+    // ---- Dispatch (OP-005, COM-001, BR-F001-003) ----
+    /// <summary>
+    /// Ejecuta un comando registrado (OP-005). Solo los comandos de acciones
+    /// disponibles en F-001 producen efecto; el resto permanece inerte
+    /// (BR-F001-003, ADR-001). <paramref name="argument"/> transporta el
+    /// parámetro de la acción (p. ej. la entrada de menú de OP-003).
+    /// </summary>
     public bool Dispatch(string? command)
     {
-        // No action connected (ADR-001): no observable effect.
-        return false;
+        if (string.IsNullOrWhiteSpace(command))
+        {
+            return false;
+        }
+
+        return Dispatch(new SharedCommand(command!));
     }
 
     public bool Dispatch(SharedCommand? command)
     {
-        return false;
-    }
-
-    public bool Dispatch(object? command)
-    {
-        return false;
-    }
-
-    public bool DispatchShortcut(string? combination)
-    {
-        var s = ResolveShortcut(combination);
-        if (s is null || !s.Active)
+        if (command is null)
         {
             return false;
         }
 
-        // Shortcut registered; command may or may not be available in F-001.
-        // No action connected => no observable effect on document/session.
-        return false;
+        var name = ResolveCommandName(command);
+        if (!Shortcut.IsAvailableCommandPublic(name))
+        {
+            // Comando de una acción que aún no existe en F-001: inerte.
+            return false;
+        }
+
+        return ExecuteAvailableCommand(command, command.Argument);
+    }
+
+    public bool Dispatch(object? command) => command switch
+    {
+        SharedCommand sharedCommand => Dispatch(sharedCommand),
+        string text => Dispatch(text),
+        _ => false,
+    };
+
+    /// <summary>
+    /// OP-005: invoke de un atajo registrado en ENT-007. Un atajo no
+    /// registrado, inactivo o cuyo comando no está disponible en F-001 no
+    /// produce efecto observable.
+    /// </summary>
+    public bool DispatchShortcut(string? combination)
+    {
+        var shortcut = ResolveShortcut(combination);
+        return DispatchShortcut(shortcut);
     }
 
     public bool DispatchShortcut(Shortcut? shortcut)
     {
-        if (shortcut is null || !shortcut.Active)
+        if (shortcut is null || !shortcut.Active || !shortcut.Enabled)
         {
             return false;
         }
 
-        return false;
+        var command = ResolveShortcutCommand(shortcut);
+        if (command is null)
+        {
+            return false;
+        }
+
+        var name = ResolveCommandName(command);
+        if (!Shortcut.IsAvailableCommandPublic(name))
+        {
+            // El binding existe pero su acción pertenece a otra Feature: inerte.
+            return false;
+        }
+
+        var argument = FirstNonEmpty(shortcut.Argument, command.Argument);
+        return ExecuteAvailableCommand(command, string.IsNullOrWhiteSpace(argument) ? null : argument);
     }
 
     public CommandResult DispatchCommand(string? command)
     {
-        return CommandResult.NoEffect;
+        return ToCommandResult(command, Dispatch(command));
     }
 
     public CommandResult DispatchCommand(SharedCommand? command)
     {
-        return CommandResult.NoEffect;
+        return ToCommandResult(command, Dispatch(command));
     }
 
     public CommandResult DispatchCommand(object? command)
     {
-        return CommandResult.NoEffect;
+        return command switch
+        {
+            SharedCommand sharedCommand => DispatchCommand(sharedCommand),
+            string text => DispatchCommand(text),
+            _ => CommandResult.NoEffect,
+        };
     }
 
-    public DispatchResult Execute(string? command) => DispatchResult.NoEffect;
-    public DispatchResult Execute(SharedCommand? command) => DispatchResult.NoEffect;
-    public DispatchResult Execute(object? command) => DispatchResult.NoEffect;
+    public DispatchResult Execute(string? command) => ToDispatchResult(DispatchCommand(command));
+    public DispatchResult Execute(SharedCommand? command) => ToDispatchResult(DispatchCommand(command));
+    public DispatchResult Execute(object? command) => ToDispatchResult(DispatchCommand(command));
 
-    public bool Invoke(string? command) => false;
-    public bool Invoke(SharedCommand? command) => false;
-    public bool Invoke(object? command) => false;
+    public bool Invoke(string? command) => Dispatch(command);
+    public bool Invoke(SharedCommand? command) => Dispatch(command);
+    public bool Invoke(object? command) => Dispatch(command);
 
-    public bool Handle(string? command) => false;
-    public bool Handle(SharedCommand? command) => false;
-    public bool Handle(object? command) => false;
+    public bool Handle(string? command) => Dispatch(command);
+    public bool Handle(SharedCommand? command) => Dispatch(command);
+    public bool Handle(object? command) => Dispatch(command);
 
-    public bool Run(string? command) => false;
-    public bool Trigger(string? command) => false;
-    public bool Process(string? command) => false;
+    public bool Run(string? command) => Dispatch(command);
+    public bool Trigger(string? command) => Dispatch(command);
+    public bool Process(string? command) => Dispatch(command);
 
-    public bool TryDispatch(string? command) => false;
-    public bool TryDispatch(SharedCommand? command) => false;
-    public bool TryExecute(string? command) => false;
-    public bool TryExecute(SharedCommand? command) => false;
-    public bool TryInvoke(string? command) => false;
-    public bool TryHandle(string? command) => false;
+    public bool TryDispatch(string? command) => Dispatch(command);
+    public bool TryDispatch(SharedCommand? command) => Dispatch(command);
+    public bool TryExecute(string? command) => Dispatch(command);
+    public bool TryExecute(SharedCommand? command) => Dispatch(command);
+    public bool TryInvoke(string? command) => Dispatch(command);
+    public bool TryHandle(string? command) => Dispatch(command);
 
-    public object? ExecuteCommand(string? command) => null;
-    public object? InvokeCommand(string? command) => null;
-    public object? HandleCommand(string? command) => null;
+    public object? ExecuteCommand(string? command) => Dispatch(command) ? CommandResult.Handled : null;
+    public object? InvokeCommand(string? command) => ExecuteCommand(command);
+    public object? HandleCommand(string? command) => ExecuteCommand(command);
 
-    public bool InvokeShortcut(string? combination) => false;
-    public bool TriggerShortcut(string? combination) => false;
-    public bool HandleShortcut(string? combination) => false;
-    public bool HandleKey(string? combination) => false;
-    public bool HandleKeyPress(string? combination) => false;
-    public bool OnKeyPress(string? combination) => false;
-    public bool OnKeyDown(string? combination) => false;
+    public bool InvokeShortcut(string? combination) => DispatchShortcut(combination);
+    public bool TriggerShortcut(string? combination) => DispatchShortcut(combination);
+    public bool HandleShortcut(string? combination) => DispatchShortcut(combination);
+    public bool HandleKey(string? combination) => DispatchShortcut(combination);
+    public bool HandleKeyPress(string? combination) => DispatchShortcut(combination);
+    public bool OnKeyPress(string? combination) => DispatchShortcut(combination);
+    public bool OnKeyDown(string? combination) => DispatchShortcut(combination);
 
     public SharedCommand? Resolve(string? name) => ResolveCommand(name);
     public string? GetCommandName(string? name) => ResolveCommand(name)?.Name;
 
-    // Events intentionally omitted: no actions connected in F-001 (ADR-001).
+    /// <summary>
+    /// Punto único de ejecución de las acciones disponibles en F-001
+    /// (COM-001). Las Features posteriores sustituyen o amplían este
+    /// despacho sin conectar aquí ninguna acción de dominio (ADR-001).
+    /// </summary>
+    protected virtual bool ExecuteAvailableCommand(SharedCommand command, string? argument)
+    {
+        switch (NormalizeCommandName(ResolveCommandName(command)))
+        {
+            case "openmenu":
+                // OP-003: la entrada concreta la conserva el ViewModel; la
+                // sesión solo refleja {Cerrado, Desplegado}.
+                return Session?.TryOpenMenu() ?? false;
+            case "closemenu":
+            case "escape":
+            case "esc":
+                // TR-005: solo hay efecto con el menú desplegado.
+                return Session?.TryCloseMenu() ?? false;
+            case "togglemenu":
+                if (Session is null)
+                {
+                    return false;
+                }
+
+                Session.ToggleMenu();
+                return true;
+            case "close":
+            case "closewindow":
+            case "exit":
+            case "quit":
+                if (Session is null)
+                {
+                    return false;
+                }
+
+                Session.CloseWindow();
+                return true;
+            case "changelanguage":
+            case "switchlanguage":
+                return !string.IsNullOrWhiteSpace(argument) && (Session?.TrySetLanguage(argument) ?? false);
+            case "changetheme":
+                return !string.IsNullOrWhiteSpace(argument) && (Session?.TrySetTheme(argument) ?? false);
+            case "toggletheme":
+                if (Session is null)
+                {
+                    return false;
+                }
+
+                Session.ToggleTheme();
+                return true;
+            case "shownotice":
+                Session?.ShowNotice();
+                return Session is not null;
+            case "hidenotice":
+            case "hidetooltip":
+                Session?.HideNotice();
+                return Session is not null;
+            case "togglenotice":
+                Session?.ToggleNotice();
+                return Session is not null;
+            case "requestfocus":
+                Session?.RequestFocus();
+                return Session is not null;
+            default:
+                return false;
+        }
+    }
+
+    // Events intentionally omitted: no domain actions connected in F-001 (ADR-001).
+
+    protected static string ResolveCommandName(SharedCommand command)
+    {
+        return FirstNonEmpty(command.Command, command.CommandName, command.Name, command.Id, command.Action);
+    }
+
+    private SharedCommand? ResolveShortcutCommand(Shortcut shortcut)
+    {
+        if (shortcut.CommandRef is not null)
+        {
+            return shortcut.CommandRef;
+        }
+
+        var name = FirstNonEmpty(shortcut.Command, shortcut.CommandName, shortcut.Action);
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return null;
+        }
+
+        return ResolveCommand(name) ?? new SharedCommand(name);
+    }
+
+    protected static string NormalizeCommandName(string? command)
+    {
+        if (string.IsNullOrWhiteSpace(command))
+        {
+            return string.Empty;
+        }
+
+        return command!
+            .Trim()
+            .Replace(".", string.Empty, StringComparison.Ordinal)
+            .Replace(" ", string.Empty, StringComparison.Ordinal)
+            .Replace("_", string.Empty, StringComparison.Ordinal)
+            .ToLowerInvariant();
+    }
+
+    private static CommandResult ToCommandResult(string? command, bool handled)
+    {
+        if (string.IsNullOrWhiteSpace(command))
+        {
+            return CommandResult.NoEffect;
+        }
+
+        if (!Shortcut.IsAvailableCommandPublic(command))
+        {
+            return CommandResult.NotAvailable;
+        }
+
+        return handled ? CommandResult.Handled : CommandResult.NoEffect;
+    }
+
+    private static CommandResult ToCommandResult(SharedCommand? command, bool handled)
+    {
+        if (command is null)
+        {
+            return CommandResult.NoEffect;
+        }
+
+        return ToCommandResult(ResolveCommandName(command), handled);
+    }
+
+    private static DispatchResult ToDispatchResult(CommandResult result) => result switch
+    {
+        CommandResult.Handled => DispatchResult.Handled,
+        CommandResult.NotAvailable => DispatchResult.NotAvailable,
+        CommandResult.Ignored => DispatchResult.Ignored,
+        CommandResult.NotFound => DispatchResult.NotFound,
+        _ => DispatchResult.NoEffect,
+    };
 
     private static string FirstNonEmpty(params string?[] values)
     {
@@ -468,9 +647,14 @@ public class CommandDispatcher
                 shortcut.Command = FirstNonEmpty(shortcut.CommandRef.Name, shortcut.CommandRef.Command);
             }
             if (string.IsNullOrWhiteSpace(shortcut.CommandName)) shortcut.CommandName = shortcut.Command;
+            if (string.IsNullOrWhiteSpace(shortcut.Argument)) shortcut.Argument = shortcut.CommandRef.Argument;
         }
 
-        shortcut.IsAvailable = Shortcut.IsAvailableCommandPublic(shortcut.Command) || shortcut.IsAvailable;
+        var availableName = FirstNonEmpty(
+            shortcut.CommandRef?.Command,
+            shortcut.CommandRef?.Name,
+            shortcut.Command);
+        shortcut.IsAvailable = Shortcut.IsAvailableCommandPublic(availableName) || shortcut.IsAvailable;
     }
 }
 
@@ -690,26 +874,25 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
     public void ClearAll() => Clear();
     public void Reset() => Clear();
 
+    /// <summary>
+    /// OP-005: ejecuta el atajo a través del dispatcher compartido solo si su
+    /// comando está disponible en F-001 (BR-F001-003). Sin dispatcher, o con
+    /// un atajo cuyo comando pertenece a otra Feature, no hay efecto.
+    /// </summary>
     public bool Invoke(string? combination)
     {
-        var s = Find(combination);
-        if (s is null || !s.Active)
-        {
-            return false;
-        }
-
-        // No action connected in F-001.
-        return false;
+        var shortcut = Find(combination);
+        return Invoke(shortcut);
     }
 
     public bool Invoke(Shortcut? shortcut)
     {
-        if (shortcut is null || !shortcut.Active)
+        if (shortcut is null || !shortcut.Active || !shortcut.Enabled)
         {
             return false;
         }
 
-        return false;
+        return _dispatcher?.DispatchShortcut(shortcut) ?? false;
     }
 
     public bool TryInvoke(string? combination) => Invoke(combination);
@@ -746,7 +929,18 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
 
     public CommandResult InvokeWithResult(string? combination)
     {
-        return CommandResult.NoEffect;
+        var shortcut = Find(combination);
+        if (shortcut is null || !shortcut.Active || !shortcut.Enabled)
+        {
+            return CommandResult.NotFound;
+        }
+
+        if (!shortcut.IsAvailable)
+        {
+            return CommandResult.Inert;
+        }
+
+        return Invoke(shortcut) ? CommandResult.Handled : CommandResult.NoEffect;
     }
 
     private static string FirstNonEmptyStatic(params string?[] values)
