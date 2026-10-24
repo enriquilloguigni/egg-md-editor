@@ -13,8 +13,10 @@ namespace EggMdEditor.App;
 /// ViewModel de la ventana principal SC-001 (T-006): expone los 6 menús
 /// principales de FR-011 (ENT-004) en orden, con el rótulo resuelto desde el
 /// catálogo i18n (ENT-006) en el idioma activo. Solo presentación: no hay
-/// acciones conectadas a documento (ADR-001); la conmutación de idioma es la
-/// única acción disponible (OP-001).
+/// acciones conectadas a documento (ADR-001); la conmutación de idioma
+/// (OP-001) y de tema (OP-002) y las superficies de ayuda (SC-003) y diálogo
+/// genérico (SC-002) son las únicas acciones disponibles y ninguna altera el
+/// documento.
 /// </summary>
 public partial class MainWindowViewModel : INotifyPropertyChanged
 {
@@ -28,6 +30,7 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     private string? _activeNoticeKey;
     private readonly List<string> _menuShortcutCombinations = new();
     private bool _registeringShortcuts;
+    private DialogViewModel? _dialog;
 
     /// <summary>Claves i18n de los 6 menús de FR-011, en el orden declarado.</summary>
     public static IReadOnlyList<string> MenuKeys { get; } = Array.AsReadOnly(
@@ -43,6 +46,11 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     public const string LanguageMenuKey = "Menu.Tools.Language";
     public const string SpanishLanguageKey = "Language.Spanish";
     public const string EnglishLanguageKey = "Language.English";
+
+    /// <summary>Entradas de FR-010 en el menú Ayuda (SC-003).</summary>
+    public const string HelpGuideMenuKey = "Menu.Help.Guide";
+    public const string HelpShortcutsMenuKey = "Menu.Help.Shortcuts";
+    public const string HelpAboutMenuKey = "Menu.Help.About";
 
     /// <summary>
     /// Controles de la barra de formato de FR-012 en orden de escritura
@@ -123,6 +131,64 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     public string FormatMenuHeader => Menus[3].Header;
     public string ToolsMenuHeader => Menus[4].Header;
     public string HelpMenuHeader => Menus[5].Header;
+
+    /// <summary>Entrada Ayuda → Guía de Markdown (SC-003, FR-010).</summary>
+    public string HelpGuideHeader => ResolveCatalog().Get(HelpGuideMenuKey);
+
+    /// <summary>Entrada Ayuda → Atajos de teclado (SC-003, FR-010).</summary>
+    public string HelpShortcutsHeader => ResolveCatalog().Get(HelpShortcutsMenuKey);
+
+    /// <summary>Entrada Ayuda → Acerca de Egg MD Editor (SC-003, FR-010).</summary>
+    public string HelpAboutHeader => ResolveCatalog().Get(HelpAboutMenuKey);
+
+    /// <summary>
+    /// Superficie de diálogo genérica SC-002 (T-014). En F-001 permanece
+    /// cerrada y ningún diálogo concreto se conecta a una entrada de menú
+    /// (ADR-001); las Features posteriores abren su formulario con
+    /// <see cref="DialogViewModel.Open"/>.
+    /// </summary>
+    public DialogViewModel Dialog => _dialog ??= new DialogViewModel(() => ResolveCatalog());
+
+    /// <summary>
+    /// Atajos disponibles en F-001 para el listado de SC-003 (OP-005,
+    /// BR-F001-003): los Alt+letra de las entradas de menú en el idioma
+    /// activo, Esc y el cierre de ventana. El resto no se lista porque su
+    /// acción aún no existe.
+    /// </summary>
+    public IReadOnlyList<HelpShortcutDefinition> AvailableShortcuts
+    {
+        get
+        {
+            var catalog = ResolveCatalog();
+            var menuShortcuts = MenuShortcuts;
+            var shortcuts = new List<HelpShortcutDefinition>(menuShortcuts.Count + 2);
+            foreach (var menuKey in MenuKeys)
+            {
+                var combination = menuShortcuts
+                    .Where(pair => string.Equals(pair.Value, menuKey, StringComparison.Ordinal))
+                    .Select(pair => pair.Key)
+                    .FirstOrDefault();
+                if (combination is null)
+                {
+                    continue;
+                }
+
+                var description = string.Format(
+                    System.Globalization.CultureInfo.CurrentCulture,
+                    catalog.Get("Help.Shortcuts.OpenMenu"),
+                    catalog.Get(menuKey));
+                shortcuts.Add(new HelpShortcutDefinition(combination, description));
+            }
+
+            shortcuts.Add(new HelpShortcutDefinition(
+                ShortcutNames.Escape,
+                catalog.Get("Help.Shortcuts.Escape")));
+            shortcuts.Add(new HelpShortcutDefinition(
+                ShortcutNames.Close,
+                catalog.Get("Help.Shortcuts.Close")));
+            return new ReadOnlyCollection<HelpShortcutDefinition>(shortcuts);
+        }
+    }
 
     /// <summary>
     /// Atajos Alt+letra que abren las entradas de ENT-004 en el idioma
@@ -595,6 +661,13 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(LanguageMenuHeader));
         OnPropertyChanged(nameof(SpanishOptionHeader));
         OnPropertyChanged(nameof(EnglishOptionHeader));
+        OnPropertyChanged(nameof(HelpGuideHeader));
+        OnPropertyChanged(nameof(HelpShortcutsHeader));
+        OnPropertyChanged(nameof(HelpAboutHeader));
+        OnPropertyChanged(nameof(AvailableShortcuts));
+        // SC-002: la superficie genérica relabeliza sus textos propios si
+        // estuviera abierta durante la conmutación (BR-F001-005).
+        Dialog.NotifyLanguageChanged();
         // BR-F001-005: el aviso flotante visible se conserva y se relabeliza
         // en caliente junto con el resto de la superficie.
         OnPropertyChanged(nameof(VisibleNotice));
