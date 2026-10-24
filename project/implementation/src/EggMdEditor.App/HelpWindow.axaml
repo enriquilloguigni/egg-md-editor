@@ -1,0 +1,93 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:app="using:EggMdEditor.App"
+        x:Class="EggMdEditor.App.HelpWindow"
+        x:DataType="app:HelpWindowViewModel"
+        Title="{Binding WindowTitle}"
+        AutomationProperties.AutomationId="SC-003"
+        AutomationProperties.Name="{Binding WindowTitle}"
+        Width="960"
+        Height="640"
+        MinWidth="640"
+        MinHeight="480"
+        WindowStartupLocation="CenterOwner">
+
+  <!-- SC-003 (T-014): ventana de ayuda con navegación por secciones y texto
+       seleccionable. Incluye el Acerca de (versión, atribuciones y licencias
+       MIT) y la guía rápida de Markdown con el listado de atajos disponibles
+       en F-001 (FR-010, NFR-011). El contenido completo de la guía lo
+       conectará F-010; aquí la superficie ya es visible y navegable. -->
+  <Grid ColumnDefinitions="224,*">
+
+    <Border Grid.Column="0"
+            x:Name="HelpNavigation"
+            BorderThickness="0,0,1,0"
+            BorderBrush="{DynamicResource HelpNavigationBorderBrush}"
+            Background="{DynamicResource HelpNavigationBackgroundBrush}"
+            Padding="12,16">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{Binding SectionsHeader}"
+                   Margin="4,0,4,12"
+                   FontWeight="SemiBold"
+                   Foreground="{DynamicResource HelpMutedTextBrush}" />
+
+        <ListBox x:Name="HelpSectionList"
+                 ItemsSource="{Binding Sections}"
+                 SelectedItem="{Binding ActiveSection, Mode=TwoWay}"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 AutomationProperties.AutomationId="Help.Sections"
+                 AutomationProperties.Name="{Binding SectionsHeader}">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="app:HelpSectionDefinition">
+              <TextBlock Text="{Binding Title}"
+                         TextWrapping="Wrap"
+                         AutomationProperties.Name="{Binding Title}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <DockPanel Grid.Column="1">
+      <StackPanel DockPanel.Dock="Bottom"
+                  Orientation="Horizontal"
+                  HorizontalAlignment="Right"
+                  Spacing="8"
+                  Margin="24,12,24,16">
+        <Button x:Name="CopyHelpTextButton"
+                Content="{Binding CopyTextLabel}"
+                Click="OnCopyTextClick"
+                AutomationProperties.AutomationId="Help.CopyText" />
+        <Button x:Name="CloseHelpButton"
+                Classes="accent"
+                Content="{Binding CloseLabel}"
+                Click="OnCloseClick"
+                AutomationProperties.AutomationId="Help.Close" />
+      </StackPanel>
+
+      <ScrollViewer Margin="24,16,24,0"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+          <TextBlock x:Name="HelpSectionTitle"
+                     Text="{Binding ActiveSectionTitle}"
+                     FontSize="22"
+                     FontWeight="SemiBold"
+                     TextWrapping="Wrap"
+                     Margin="0,0,0,12"
+                     AutomationProperties.AutomationId="Help.SectionTitle" />
+
+          <!-- Texto seleccionable (screens.md, SC-003). -->
+          <SelectableTextBlock x:Name="HelpContent"
+                               Text="{Binding Content}"
+                               TextWrapping="Wrap"
+                               LineHeight="22"
+                               AutomationProperties.AutomationId="Help.Content"
+                               AutomationProperties.Name="{Binding ActiveSectionTitle}" />
+        </StackPanel>
+      </ScrollViewer>
+    </DockPanel>
+  </Grid>
+</Window>
