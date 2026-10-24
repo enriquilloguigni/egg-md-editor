@@ -9,6 +9,20 @@
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
+  <!--
+    El apphost nativo de los tests localiza el runtime sólo por DOTNET_ROOT o por una
+    instalación global (/usr/share/dotnet). En instalaciones de usuario (~/.dotnet) sin
+    DOTNET_ROOT, `dotnet test` falla con `app-launch-failed`. Antes de invocar al runner
+    se desactiva UseAppHost para que Microsoft.Testing.Platform use el muxer `dotnet`
+    (DOTNET_HOST_PATH, que la propia CLI define) en lugar del apphost. Se mantiene
+    UseAppHost=true durante la compilación porque xunit.v3 lo exige.
+  -->
+  <Target Name="InvokeTestingPlatformWithDotnetMuxer" BeforeTargets="InvokeTestingPlatform">
+    <PropertyGroup>
+      <UseAppHost>false</UseAppHost>
+    </PropertyGroup>
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="Microsoft.Testing.Platform" />
