@@ -63,4 +63,91 @@
   <data name="barra.indice" xml:space="preserve">
     <value>Table of contents</value>
   </data>
+  <data name="Menu.Help.Guide" xml:space="preserve">
+    <value>Markdown guide</value>
+  </data>
+  <data name="Menu.Help.Shortcuts" xml:space="preserve">
+    <value>Keyboard shortcuts</value>
+  </data>
+  <data name="Menu.Help.About" xml:space="preserve">
+    <value>About Egg MD Editor</value>
+  </data>
+  <data name="Help.WindowTitle" xml:space="preserve">
+    <value>Help — Egg MD Editor</value>
+  </data>
+  <data name="Help.Sections" xml:space="preserve">
+    <value>Sections</value>
+  </data>
+  <data name="Help.Section.About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Help.Section.Guide" xml:space="preserve">
+    <value>Markdown guide</value>
+  </data>
+  <data name="Help.Section.Shortcuts" xml:space="preserve">
+    <value>Keyboard shortcuts</value>
+  </data>
+  <data name="Help.CopyText" xml:space="preserve">
+    <value>Copy text</value>
+  </data>
+  <data name="Help.Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Help.About.Name" xml:space="preserve">
+    <value>Egg MD Editor</value>
+  </data>
+  <data name="Help.About.VersionLabel" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Help.About.AttributionsTitle" xml:space="preserve">
+    <value>Attributions</value>
+  </data>
+  <data name="Help.About.Attributions" xml:space="preserve">
+    <value>Avalonia UI — MIT license&#10;.NET — MIT license&#10;Microsoft.Extensions.Logging — MIT license&#10;Inter font — SIL Open Font License 1.1&#10;&#10;Full licenses are distributed with the application source code.</value>
+  </data>
+  <data name="Help.About.LicenseTitle" xml:space="preserve">
+    <value>License</value>
+  </data>
+  <data name="Help.About.License" xml:space="preserve">
+    <value>Egg MD Editor is distributed under the MIT license. See the LICENSE file in the repository for the full text.</value>
+  </data>
+  <data name="Help.Guide.Content" xml:space="preserve">
+    <value>Markdown quick guide&#10;&#10;# Heading 1&#10;## Heading 2&#10;**bold** · *italic* · ~~strikethrough~~&#10;- bullet list&#10;1. numbered list&#10;&gt; quote&#10;`inline code`&#10;&#10;| Column | Column |&#10;| --- | --- |&#10;| data | data |&#10;&#10;Footnote: [^1]&#10;&#10;Formula: $x^2$&#10;&#10;Link: [text](https://example.com)&#10;Image: ![description](image.png)</value>
+  </data>
+  <data name="Help.Shortcuts.Intro" xml:space="preserve">
+    <value>Shortcuts available in this version:</value>
+  </data>
+  <data name="Help.Shortcuts.OpenMenu" xml:space="preserve">
+    <value>Open the {0} menu</value>
+  </data>
+  <data name="Help.Shortcuts.Escape" xml:space="preserve">
+    <value>Close menus and dialogs</value>
+  </data>
+  <data name="Help.Shortcuts.Close" xml:space="preserve">
+    <value>Close the window</value>
+  </data>
+  <data name="Help.Shortcuts.Pending" xml:space="preserve">
+    <value>The remaining shortcuts will become available once their actions are connected.</value>
+  </data>
+  <data name="Dialog.Title" xml:space="preserve">
+    <value>Dialog</value>
+  </data>
+  <data name="Dialog.Message" xml:space="preserve">
+    <value>Form or message</value>
+  </data>
+  <data name="Dialog.UnsavedChanges" xml:space="preserve">
+    <value>There are unsaved changes. Do you want to discard them?</value>
+  </data>
+  <data name="Dialog.Discard" xml:space="preserve">
+    <value>Discard</value>
+  </data>
+  <data name="Dialog.KeepEditing" xml:space="preserve">
+    <value>Keep editing</value>
+  </data>
+  <data name="Common.Ok" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="Common.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
 </root>
