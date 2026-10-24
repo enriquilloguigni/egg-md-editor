@@ -33,19 +33,41 @@ public class I18nCatalogTests
     [Fact]
     public void MissingKeyInEnglish_FallsBackToSpanish()
     {
+        var resources = new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["es"] = new Dictionary<string, string> { ["OnlySpanish"] = "Hola" },
+            ["en"] = new Dictionary<string, string> { ["Other"] = "Hello" },
+        };
+        var catalog = new I18nCatalog(resources, "en", "es");
+
+        // ERR-004: una clave ausente en el idioma activo se resuelve con el
+        // fallback español.
+        Assert.Equal("Hola", catalog.Get("OnlySpanish"));
+    }
+
+    [Fact]
+    public void EmbeddedCatalog_HasNoMissingKeysInEnglish()
+    {
         var catalog = new I18nCatalog();
-        catalog.TrySetLanguage("en");
-        // Common.Ok only in Spanish
-        Assert.Equal("Aceptar", catalog.Get("Common.Ok"));
+        Assert.True(catalog.TrySetLanguage("en"));
+
+        // DS-001: 0 claves i18n sin resolver en el idioma activo.
+        Assert.Empty(catalog.GetUnresolvedKeys());
     }
 
     [Fact]
     public void UnresolvedKeys_ContainsMissingEnglishKeys()
     {
-        var catalog = new I18nCatalog();
+        var resources = new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["es"] = new Dictionary<string, string> { ["K"] = "Hola", ["OnlySpanish"] = "Solo" },
+            ["en"] = new Dictionary<string, string> { ["K"] = "Hello" },
+        };
+        var catalog = new I18nCatalog(resources, "es", "es");
         catalog.TrySetLanguage("en");
+
         var unresolved = catalog.GetUnresolvedKeys();
-        Assert.Contains("Common.Ok", unresolved);
+        Assert.Contains("OnlySpanish", unresolved);
     }
 
     [Fact]
@@ -147,9 +169,16 @@ public class I18nCatalogTests
         var catalog = new I18nCatalog();
         Assert.True(catalog.TryGet("Menu.File", "en", out var en));
         Assert.Equal("File", en);
-        // missing in en falls back to es
-        Assert.True(catalog.TryGet("Common.Ok", "en", out var ok));
-        Assert.Equal("Aceptar", ok);
+
+        // missing in en falls back to es even when the active language differs
+        var resources = new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["es"] = new Dictionary<string, string> { ["OnlySpanish"] = "Hola" },
+            ["en"] = new Dictionary<string, string> { ["Other"] = "Hello" },
+        };
+        var fallback = new I18nCatalog(resources, "es", "es");
+        Assert.True(fallback.TryGet("OnlySpanish", "en", out var onlySpanish));
+        Assert.Equal("Hola", onlySpanish);
     }
 
     [Fact]
