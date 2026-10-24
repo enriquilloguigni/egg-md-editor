@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:app="using:EggMdEditor.App"
+        xmlns:local="using:EggMdEditor.App"
         x:Class="EggMdEditor.App.MainWindow"
         x:DataType="app:MainWindowViewModel"
         Title="Egg MD Editor"
@@ -30,7 +31,9 @@
        menú (TR-004/TR-005, COM-006) y el aviso flotante por control
        (TR-006/TR-007, COM-004); los manejadores solo actualizan el estado de
        sesión, sin acciones de dominio. -->
-  <DockPanel>
+  <Grid>
+    <DockPanel x:Name="MainContent"
+               IsEnabled="{Binding !Dialog.IsOpen}">
 
     <Menu x:Name="MainMenu" DockPanel.Dock="Top">
       <MenuItem x:Name="FileMenu"
@@ -88,7 +91,27 @@
                 Header="{Binding HelpMenuHeader}"
                 Tag="Menu.Help"
                 Click="OnMenuEntryClick"
-                SubmenuOpened="OnMenuSubmenuOpened" />
+                SubmenuOpened="OnMenuSubmenuOpened">
+        <!-- SC-003 (T-014, FR-010): superficie de ayuda navegable. El
+             contenido completo (guía y atribuciones) lo conectará F-010;
+             aquí la ventana ya es visible en el idioma activo. -->
+        <MenuItem x:Name="HelpGuideItem"
+                  Header="{Binding HelpGuideHeader}"
+                  Tag="Help.Guide"
+                  Click="OnHelpEntryClick"
+                  AutomationProperties.AutomationId="Help.Guide" />
+        <MenuItem x:Name="HelpShortcutsItem"
+                  Header="{Binding HelpShortcutsHeader}"
+                  Tag="Help.Shortcuts"
+                  Click="OnHelpEntryClick"
+                  AutomationProperties.AutomationId="Help.Shortcuts" />
+        <Separator />
+        <MenuItem x:Name="HelpAboutItem"
+                  Header="{Binding HelpAboutHeader}"
+                  Tag="Help.About"
+                  Click="OnHelpEntryClick"
+                  AutomationProperties.AutomationId="Help.About" />
+      </MenuItem>
     </Menu>
 
     <!-- Barra de formato (ENT-005): un icono (VR-001), un aviso flotante
@@ -124,6 +147,13 @@
     <!-- Área de documento vacía en F-001 (BR-F001-008). -->
     <Border x:Name="DocumentArea" />
 
-  </DockPanel>
+    </DockPanel>
+
+    <!-- SC-002 (T-014): superficie modal genérica sobre SC-001. Se enlaza al
+         estado del diálogo; en F-001 permanece cerrada y ningún diálogo
+         concreto está conectado (screens.md, SC-002). -->
+    <local:DialogSurface x:Name="DialogSurface"
+                         DataContext="{Binding Dialog}" />
+  </Grid>
 
 </Window>
