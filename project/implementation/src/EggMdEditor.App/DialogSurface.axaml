@@ -1,0 +1,126 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:app="using:EggMdEditor.App"
+             x:Class="EggMdEditor.App.DialogSurface"
+             x:DataType="app:DialogViewModel"
+             IsVisible="{Binding IsOpen, FallbackValue=False}"
+             Background="Transparent">
+
+  <!-- SC-002 (T-014): superficie modal genérica sobre SC-001 (screens.md).
+       Overlay con elevación (TK-006), título y mensaje en el idioma activo,
+       formulario opcional, validación inline y acciones primaria/secundaria.
+       El foco inicial cae en la acción primaria y la tabulación circula
+       dentro del cuadro (NFR-009). Sin diálogos concretos conectados en
+       F-001. -->
+  <Grid>
+    <Border x:Name="DialogOverlay"
+            Background="{DynamicResource DialogOverlayBrush}" />
+
+    <Border x:Name="DialogCard"
+            Width="640"
+            MaxHeight="560"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Padding="24"
+            CornerRadius="8"
+            BorderThickness="1"
+            Background="{DynamicResource DialogSurfaceBrush}"
+            BorderBrush="{DynamicResource DialogBorderBrush}"
+            BoxShadow="0 8 24 0 #66000000"
+            KeyboardNavigation.TabNavigation="Cycle"
+            AutomationProperties.AutomationId="SC-002"
+            AutomationProperties.Name="{Binding Title}"
+            AutomationProperties.HelpText="{Binding Message}">
+      <DockPanel>
+
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8"
+                    Margin="0,24,0,0">
+          <Button x:Name="PrimaryButton"
+                  Classes="accent"
+                  Content="{Binding PrimaryText}"
+                  Command="{Binding PrimaryCommand}"
+                  TabIndex="0"
+                  IsDefault="True"
+                  AutomationProperties.AutomationId="Dialog.Primary" />
+          <Button x:Name="SecondaryButton"
+                  Content="{Binding SecondaryText}"
+                  Command="{Binding SecondaryCommand}"
+                  TabIndex="1"
+                  AutomationProperties.AutomationId="Dialog.Secondary" />
+        </StackPanel>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <TextBlock x:Name="DialogTitle"
+                     Text="{Binding Title}"
+                     FontSize="20"
+                     FontWeight="SemiBold"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource DialogTextBrush}" />
+
+          <TextBlock x:Name="DialogMessage"
+                     Text="{Binding Message}"
+                     Margin="0,12,0,0"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource DialogTextBrush}" />
+
+          <TextBlock x:Name="DialogBelowMessage"
+                     Text="{Binding BelowMessage}"
+                     IsVisible="{Binding HasBelowMessage}"
+                     Margin="0,8,0,0"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource DialogMutedBrush}" />
+
+          <ContentControl x:Name="DialogForm"
+                          Content="{Binding FormContent}"
+                          Margin="0,16,0,0" />
+
+          <!-- Validación inline (TK-005): el error se asocia al formulario. -->
+          <TextBlock x:Name="DialogValidation"
+                     Text="{Binding ValidationMessage}"
+                     IsVisible="{Binding HasValidationMessage}"
+                     Margin="0,8,0,0"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource DialogErrorBrush}"
+                     AutomationProperties.AutomationId="Dialog.Validation"
+                     AutomationProperties.LiveSetting="Assertive" />
+
+          <!-- Confirmación al cerrar con cambios sin guardar (SC-002). -->
+          <Border x:Name="UnsavedChangesPanel"
+                  IsVisible="{Binding CloseConfirmationVisible}"
+                  Margin="0,16,0,0"
+                  Padding="16"
+                  CornerRadius="4"
+                  BorderThickness="1"
+                  BorderBrush="{DynamicResource DialogBorderBrush}"
+                  Background="{DynamicResource DialogConfirmationBrush}">
+            <StackPanel>
+              <TextBlock Text="{Binding UnsavedChangesMessage}"
+                         TextWrapping="Wrap"
+                         Foreground="{DynamicResource DialogTextBrush}" />
+              <StackPanel Orientation="Horizontal"
+                          HorizontalAlignment="Right"
+                          Spacing="8"
+                          Margin="0,12,0,0">
+                <Button x:Name="KeepEditingButton"
+                        Content="{Binding KeepEditingText}"
+                        Command="{Binding KeepEditingCommand}"
+                        AutomationProperties.AutomationId="Dialog.KeepEditing" />
+                <Button x:Name="DiscardButton"
+                        Classes="accent"
+                        Content="{Binding DiscardText}"
+                        Command="{Binding DiscardCommand}"
+                        AutomationProperties.AutomationId="Dialog.Discard" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+  </Grid>
+</UserControl>
