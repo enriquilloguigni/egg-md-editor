@@ -66,4 +66,88 @@
   <data name="barra.indice" xml:space="preserve">
     <value>Índice</value>
   </data>
+  <data name="Menu.Help.Guide" xml:space="preserve">
+    <value>Guía de Markdown</value>
+  </data>
+  <data name="Menu.Help.Shortcuts" xml:space="preserve">
+    <value>Atajos de teclado</value>
+  </data>
+  <data name="Menu.Help.About" xml:space="preserve">
+    <value>Acerca de Egg MD Editor</value>
+  </data>
+  <data name="Help.WindowTitle" xml:space="preserve">
+    <value>Ayuda — Egg MD Editor</value>
+  </data>
+  <data name="Help.Sections" xml:space="preserve">
+    <value>Secciones</value>
+  </data>
+  <data name="Help.Section.About" xml:space="preserve">
+    <value>Acerca de</value>
+  </data>
+  <data name="Help.Section.Guide" xml:space="preserve">
+    <value>Guía de Markdown</value>
+  </data>
+  <data name="Help.Section.Shortcuts" xml:space="preserve">
+    <value>Atajos de teclado</value>
+  </data>
+  <data name="Help.CopyText" xml:space="preserve">
+    <value>Copiar texto</value>
+  </data>
+  <data name="Help.Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Help.About.Name" xml:space="preserve">
+    <value>Egg MD Editor</value>
+  </data>
+  <data name="Help.About.VersionLabel" xml:space="preserve">
+    <value>Versión</value>
+  </data>
+  <data name="Help.About.AttributionsTitle" xml:space="preserve">
+    <value>Atribuciones</value>
+  </data>
+  <data name="Help.About.Attributions" xml:space="preserve">
+    <value>Avalonia UI — licencia MIT&#10;.NET — licencia MIT&#10;Microsoft.Extensions.Logging — licencia MIT&#10;Fuente Inter — SIL Open Font License 1.1&#10;&#10;Las licencias completas se distribuyen con el código fuente de la aplicación.</value>
+  </data>
+  <data name="Help.About.LicenseTitle" xml:space="preserve">
+    <value>Licencia</value>
+  </data>
+  <data name="Help.About.License" xml:space="preserve">
+    <value>Egg MD Editor se distribuye bajo la licencia MIT. Consulta el archivo LICENSE del repositorio para el texto completo.</value>
+  </data>
+  <data name="Help.Guide.Content" xml:space="preserve">
+    <value>Guía rápida de Markdown&#10;&#10;# Encabezado 1&#10;## Encabezado 2&#10;**negrita** · *cursiva* · ~~tachado~~&#10;- lista de viñetas&#10;1. lista numerada&#10;&gt; cita&#10;`código en línea`&#10;&#10;| Columna | Columna |&#10;| --- | --- |&#10;| dato | dato |&#10;&#10;Nota al pie: [^1]&#10;&#10;Fórmula: $x^2$&#10;&#10;Enlace: [texto](https://ejemplo.com)&#10;Imagen: ![descripción](imagen.png)</value>
+  </data>
+  <data name="Help.Shortcuts.Intro" xml:space="preserve">
+    <value>Atajos disponibles en esta versión:</value>
+  </data>
+  <data name="Help.Shortcuts.OpenMenu" xml:space="preserve">
+    <value>Abrir el menú {0}</value>
+  </data>
+  <data name="Help.Shortcuts.Escape" xml:space="preserve">
+    <value>Cerrar menús y diálogos</value>
+  </data>
+  <data name="Help.Shortcuts.Close" xml:space="preserve">
+    <value>Cerrar la ventana</value>
+  </data>
+  <data name="Help.Shortcuts.Pending" xml:space="preserve">
+    <value>El resto de atajos se activará cuando sus acciones estén disponibles.</value>
+  </data>
+  <data name="Dialog.Title" xml:space="preserve">
+    <value>Diálogo</value>
+  </data>
+  <data name="Dialog.Message" xml:space="preserve">
+    <value>Formulario o mensaje</value>
+  </data>
+  <data name="Dialog.UnsavedChanges" xml:space="preserve">
+    <value>Hay cambios sin guardar. ¿Quieres descartarlos?</value>
+  </data>
+  <data name="Dialog.Discard" xml:space="preserve">
+    <value>Descartar</value>
+  </data>
+  <data name="Dialog.KeepEditing" xml:space="preserve">
+    <value>Seguir editando</value>
+  </data>
+  <data name="Common.Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
 </root>
