@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -14,6 +15,7 @@ public partial class MainWindow : Window
     private readonly MainWindowViewModel _viewModel;
     private readonly ShortcutHandler _shortcutHandler;
     private MenuItem? _lastOpenMenuItem;
+    private HelpWindow? _helpWindow;
 
     /// <summary>
     /// Ciclo de vida técnico del proceso (LOG-003, ERR-005). La composición de
@@ -45,6 +47,10 @@ public partial class MainWindow : Window
         // OP-005/OP-006: el atajo de cierre disponible en F-001 solicita el
         // cierre de la ventana; el ViewModel no conoce la plataforma.
         _viewModel.CloseRequested += OnCloseRequested;
+
+        // SC-003: la superficie de ayuda abierta sigue la conmutación de
+        // idioma de SC-001 en caliente (BR-013, COM-002).
+        _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
         // OP-003/TR-004/TR-005 (COM-006): el cierre del menú se refleja en
         // cuanto la entrada deja de estar desplegada, tanto si lo cierra el
@@ -87,6 +93,95 @@ public partial class MainWindow : Window
         {
             _lastOpenMenuItem = item;
             item.Focus();
+        }
+    }
+
+    /// <summary>
+    /// SC-003 (T-014): ventana de ayuda abierta, o <c>null</c> si no hay
+    /// ninguna. La superficie es única por SC-001 y se reutiliza al navegar
+    /// entre secciones.
+    /// </summary>
+    public HelpWindow? HelpWindow => _helpWindow;
+
+    /// <summary>
+    /// Abre SC-003 en la sección indicada. Si ya está abierta, la activa y
+    /// navega a la sección sin crear otra ventana. La superficie se muestra
+    /// no modal para que la conmutación de idioma de SC-001 la relabelice en
+    /// caliente (BR-F001-005).
+    /// </summary>
+    public HelpWindow OpenHelp(HelpSection section)
+    {
+        if (_helpWindow is { } existing)
+        {
+            existing.SelectSection(section);
+            if (existing.WindowState == WindowState.Minimized)
+            {
+                existing.WindowState = WindowState.Normal;
+            }
+
+            existing.Activate();
+            return existing;
+        }
+
+        var viewModel = new HelpWindowViewModel(
+            _viewModel.Session,
+            _viewModel.Catalog,
+            section,
+            () => _viewModel.AvailableShortcuts);
+        var window = new HelpWindow(viewModel);
+        window.Closed += OnHelpWindowClosed;
+        _helpWindow = window;
+        window.Show(this);
+        return window;
+    }
+
+    /// <summary>
+    /// Entrada del menú Ayuda (SC-003, FR-010): abre la superficie en la
+    /// sección correspondiente. El contenido estático no altera el documento
+    /// ni el resto del estado de la sesión (ADR-001).
+    /// </summary>
+    private void OnHelpEntryClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem item)
+        {
+            return;
+        }
+
+        var section = item.Tag switch
+        {
+            "Help.Guide" => HelpSection.Guide,
+            "Help.Shortcuts" => HelpSection.Shortcuts,
+            _ => HelpSection.About,
+        };
+
+        _viewModel.CloseMenu();
+        OpenHelp(section);
+        e.Handled = true;
+    }
+
+    private void OnHelpWindowClosed(object? sender, EventArgs e)
+    {
+        if (sender is not HelpWindow window)
+        {
+            return;
+        }
+
+        window.Closed -= OnHelpWindowClosed;
+        if (ReferenceEquals(_helpWindow, window))
+        {
+            _helpWindow = null;
+        }
+    }
+
+    /// <summary>
+    /// SC-003/BR-013: al conmutar el idioma activo se relabeliza también la
+    /// superficie de ayuda si está abierta, sin recrearla.
+    /// </summary>
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainWindowViewModel.CurrentLanguage))
+        {
+            _helpWindow?.ViewModel.RefreshLanguage();
         }
     }
 
@@ -179,6 +274,15 @@ public partial class MainWindow : Window
     {
         if (e.Key == Key.Escape && e.KeyModifiers == KeyModifiers.None)
         {
+            // SC-002: con la superficie modal abierta, Esc la cierra o
+            // cancela la confirmación de descarte antes que el menú.
+            if (_viewModel.Dialog.IsOpen)
+            {
+                _viewModel.Dialog.RequestClose();
+                e.Handled = true;
+                return;
+            }
+
             if (!_viewModel.IsMenuOpen || !_viewModel.DispatchShortcut("Esc"))
             {
                 return;
@@ -231,6 +335,17 @@ public partial class MainWindow : Window
         }
         finally
         {
+            _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+
+            try
+            {
+                _helpWindow?.Close();
+            }
+            catch (Exception)
+            {
+                // La ventana auxiliar no impide la finalización de SC-001.
+            }
+
             base.OnClosed(e);
         }
     }
