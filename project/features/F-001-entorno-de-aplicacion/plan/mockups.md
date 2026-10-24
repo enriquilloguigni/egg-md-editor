@@ -3,6 +3,7 @@
 Superficie nativa (Avalonia): wireframes SVG. Tokens TK-xxx por nombre.
 
 ## SC-001 — Ventana principal (ventana-principal)
+Superficie: ventana-principal
 Layout: barra de título, menú de 6 entradas, barra de formato, tres columnas (WYSIWYG, Markdown, índice), área de documento vacía; aviso flotante junto al control apuntado. Tokens: TK-001, TK-002, TK-003, TK-004, TK-005, TK-007, TK-008.
 
 ```svg
@@ -28,6 +29,7 @@ Layout: barra de título, menú de 6 entradas, barra de formato, tres columnas (
 ```
 
 ## SC-002 — Diálogo (diálogo)
+Superficie: diálogo
 Overlay modal con elevación. Layout: fondo atenuado, cuadro centrado con título, área de formulario, acciones primaria/secundaria, validación inline. Tokens: TK-001, TK-002, TK-004, TK-005, TK-006.
 
 ```svg
@@ -46,6 +48,7 @@ Overlay modal con elevación. Layout: fondo atenuado, cuadro centrado con títul
 ```
 
 ## SC-003 — Ayuda (ayuda)
+Superficie: ayuda
 Ventana con barra de título, navegación por secciones y área de texto seleccionable. Tokens: TK-001, TK-002, TK-004, TK-007.
 
 ```svg
