@@ -42,6 +42,13 @@
         "T-012": "done",
         "T-013": "done",
         "T-014": "done"
+      },
+      "verification": {
+        "run": "v1",
+        "execution": "E-001",
+        "spec": "v1",
+        "plan": "v1",
+        "commit": "0f12830668871f3e79cb9094b463225ea669394c"
       }
     }
   },
@@ -124,7 +131,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-24T00:28:52.862Z",
+  "updated_at": "2026-10-24T00:54:56.075Z",
   "owner": "EG",
   "sources": [
     {
