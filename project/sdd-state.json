@@ -9,7 +9,7 @@
   },
   "features": {
     "F-001-entorno-de-aplicacion": {
-      "status": "implementing",
+      "status": "verifying",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -40,7 +40,8 @@
         "T-010": "done",
         "T-011": "done",
         "T-012": "done",
-        "T-013": "done"
+        "T-013": "done",
+        "T-014": "done"
       }
     }
   },
@@ -123,7 +124,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-23T23:56:29.761Z",
+  "updated_at": "2026-10-24T00:28:52.862Z",
   "owner": "EG",
   "sources": [
     {
