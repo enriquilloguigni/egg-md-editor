@@ -214,13 +214,6 @@ public class CommandDispatcher
         return true;
     }
 
-    public void ClearShortcuts()
-    {
-        _shortcuts.Clear();
-        _shortcutMap.Clear();
-        ShortcutsRegistry.Clear();
-    }
-
     // ---- Dispatch (OP-005, COM-001, BR-F001-003) ----
     /// <summary>
     /// Ejecuta un comando registrado (OP-005). Solo los comandos de acciones
@@ -290,19 +283,6 @@ public class CommandDispatcher
         return ExecuteAvailableCommand(command, string.IsNullOrWhiteSpace(argument) ? null : argument);
     }
 
-    public CommandResult DispatchCommand(string? command)
-    {
-        return ToCommandResult(command, Dispatch(command));
-    }
-
-    public CommandResult DispatchCommand(SharedCommand? command)
-    {
-        return ToCommandResult(command, Dispatch(command));
-    }
-
-    public DispatchResult Execute(string? command) => ToDispatchResult(DispatchCommand(command));
-    public DispatchResult Execute(SharedCommand? command) => ToDispatchResult(DispatchCommand(command));
-
     /// <summary>
     /// Punto único de ejecución de las acciones disponibles en F-001
     /// (COM-001). Las Features posteriores sustituyen o amplían este
@@ -317,8 +297,6 @@ public class CommandDispatcher
                 // sesión solo refleja {Cerrado, Desplegado}.
                 return Session?.TryOpenMenu() ?? false;
             case "closemenu":
-            case "escape":
-            case "esc":
                 // TR-005: solo hay efecto con el menú desplegado.
                 return Session?.TryCloseMenu() ?? false;
             case "togglemenu":
@@ -330,9 +308,6 @@ public class CommandDispatcher
                 Session.ToggleMenu();
                 return true;
             case "close":
-            case "closewindow":
-            case "exit":
-            case "quit":
                 if (Session is null)
                 {
                     return false;
@@ -341,7 +316,6 @@ public class CommandDispatcher
                 Session.CloseWindow();
                 return true;
             case "changelanguage":
-            case "switchlanguage":
                 return !string.IsNullOrWhiteSpace(argument) && (Session?.TrySetLanguage(argument) ?? false);
             case "changetheme":
                 return !string.IsNullOrWhiteSpace(argument) && (Session?.TrySetTheme(argument) ?? false);
@@ -357,7 +331,6 @@ public class CommandDispatcher
                 Session?.ShowNotice();
                 return Session is not null;
             case "hidenotice":
-            case "hidetooltip":
                 Session?.HideNotice();
                 return Session is not null;
             case "togglenotice":
@@ -408,40 +381,6 @@ public class CommandDispatcher
             .Replace("_", string.Empty, StringComparison.Ordinal)
             .ToLowerInvariant();
     }
-
-    private static CommandResult ToCommandResult(string? command, bool handled)
-    {
-        if (string.IsNullOrWhiteSpace(command))
-        {
-            return CommandResult.NoEffect;
-        }
-
-        if (!Shortcut.IsAvailableCommandPublic(command))
-        {
-            return CommandResult.NotAvailable;
-        }
-
-        return handled ? CommandResult.Handled : CommandResult.NoEffect;
-    }
-
-    private static CommandResult ToCommandResult(SharedCommand? command, bool handled)
-    {
-        if (command is null)
-        {
-            return CommandResult.NoEffect;
-        }
-
-        return ToCommandResult(ResolveCommandName(command), handled);
-    }
-
-    private static DispatchResult ToDispatchResult(CommandResult result) => result switch
-    {
-        CommandResult.Handled => DispatchResult.Handled,
-        CommandResult.NotAvailable => DispatchResult.NotAvailable,
-        CommandResult.Ignored => DispatchResult.Ignored,
-        CommandResult.NotFound => DispatchResult.NotFound,
-        _ => DispatchResult.NoEffect,
-    };
 
     private static string FirstNonEmpty(params string?[] values)
     {
