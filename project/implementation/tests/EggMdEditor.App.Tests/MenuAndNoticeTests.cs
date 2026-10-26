@@ -1,6 +1,7 @@
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
@@ -147,7 +148,7 @@ public class MenuAndNoticeTests
     }
 
     [AvaloniaFact]
-    public void Window_TracksSubmenuOpeningAndClosingState()
+    public void Window_TracksMenuLabelOpeningAndClosingState()
     {
         var viewModel = new MainWindowViewModel(new I18nCatalog());
         var window = new MainWindow(viewModel);
@@ -157,23 +158,31 @@ public class MenuAndNoticeTests
             window.Show();
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            var toolsMenu = window.FindControl<MenuItem>("ToolsMenu");
-            Assert.NotNull(toolsMenu);
+            var toolsButton = window.FindControl<ToggleButton>("ToolsMenuButton");
+            var dropdown = window.FindControl<Border>("MenuDropdown");
+            Assert.NotNull(toolsButton);
+            Assert.NotNull(dropdown);
 
-            // TR-004: la entrada con submenú se despliega y el estado pasa a
-            // ST-006 sin ejecutar la acción de ninguna opción.
-            toolsMenu.IsSubMenuOpen = true;
+            // TR-004: activar el rótulo lo selecciona, despliega su superficie
+            // y pasa a ST-006 sin ejecutar la acción de ninguna opción.
+            toolsButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             Assert.True(viewModel.IsMenuOpen);
             Assert.Equal("Menu.Tools", viewModel.OpenMenuKey);
+            Assert.Equal(5, viewModel.SelectedMenuIndex);
+            Assert.True(toolsButton.IsChecked);
+            Assert.True(dropdown.IsVisible);
 
-            // TR-005: al cerrarse el submenú el estado vuelve a ST-005.
-            toolsMenu.IsSubMenuOpen = false;
+            // TR-005: al cerrar el rótulo el estado vuelve a ST-005 y no
+            // queda ninguna superficie de menú visible.
+            toolsButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             Assert.False(viewModel.IsMenuOpen);
             Assert.Null(viewModel.OpenMenuKey);
+            Assert.True(toolsButton.IsChecked);
+            Assert.False(dropdown.IsVisible);
         }
         finally
         {
@@ -182,7 +191,7 @@ public class MenuAndNoticeTests
     }
 
     [AvaloniaFact]
-    public void Window_MenuEntryKeepsStateAndFocusUntilEscape()
+    public void Window_MenuLabelKeepsStateAndFocusUntilEscape()
     {
         var viewModel = new MainWindowViewModel(new I18nCatalog());
         var window = new MainWindow(viewModel);
@@ -192,23 +201,24 @@ public class MenuAndNoticeTests
             window.Show();
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            var fileMenu = window.FindControl<MenuItem>("FileMenu");
-            Assert.NotNull(fileMenu);
+            var fileButton = window.FindControl<ToggleButton>("FileMenuButton");
+            Assert.NotNull(fileButton);
 
-            fileMenu.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+            fileButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             Assert.True(viewModel.IsMenuOpen);
             Assert.Equal("Menu.File", viewModel.OpenMenuKey);
-            Assert.True(fileMenu.IsFocused);
+            Assert.Equal(1, viewModel.SelectedMenuIndex);
+            Assert.True(fileButton.IsFocused);
 
-            // TR-005: Esc cierra el menú y devuelve el foco a la entrada.
+            // TR-005: Esc cierra el menú y devuelve el foco al rótulo.
             window.KeyPressQwerty(PhysicalKey.Escape, RawInputModifiers.None);
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             Assert.False(viewModel.IsMenuOpen);
             Assert.Null(viewModel.OpenMenuKey);
-            Assert.True(fileMenu.IsFocused);
+            Assert.True(fileButton.IsFocused);
         }
         finally
         {
@@ -227,12 +237,12 @@ public class MenuAndNoticeTests
             window.Show();
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            var fileMenu = window.FindControl<MenuItem>("FileMenu");
+            var fileButton = window.FindControl<ToggleButton>("FileMenuButton");
             var documentArea = window.FindControl<Border>("DocumentArea");
-            Assert.NotNull(fileMenu);
+            Assert.NotNull(fileButton);
             Assert.NotNull(documentArea);
 
-            fileMenu.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+            fileButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
             Assert.True(viewModel.IsMenuOpen);
 
@@ -243,6 +253,7 @@ public class MenuAndNoticeTests
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             Assert.False(viewModel.IsMenuOpen);
+            Assert.True(fileButton.IsChecked);
         }
         finally
         {
