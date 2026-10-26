@@ -1,0 +1,13 @@
+{
+  "feature": "F-001-entorno-de-aplicacion",
+  "execution": "E-004",
+  "sc": "SC-001",
+  "scenario": "C",
+  "surface": "ventana-principal",
+  "command": "dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- ventana-principal SC-001 C project/features/F-001-entorno-de-aplicacion/verification/executions/E-004/evidence/visual-capture/SC-001-C.txt",
+  "exit_code": 0,
+  "capture_file": "project/features/F-001-entorno-de-aplicacion/verification/executions/E-004/evidence/visual-capture/SC-001-C.png",
+  "capture_sha256": "5e7a0aee48e70c7760fb605fea10fd38275315f073ad89f94895bf8eb9226b2b",
+  "duration_ms": 5337,
+  "captured_at": "2026-10-26 21:34:25"
+}
