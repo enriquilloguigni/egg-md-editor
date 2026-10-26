@@ -18,6 +18,12 @@
   <data name="Menu.Help" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="Menu.Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Menu.Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
   <data name="Menu.Tools.Language" xml:space="preserve">
     <value>Interface language</value>
   </data>
