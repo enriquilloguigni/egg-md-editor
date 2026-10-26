@@ -9,6 +9,34 @@
         Height="720">
 
   <Window.Styles>
+    <!-- TK-004/TK-005: los 6 rótulos de ENT-004 son botones visibles; el
+         seleccionado se marca con el acento del tema (ST-011). -->
+    <Style Selector="ToggleButton.menu-label">
+      <Setter Property="MinWidth" Value="64" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="12,4" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="ToggleButton.menu-label:checked">
+      <Setter Property="Background" Value="{DynamicResource MenuSelectionBackgroundBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource MenuSelectionForegroundBrush}" />
+    </Style>
+    <Style Selector="Button.menu-navigation">
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="12,4" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.menu-entry">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Padding" Value="12,6" />
+    </Style>
+    <Style Selector="RadioButton.menu-option">
+      <Setter Property="Padding" Value="12,4" />
+    </Style>
+
     <!-- TK-004: tamaño y espaciado de los controles de la barra de formato. -->
     <Style Selector="Button.format-control">
       <Setter Property="MinWidth" Value="34" />
@@ -24,136 +52,234 @@
     </Style>
   </Window.Styles>
 
-  <!-- SC-001 (T-006, T-007, T-010): ventana única con menú principal
-       persistente de los 6 menús de FR-011 y barra de formato con los
-       controles de FR-012 en orden de escritura (ENT-005), visibles y sin
-       acciones conectadas (ADR-001). T-010 declara la apertura/cierre del
-       menú (TR-004/TR-005, COM-006) y el aviso flotante por control
-       (TR-006/TR-007, COM-004); los manejadores solo actualizan el estado de
-       sesión, sin acciones de dominio. -->
+  <!-- SC-001 (T-006, T-007, T-010, T-015): ventana única con los 6 rótulos de
+       FR-011 como botones seleccionables y 2 botones de navegación secuencial,
+       la barra de formato con los controles de FR-012 en orden de escritura
+       (ENT-005) y el área de documento vacía. Los rótulos sin acciones
+       conectadas mantienen su parte visual (ADR-001, ADR-002). -->
   <Grid>
-    <DockPanel x:Name="MainContent"
-               IsEnabled="{Binding !Dialog.IsOpen}">
+    <Grid x:Name="MainContent"
+          RowDefinitions="Auto,Auto,*"
+          IsEnabled="{Binding !Dialog.IsOpen}">
 
-    <Menu x:Name="MainMenu" DockPanel.Dock="Top">
-      <MenuItem x:Name="FileMenu"
-                Header="{Binding FileMenuHeader}"
-                Tag="Menu.File"
-                Click="OnMenuEntryClick"
-                SubmenuOpened="OnMenuSubmenuOpened" />
-      <MenuItem x:Name="EditMenu"
-                Header="{Binding EditMenuHeader}"
-                Tag="Menu.Edit"
-                Click="OnMenuEntryClick"
-                SubmenuOpened="OnMenuSubmenuOpened" />
-      <MenuItem x:Name="ViewMenu"
-                Header="{Binding ViewMenuHeader}"
-                Tag="Menu.View"
-                Click="OnMenuEntryClick"
-                SubmenuOpened="OnMenuSubmenuOpened" />
-      <MenuItem x:Name="FormatMenu"
-                Header="{Binding FormatMenuHeader}"
-                Tag="Menu.Format"
-                Click="OnMenuEntryClick"
-                SubmenuOpened="OnMenuSubmenuOpened" />
-      <MenuItem x:Name="ToolsMenu"
-                Header="{Binding ToolsMenuHeader}"
-                Tag="Menu.Tools"
-                Click="OnMenuEntryClick"
-                SubmenuOpened="OnMenuSubmenuOpened">
-        <!-- OP-001 (T-008): selección de idioma mutuamente excluyente en
-             Herramientas → Idioma de la interfaz; relabeliza en caliente sin
-             reinicio y conserva ventana, menú y aviso (TR-002/TR-003). -->
-        <MenuItem x:Name="LanguageMenu"
-                  Header="{Binding LanguageMenuHeader}"
-                  Tag="Menu.Tools.Language">
-          <MenuItem x:Name="SpanishLanguageItem"
-                    Header="{Binding SpanishOptionHeader}"
-                    Tag="Language.es"
-                    ToggleType="Radio"
-                    GroupName="InterfaceLanguage"
-                    IsChecked="{Binding IsSpanish, Mode=OneWay}"
-                    Command="{Binding ChangeLanguageCommand}"
-                    CommandParameter="es"
-                    AutomationProperties.AutomationId="Language.es" />
-          <MenuItem x:Name="EnglishLanguageItem"
-                    Header="{Binding EnglishOptionHeader}"
-                    Tag="Language.en"
-                    ToggleType="Radio"
-                    GroupName="InterfaceLanguage"
-                    IsChecked="{Binding IsEnglish, Mode=OneWay}"
-                    Command="{Binding ChangeLanguageCommand}"
-                    CommandParameter="en"
-                    AutomationProperties.AutomationId="Language.en" />
-        </MenuItem>
-      </MenuItem>
-      <MenuItem x:Name="HelpMenu"
-                Header="{Binding HelpMenuHeader}"
-                Tag="Menu.Help"
-                Click="OnMenuEntryClick"
-                SubmenuOpened="OnMenuSubmenuOpened">
-        <!-- SC-003 (T-014, FR-010): superficie de ayuda navegable. El
-             contenido completo (guía y atribuciones) lo conectará F-010;
-             aquí la ventana ya es visible en el idioma activo. -->
-        <MenuItem x:Name="HelpGuideItem"
-                  Header="{Binding HelpGuideHeader}"
-                  Tag="Help.Guide"
-                  Click="OnHelpEntryClick"
-                  AutomationProperties.AutomationId="Help.Guide" />
-        <MenuItem x:Name="HelpShortcutsItem"
-                  Header="{Binding HelpShortcutsHeader}"
-                  Tag="Help.Shortcuts"
-                  Click="OnHelpEntryClick"
-                  AutomationProperties.AutomationId="Help.Shortcuts" />
-        <Separator />
-        <MenuItem x:Name="HelpAboutItem"
-                  Header="{Binding HelpAboutHeader}"
-                  Tag="Help.About"
-                  Click="OnHelpEntryClick"
-                  AutomationProperties.AutomationId="Help.About" />
-      </MenuItem>
-    </Menu>
+      <!-- ENT-004/OP-007: rótulos como botones y navegación cíclica. El
+           seleccionado se expone además como ToggleButton marcado (NFR-009). -->
+      <Border x:Name="MainMenuBar"
+              Grid.Row="0"
+              Padding="8,6"
+              BorderThickness="0,0,0,1"
+              BorderBrush="{DynamicResource MenuPanelBorderBrush}"
+              Background="{DynamicResource MenuPanelBackgroundBrush}">
+        <Grid ColumnDefinitions="Auto,*">
+          <StackPanel x:Name="MenuLabels"
+                      Grid.Column="0"
+                      Orientation="Horizontal"
+                      Spacing="4">
+            <ToggleButton x:Name="FileMenuButton"
+                          Classes="menu-label"
+                          Content="{Binding FileMenuHeader}"
+                          Tag="Menu.File"
+                          Click="OnMenuLabelClick"
+                          IsChecked="{Binding IsFileMenuSelected, Mode=OneWay}"
+                          AutomationProperties.AutomationId="Menu.File"
+                          AutomationProperties.Name="{Binding FileMenuHeader}" />
+            <ToggleButton x:Name="EditMenuButton"
+                          Classes="menu-label"
+                          Content="{Binding EditMenuHeader}"
+                          Tag="Menu.Edit"
+                          Click="OnMenuLabelClick"
+                          IsChecked="{Binding IsEditMenuSelected, Mode=OneWay}"
+                          AutomationProperties.AutomationId="Menu.Edit"
+                          AutomationProperties.Name="{Binding EditMenuHeader}" />
+            <ToggleButton x:Name="ViewMenuButton"
+                          Classes="menu-label"
+                          Content="{Binding ViewMenuHeader}"
+                          Tag="Menu.View"
+                          Click="OnMenuLabelClick"
+                          IsChecked="{Binding IsViewMenuSelected, Mode=OneWay}"
+                          AutomationProperties.AutomationId="Menu.View"
+                          AutomationProperties.Name="{Binding ViewMenuHeader}" />
+            <ToggleButton x:Name="FormatMenuButton"
+                          Classes="menu-label"
+                          Content="{Binding FormatMenuHeader}"
+                          Tag="Menu.Format"
+                          Click="OnMenuLabelClick"
+                          IsChecked="{Binding IsFormatMenuSelected, Mode=OneWay}"
+                          AutomationProperties.AutomationId="Menu.Format"
+                          AutomationProperties.Name="{Binding FormatMenuHeader}" />
+            <ToggleButton x:Name="ToolsMenuButton"
+                          Classes="menu-label"
+                          Content="{Binding ToolsMenuHeader}"
+                          Tag="Menu.Tools"
+                          Click="OnMenuLabelClick"
+                          IsChecked="{Binding IsToolsMenuSelected, Mode=OneWay}"
+                          AutomationProperties.AutomationId="Menu.Tools"
+                          AutomationProperties.Name="{Binding ToolsMenuHeader}" />
+            <ToggleButton x:Name="HelpMenuButton"
+                          Classes="menu-label"
+                          Content="{Binding HelpMenuHeader}"
+                          Tag="Menu.Help"
+                          Click="OnMenuLabelClick"
+                          IsChecked="{Binding IsHelpMenuSelected, Mode=OneWay}"
+                          AutomationProperties.AutomationId="Menu.Help"
+                          AutomationProperties.Name="{Binding HelpMenuHeader}" />
+          </StackPanel>
 
-    <!-- Barra de formato (ENT-005): un icono (VR-001), un aviso flotante
-         (VR-002) y un nombre accesible (NFR-009) por control, resueltos en
-         el idioma activo. Ningún control tiene comando: su parte visual no
-         está conectada a acciones en F-001 (ADR-001). -->
-    <Border x:Name="FormatBarContainer"
-            DockPanel.Dock="Top"
-            Padding="8,5">
-      <ItemsControl x:Name="FormatBar"
-                    ItemsSource="{Binding FormatBarControls}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <StackPanel Orientation="Horizontal" Spacing="2" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate x:DataType="app:FormatBarControlDefinition">
-            <Button Classes="format-control"
-                    Tag="{Binding Key}"
-                    AutomationProperties.AutomationId="{Binding Key}"
-                    AutomationProperties.Name="{Binding Name}"
-                    ToolTip.Tip="{Binding Name}"
-                    PointerEntered="OnFormatControlPointerEntered"
-                    PointerExited="OnFormatControlPointerExited">
-              <TextBlock Text="{Binding Glyph}" />
-            </Button>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-    </Border>
+          <StackPanel Grid.Column="1"
+                      Orientation="Horizontal"
+                      Spacing="4"
+                      Margin="16,0,0,0">
+            <Border Width="1"
+                    Height="24"
+                    Margin="0,4,8,4"
+                    Background="{DynamicResource MenuPanelBorderBrush}" />
+            <!-- OP-007/TR-011: «Anterior» disminuye el índice con salto
+                 cíclico Archivo → Ayuda. -->
+            <Button x:Name="PreviousMenuButton"
+                    Classes="menu-navigation"
+                    Content="{Binding PreviousMenuLabel}"
+                    Tag="Navigation.Previous"
+                    Click="OnMenuNavigationClick"
+                    Command="{Binding SelectPreviousMenuCommand}"
+                    AutomationProperties.AutomationId="Menu.Navigation.Previous"
+                    AutomationProperties.Name="{Binding PreviousMenuLabel}" />
+            <!-- OP-007/TR-010: «Siguiente» aumenta el índice con salto
+                 cíclico Ayuda → Archivo. -->
+            <Button x:Name="NextMenuButton"
+                    Classes="menu-navigation"
+                    Content="{Binding NextMenuLabel}"
+                    Tag="Navigation.Next"
+                    Click="OnMenuNavigationClick"
+                    Command="{Binding SelectNextMenuCommand}"
+                    AutomationProperties.AutomationId="Menu.Navigation.Next"
+                    AutomationProperties.Name="{Binding NextMenuLabel}" />
+          </StackPanel>
+        </Grid>
+      </Border>
 
-    <!-- Área de documento vacía en F-001 (BR-F001-008). -->
-    <Border x:Name="DocumentArea" />
+      <!-- Barra de formato (ENT-005): un icono (VR-001), un aviso flotante
+           (VR-002) y un nombre accesible (NFR-009) por control, resueltos en
+           el idioma activo. Ningún control tiene comando: su parte visual no
+           está conectada a acciones en F-001 (ADR-001). -->
+      <Border x:Name="FormatBarContainer"
+              Grid.Row="1"
+              Padding="8,5">
+        <ItemsControl x:Name="FormatBar"
+                      ItemsSource="{Binding FormatBarControls}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Orientation="Horizontal" Spacing="2" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="app:FormatBarControlDefinition">
+              <Button Classes="format-control"
+                      Tag="{Binding Key}"
+                      AutomationProperties.AutomationId="{Binding Key}"
+                      AutomationProperties.Name="{Binding Name}"
+                      ToolTip.Tip="{Binding Name}"
+                      PointerEntered="OnFormatControlPointerEntered"
+                      PointerExited="OnFormatControlPointerExited">
+                <TextBlock Text="{Binding Glyph}" />
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Border>
 
-    </DockPanel>
+      <!-- Área de documento vacía en F-001 (BR-F001-008). -->
+      <Border x:Name="DocumentArea" Grid.Row="2" />
+    </Grid>
+
+    <!-- Herramientas → Idioma y las entradas de Ayuda (SC-003) conservan su
+         superficie y sus comandos. El submenú se superpone a la barra de
+         formato sin desplazar el documento (BR-F001-001). T-016 añadirá Tema
+         a esta misma sección de Herramientas. -->
+    <Canvas x:Name="MenuOverlay"
+            IsVisible="{Binding IsMenuDropdownOpen}"
+            IsEnabled="{Binding !Dialog.IsOpen}"
+            ZIndex="10">
+      <Border x:Name="MenuDropdown"
+              IsVisible="{Binding IsMenuDropdownOpen}"
+              Canvas.Left="16"
+              Canvas.Top="{Binding #MainMenuBar.Bounds.Height}"
+              MinWidth="260"
+              Padding="8"
+              CornerRadius="4"
+              BorderThickness="1"
+              BorderBrush="{DynamicResource MenuPanelBorderBrush}"
+              Background="{DynamicResource MenuPanelBackgroundBrush}"
+              BoxShadow="0 8 24 0 #55000000">
+        <StackPanel>
+          <TextBlock Text="{Binding SelectedMenuHeader}"
+                     FontWeight="SemiBold"
+                     Margin="8,4,8,8" />
+
+          <StackPanel x:Name="ToolsMenuEntries"
+                      IsVisible="{Binding IsToolsMenuSelected}"
+                      Spacing="2">
+            <TextBlock Text="{Binding LanguageMenuHeader}"
+                       Margin="8,4,8,4"
+                       Foreground="{DynamicResource DialogMutedBrush}" />
+            <!-- OP-001 (T-008): selección de idioma mutuamente excluyente. -->
+            <RadioButton x:Name="SpanishLanguageItem"
+                         Classes="menu-option"
+                         GroupName="InterfaceLanguage"
+                         Content="{Binding SpanishOptionHeader}"
+                         IsChecked="{Binding IsSpanish, Mode=OneWay}"
+                         Command="{Binding ChangeLanguageCommand}"
+                         CommandParameter="es"
+                         AutomationProperties.AutomationId="Language.es"
+                         AutomationProperties.Name="{Binding SpanishOptionHeader}" />
+            <RadioButton x:Name="EnglishLanguageItem"
+                         Classes="menu-option"
+                         GroupName="InterfaceLanguage"
+                         Content="{Binding EnglishOptionHeader}"
+                         IsChecked="{Binding IsEnglish, Mode=OneWay}"
+                         Command="{Binding ChangeLanguageCommand}"
+                         CommandParameter="en"
+                         AutomationProperties.AutomationId="Language.en"
+                         AutomationProperties.Name="{Binding EnglishOptionHeader}" />
+          </StackPanel>
+
+          <StackPanel x:Name="HelpMenuEntries"
+                      IsVisible="{Binding IsHelpMenuSelected}"
+                      Spacing="2">
+            <!-- SC-003 (T-014, FR-010): superficie de ayuda navegable. El
+                 contenido completo lo conectará F-010. -->
+            <Button x:Name="HelpGuideItem"
+                    Classes="menu-entry"
+                    Content="{Binding HelpGuideHeader}"
+                    Tag="Help.Guide"
+                    Click="OnHelpEntryClick"
+                    AutomationProperties.AutomationId="Help.Guide"
+                    AutomationProperties.Name="{Binding HelpGuideHeader}" />
+            <Button x:Name="HelpShortcutsItem"
+                    Classes="menu-entry"
+                    Content="{Binding HelpShortcutsHeader}"
+                    Tag="Help.Shortcuts"
+                    Click="OnHelpEntryClick"
+                    AutomationProperties.AutomationId="Help.Shortcuts"
+                    AutomationProperties.Name="{Binding HelpShortcutsHeader}" />
+            <Separator x:Name="HelpMenuSeparator" Margin="4" />
+            <Button x:Name="HelpAboutItem"
+                    Classes="menu-entry"
+                    Content="{Binding HelpAboutHeader}"
+                    Tag="Help.About"
+                    Click="OnHelpEntryClick"
+                    AutomationProperties.AutomationId="Help.About"
+                    AutomationProperties.Name="{Binding HelpAboutHeader}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Canvas>
 
     <!-- SC-002 (T-014): superficie modal genérica sobre SC-001. Se enlaza al
          estado del diálogo; en F-001 permanece cerrada y ningún diálogo
          concreto está conectado (screens.md, SC-002). -->
     <local:DialogSurface x:Name="DialogSurface"
-                         DataContext="{Binding Dialog}" />
+                         DataContext="{Binding Dialog}"
+                         ZIndex="20" />
   </Grid>
 
 </Window>
