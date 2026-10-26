@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:app="using:EggMdEditor.App"
         xmlns:local="using:EggMdEditor.App"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         x:Class="EggMdEditor.App.MainWindow"
         x:DataType="app:MainWindowViewModel"
         Title="Egg MD Editor"
@@ -44,11 +45,6 @@
       <Setter Property="Padding" Value="8,2" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Button.format-control TextBlock">
-      <Setter Property="FontSize" Value="15" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
   </Window.Styles>
 
@@ -157,10 +153,11 @@
         </Grid>
       </Border>
 
-      <!-- Barra de formato (ENT-005): un icono (VR-001), un aviso flotante
-           (VR-002) y un nombre accesible (NFR-009) por control, resueltos en
-           el idioma activo. Ningún control tiene comando: su parte visual no
-           está conectada a acciones en F-001 (ADR-001). -->
+      <!-- Barra de formato (ENT-005): un icono vectorial de la librería
+           MIT-compatible (VR-001), un aviso flotante (VR-002) y un nombre
+           accesible (NFR-009) por control, resueltos en el idioma activo.
+           Ningún control tiene comando: su parte visual no está conectada a
+           acciones en F-001 (ADR-001). -->
       <Border x:Name="FormatBarContainer"
               Grid.Row="1"
               Padding="8,5">
@@ -180,7 +177,13 @@
                       ToolTip.Tip="{Binding Name}"
                       PointerEntered="OnFormatControlPointerEntered"
                       PointerExited="OnFormatControlPointerExited">
-                <TextBlock Text="{Binding Glyph}" />
+                <!-- VR-001: icono vectorial por control; nunca un glifo de texto. -->
+                <materialIcons:MaterialIcon Kind="{Binding Icon}"
+                                            Width="18"
+                                            Height="18"
+                                            IconSize="18"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center" />
               </Button>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
