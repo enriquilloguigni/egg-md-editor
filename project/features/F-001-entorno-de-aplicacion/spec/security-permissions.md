@@ -6,8 +6,9 @@ Rol: Usuario local (identidad = cuenta del sistema operativo que ejecuta la apli
 
 - Lanzar la aplicación y abrir `SC-001`: Sí
 - Conmutar idioma es/en en caliente: Sí
-- Conmutar tema claro/oscuro: Sí
-- Abrir/cerrar entradas del menú: Sí
+- Conmutar tema Claro/Oscuro/Sistema: Sí
+- Navegar secuencialmente entre los 6 rótulos (Siguiente/Anterior): Sí
+- Abrir/cerrar el rótulo seleccionado: Sí
 - Mostrar/ocultar aviso flotante: Sí
 - Invocar atajos disponibles en F-001: Sí
 - Cerrar la ventana: Sí
@@ -31,15 +32,15 @@ Rol: Usuario local (identidad = cuenta del sistema operativo que ejecuta la apli
 
 - Ningún dato sale del equipo: sin telemetría, actualizaciones automáticas ni servicios en la nube (BR-012, NFR-005).
 - En F-001 no se leen ni escriben archivos de documento; el acceso a archivos se rige por los permisos del SO y se conecta en F-004.
-- Preferencias (idioma, tema) y estado de menú son efímeros en F-001 y no se persisten (FR-013 → F-010).
+- Preferencias (idioma, tema) y estado de menú/rótulo son efímeros en F-001 y no se persisten (FR-013 → F-010).
 - Registros técnicos: solo locales, con rotación y niveles configurables, sin datos personales ni envío remoto (NFR-010).
 
 ## Condiciones especiales de autorización
 
 - Ninguna: la aplicación no autentica, no autoriza por rol y no solicita credenciales.
-- El idioma de UI se elige en sesión y no requiere permiso especial (BR-013).
+- El idioma de UI y el tema se eligen en sesión y no requieren permiso especial (BR-013, BR-F001-009).
 
 ## Separación de responsabilidades
 
 - UI (menús, barra, diálogos): presentación y entrada, sin lógica de dominio; el núcleo no conoce SO, rutas ni APIs concretas (puerto/adaptador, Architecture).
-- Mecanismos técnicos de autenticación/autorización (JWT, OAuth, claims, middleware, policies): fuera de alcance; si se requirieran en el futuro, se definen en Architecture.
+- Mecanismos técnicos de autenticación/autorización: fuera de alcance; si se requirieran en el futuro, se definen en Architecture.
