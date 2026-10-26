@@ -33,6 +33,6 @@ TK-008 — Resaltado de correspondencia (superficie: ventana-principal). Valor: 
 
 ## Comandos de captura
 
-Comando de captura (ventana-principal): dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- ventana-principal <SC> <salida>
+Comando de captura (ventana-principal): dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- ventana-principal <SC> <escenario> <salida>
 Comando de captura (diálogo): dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- diálogo <SC> <salida>
 Comando de captura (ayuda): dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- ayuda <SC> <salida>
