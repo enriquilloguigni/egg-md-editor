@@ -9,18 +9,11 @@ namespace EggMdEditor.App.I18n;
 public interface II18nCatalog
 {
     string CurrentLanguage { get; }
-    string Language { get; }
     string FallbackLanguage { get; }
     IReadOnlyList<string> SupportedLanguages { get; }
-    IReadOnlyList<string> Languages { get; }
 
     string Get(string key);
     string this[string key] { get; }
-    string GetString(string key);
-    string Resolve(string key);
-    string Translate(string key);
-    string Localize(string key);
-    string GetLocalizedString(string key);
 
     bool TryGet(string key, out string value);
     bool TryGet(string key, string language, out string value);
@@ -29,5 +22,4 @@ public interface II18nCatalog
     void SetLanguage(string language);
 
     IReadOnlyList<string> GetUnresolvedKeys();
-    IEnumerable<string> UnresolvedKeys { get; }
 }
