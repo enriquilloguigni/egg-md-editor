@@ -59,15 +59,24 @@ internal static class Program
         var application = Application.Current
             ?? throw new InvalidOperationException("La aplicación Avalonia no se inicializó.");
 
-        // Estado base común: tema claro e idioma español, independientemente
-        // del tema o del idioma del sistema anfitrión.
+        // Estado base común: idioma español, independientemente del idioma
+        // del sistema anfitrión. El estado A captura el tema claro y el B el
+        // tema oscuro de SC-001 (plan/mockups.md); ninguno depende del tema
+        // del SO anfitrión.
         var catalog = new I18nCatalog();
         if (!catalog.TrySetLanguage(I18nCatalog.Spanish))
         {
             throw new InvalidOperationException("No se pudo cargar el catálogo en español.");
         }
 
-        using var session = new Session(catalog, new UiPreferences(I18nCatalog.Spanish, Theme.Light));
+        var theme = request.State == CaptureState.Dark ? Theme.Dark : Theme.Light;
+        var themePreference = request.State == CaptureState.Dark
+            ? ThemePreference.Dark
+            : ThemePreference.Light;
+
+        using var session = new Session(
+            catalog,
+            new UiPreferences(I18nCatalog.Spanish, theme, themePreference));
         using var themeApplier = new ApplicationThemeApplier(application);
         themeApplier.Attach(session);
 
