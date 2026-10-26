@@ -15,6 +15,7 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
     private string _language;
     private Theme _theme;
     private MenuState _menuState;
+    private int _selectedMenuIndex = 1;
     private bool _noticeVisible;
     private bool _windowOpen;
     private II18nCatalog _catalog;
@@ -67,12 +68,20 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
         }
     }
 
-    public Session(II18nCatalog catalog, string language, Theme theme, MenuState menuState, bool noticeVisible, bool windowOpen = true)
+    public Session(
+        II18nCatalog catalog,
+        string language,
+        Theme theme,
+        MenuState menuState,
+        bool noticeVisible,
+        bool windowOpen = true,
+        int selectedMenuIndex = 1)
     {
         _catalog = catalog ?? I18nCatalog.Instance;
         _language = UiPreferences.NormalizeLanguage(language);
         _theme = UiPreferences.NormalizeTheme(theme);
         _menuState = menuState;
+        _selectedMenuIndex = IsValidMenuPosition(selectedMenuIndex) ? selectedMenuIndex : 1;
         _noticeVisible = noticeVisible;
         _windowOpen = windowOpen;
         _preferences = new UiPreferences(_language, _theme);
@@ -226,6 +235,39 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
         get => _menuState == MenuState.Closed;
         set => MenuState = value ? MenuState.Closed : MenuState.Open;
     }
+
+    /// <summary>
+    /// Rótulo de menú seleccionado (ENT-001/ENT-004, ST-011): entero 1–6 con
+    /// 1 = Archivo. Un valor fuera del catálogo no altera el estado válido.
+    /// </summary>
+    public int SelectedMenuIndex
+    {
+        get => _selectedMenuIndex;
+        set
+        {
+            if (!IsValidMenuPosition(value) || _selectedMenuIndex == value)
+            {
+                return;
+            }
+
+            _selectedMenuIndex = value;
+            OnPropertyChanged(nameof(SelectedMenuIndex));
+        }
+    }
+
+    /// <summary>OP-007: cambia el rótulo seleccionado dentro de 1–6.</summary>
+    public bool TrySelectMenu(int position)
+    {
+        if (!IsValidMenuPosition(position))
+        {
+            return false;
+        }
+
+        SelectedMenuIndex = position;
+        return true;
+    }
+
+    private static bool IsValidMenuPosition(int position) => position is >= 1 and <= 6;
 
     public bool Aviso
     {
@@ -603,7 +645,14 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
 
     public Session Clone()
     {
-        return new Session(_catalog, _language, _theme, _menuState, _noticeVisible, _windowOpen);
+        return new Session(
+            _catalog,
+            _language,
+            _theme,
+            _menuState,
+            _noticeVisible,
+            _windowOpen,
+            _selectedMenuIndex);
     }
 
     protected void OnPropertyChanged(string propertyName)
@@ -675,6 +724,7 @@ public interface ISession
     Theme CurrentTheme { get; set; }
     MenuState MenuState { get; set; }
     bool IsMenuOpen { get; set; }
+    int SelectedMenuIndex { get; set; }
     bool NoticeVisible { get; set; }
     bool IsNoticeVisible { get; set; }
     UiPreferences Preferences { get; set; }
@@ -698,6 +748,7 @@ public interface ISession
     void ToggleMenu();
     bool TryOpenMenu();
     bool TryCloseMenu();
+    bool TrySelectMenu(int position);
     bool SetMenuState(MenuState state);
 
     void ShowNotice();
