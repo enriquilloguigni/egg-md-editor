@@ -81,12 +81,15 @@ public partial class App : Application
         };
 
         // ENT-003: en F-001 el tema no se persiste (FR-013 → F-010), así
-        // que cada arranque hereda el tema del SO. Se fija el tema efectivo
-        // en la sesión y en la aplicación para que ST-009/ST-010 y las
-        // superficies de SC-001 queden alineados desde el primer pintado;
-        // OP-002 los conmuta después en caliente (COM-003).
+        // que cada arranque usa la preferencia Sistema y hereda el tema del
+        // SO. Se fija el tema efectivo en la sesión y en la aplicación para
+        // que ST-009/ST-010 y las superficies de SC-001 queden alineados
+        // desde el primer pintado; OP-002 los conmuta después en caliente
+        // (COM-003) y el selector de Herramientas → Tema muestra Sistema.
         var initialTheme = ApplicationThemeApplier.ResolveSystemTheme(this);
-        _session = new Session(catalog, new UiPreferences("es", initialTheme));
+        _session = new Session(
+            catalog,
+            new UiPreferences("es", initialTheme, ThemePreference.System));
         _themeApplier = new ApplicationThemeApplier(this);
         _themeApplier.Attach(_session);
 
