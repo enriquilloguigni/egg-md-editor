@@ -166,7 +166,7 @@ public class DialogSurfaceTests
             // tema activo.
             Assert.NotNull(overlay.Background);
             Assert.NotNull(card.Background);
-            Assert.False(window.FindControl<DockPanel>("MainContent")!.IsEnabled);
+            Assert.False(window.FindControl<Grid>("MainContent")!.IsEnabled);
 
             // Validación inline: oculta sin error y visible con el mensaje
             // asociado al formulario.
@@ -185,7 +185,7 @@ public class DialogSurfaceTests
 
             Assert.False(viewModel.Dialog.IsOpen);
             Assert.False(surface.IsVisible);
-            Assert.True(window.FindControl<DockPanel>("MainContent")!.IsEnabled);
+            Assert.True(window.FindControl<Grid>("MainContent")!.IsEnabled);
         }
         finally
         {
