@@ -1,5 +1,6 @@
 using System;
 using Avalonia;
+using Avalonia.Headless;
 using EggMdEditor.App.Startup;
 
 namespace EggMdEditor.App;
@@ -14,17 +15,19 @@ internal static class Program
         var lifecycle = new ApplicationLifecycle();
         ApplicationLifecycle.Current = lifecycle;
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        StartupTestMode.Record("process-start", $"pid={Environment.ProcessId}");
 
+        var exitCode = ExitCodes.Success;
         try
         {
-            return Run(args, lifecycle);
+            exitCode = Run(args, lifecycle);
         }
         catch (Exception exception)
         {
             // ERR-001/ERR-002: el fallo puede ocurrir durante la
             // inicialización o al pintar SC-001 antes de presentarla; ambos
             // comparten mensaje y comportamiento.
-            return lifecycle.IsStartupPresented
+            exitCode = lifecycle.IsStartupPresented
                 ? lifecycle.ReportShutdownFailure(exception)
                 : lifecycle.ReportStartupFailure(exception);
         }
@@ -32,8 +35,11 @@ internal static class Program
         {
             AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
             ApplicationLifecycle.Current = null;
+            StartupTestMode.Record("process-exit", $"code={exitCode}");
             lifecycle.Dispose();
         }
+
+        return exitCode;
     }
 
     private static int Run(string[] args, ApplicationLifecycle lifecycle)
@@ -41,15 +47,21 @@ internal static class Program
         // COM-005/BR-001: una única ventana por usuario. La primera instancia
         // conserva el cerrojo y escucha solicitudes de foco; una segunda
         // instancia se limita a pedir el foco de SC-001 y termina sin crear
-        // ventana (A-002, AC-005).
-        using var singleInstance = SingleInstanceCoordinator.Acquire();
+        // ventana (A-002, AC-005). El arnés E2E aísla el cerrojo por prueba.
+        using var singleInstance = SingleInstanceCoordinator.Acquire(
+            StartupTestMode.IsEnabled ? StartupTestMode.ApplicationId : null);
 
         if (!singleInstance.IsPrimary)
         {
-            singleInstance.TryRequestActivation();
+            // AC-005: la instancia secundaria no construye la aplicación ni
+            // crea ventana; solo entrega la solicitud de activación.
+            StartupTestMode.Record("secondary", "windowCount=0");
+            var sent = singleInstance.TryRequestActivation();
+            StartupTestMode.Record("activation-sent", $"sent={sent}");
             return ExitCodes.Success;
         }
 
+        StartupTestMode.Record("primary", "windowCount=1");
         singleInstance.ActivationRequested += OnActivationRequested;
         try
         {
@@ -80,8 +92,11 @@ internal static class Program
         }
     }
 
-    private static void OnActivationRequested(object? sender, EventArgs e) =>
+    private static void OnActivationRequested(object? sender, EventArgs e)
+    {
+        StartupTestMode.Record("activation-received");
         App.RequestActivation();
+    }
 
     /// <summary>
     /// ERR-001/ERR-002: última red de diagnóstico para una excepción que no
@@ -107,9 +122,26 @@ internal static class Program
         }
     }
 
-    public static AppBuilder BuildAvaloniaApp() =>
-        AppBuilder.Configure<App>()
+    public static AppBuilder BuildAvaloniaApp()
+    {
+        var builder = AppBuilder.Configure<App>();
+
+        // T-018: el arnés E2E usa la plataforma headless para ejecutar SC-001
+        // sin servidor gráfico. No hay ningún cambio en la ruta normal.
+        if (StartupTestMode.IsEnabled)
+        {
+            return builder
+                .UseHeadless(new AvaloniaHeadlessPlatformOptions
+                {
+                    UseHeadlessDrawing = true,
+                    ShouldRenderOnUIThread = true,
+                })
+                .WithInterFont();
+        }
+
+        return builder
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();
+    }
 }
