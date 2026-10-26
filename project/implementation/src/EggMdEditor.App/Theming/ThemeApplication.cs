@@ -132,11 +132,7 @@ public sealed class ApplicationThemeApplier : IThemeApplier, IDisposable
         }
 
         if (e.PropertyName is nameof(Session.Theme)
-            or nameof(Session.CurrentTheme)
-            or nameof(Session.ActiveTheme)
-            or nameof(Session.Tema)
-            or nameof(Session.ThemePreference)
-            or nameof(Session.CurrentThemePreference))
+            or nameof(Session.ThemePreference))
         {
             Apply(session.Theme);
         }
