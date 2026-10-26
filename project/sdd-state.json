@@ -50,13 +50,15 @@
       },
       "verification": {
         "run": "v2",
-        "execution": "E-003",
+        "execution": "E-004",
         "spec": "v2",
         "plan": "v2",
-        "commit": "60f8af180e44b97eeb550e522184879c43a40f2f",
+        "commit": "0ac46891454615f1fde2f533df0e230c3f4e993a",
         "stale": false,
-        "evidence_sha256": "4c61e637165971965f1e9f6e777234e300abbfb83c3462b4f73ae0c7e74c6a9f",
-        "visual_sha256": "c8cec06fee99c288780fdecd946dc74818630b6af76f2b3af77b1b5f5db26477"
+        "evidence_sha256": "dc1a6204bb1992ae24c395ef59988194f5571814caedb1ffb6b279cf25f4ec76",
+        "visual_sha256": "3b341315b864f5e3a661d5ab842aeabe9e419e914bbf9daf9d505907ed29e8b4",
+        "result": "v3",
+        "outcome": "cubierto"
       }
     }
   },
@@ -189,7 +191,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-26T21:07:19.331Z",
+  "updated_at": "2026-10-26T21:40:49.130Z",
   "owner": "EG",
   "sources": [
     {
