@@ -1,16 +1,20 @@
+using System;
 using System.Linq;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using EggMdEditor.App.I18n;
+using Material.Icons;
+using Material.Icons.Avalonia;
 using Xunit;
 
 namespace EggMdEditor.App.Tests;
 
-// Barra de formato de SC-001 (T-007): los 12 controles de FR-012 en orden de
-// escritura (ENT-005), cada uno con su icono (VR-001), su aviso flotante
-// (VR-002) y su nombre accesible (NFR-009), sin acciones conectadas (ADR-001).
+// Barra de formato de SC-001 (T-007/T-017): los 12 controles de FR-012 en
+// orden de escritura (ENT-005), cada uno con su icono de la librería
+// MIT-compatible (VR-001), su aviso flotante (VR-002) y su nombre accesible
+// (NFR-009), sin acciones conectadas (ADR-001).
 public class FormatBarTests
 {
     private static readonly string[] ExpectedKeys =
@@ -61,6 +65,22 @@ public class FormatBarTests
         "Table of contents",
     ];
 
+    private static readonly MaterialIconKind[] ExpectedIcons =
+    [
+        MaterialIconKind.FormatBold,
+        MaterialIconKind.FormatHeader1,
+        MaterialIconKind.FormatListBulleted,
+        MaterialIconKind.FormatQuoteClose,
+        MaterialIconKind.CodeTags,
+        MaterialIconKind.LinkVariant,
+        MaterialIconKind.ImageOutline,
+        MaterialIconKind.Table,
+        MaterialIconKind.FormatSuperscript,
+        MaterialIconKind.FunctionVariant,
+        MaterialIconKind.FlowchartOutline,
+        MaterialIconKind.Toc,
+    ];
+
     [Fact]
     public void ViewModel_ExposesTheTwelveFr012ControlsInWritingOrder()
     {
@@ -72,17 +92,25 @@ public class FormatBarTests
     }
 
     [Fact]
-    public void EveryControlHasAVisibleIconGlyph()
+    public void EveryControlHasAVisibleVectorIconFromTheIconLibrary()
     {
         var viewModel = new MainWindowViewModel(new I18nCatalog());
 
-        Assert.Equal(ExpectedKeys.Length, MainWindowViewModel.FormatBarGlyphs.Count);
-        Assert.All(ExpectedKeys, key => Assert.True(MainWindowViewModel.FormatBarGlyphs.ContainsKey(key)));
+        Assert.Equal(ExpectedKeys.Length, MainWindowViewModel.FormatBarIcons.Count);
+        Assert.All(ExpectedKeys, key => Assert.True(MainWindowViewModel.FormatBarIcons.ContainsKey(key)));
         Assert.All(viewModel.FormatBarControls, control =>
         {
-            Assert.False(string.IsNullOrWhiteSpace(control.Glyph));
-            Assert.Equal(MainWindowViewModel.FormatBarGlyphs[control.Key], control.Glyph);
+            Assert.Equal(MainWindowViewModel.FormatBarIcons[control.Key], control.Icon);
+            Assert.True(Enum.IsDefined(control.Icon));
+
+            // VR-001: cada control tiene un icono vectorial propio (un icono
+            // por control) de la librería MIT-compatible, nunca un glifo.
+            Assert.False(string.IsNullOrWhiteSpace(MaterialIconDataProvider.GetData(control.Icon)));
         });
+        Assert.Equal(
+            ExpectedIcons,
+            ExpectedKeys.Select(key => MainWindowViewModel.FormatBarIcons[key]));
+        Assert.Equal(ExpectedIcons.Length, viewModel.FormatBarControls.Select(control => control.Icon).Distinct().Count());
     }
 
     [Fact]
@@ -119,8 +147,14 @@ public class FormatBarTests
 
             Assert.All(buttons, button =>
             {
-                var glyph = Assert.IsType<TextBlock>(button.Content);
-                Assert.False(string.IsNullOrWhiteSpace(glyph.Text));
+                // VR-001: icono vectorial de la librería MIT-compatible, no un
+                // glifo de texto.
+                var icon = Assert.IsType<MaterialIcon>(button.Content);
+                Assert.NotNull(icon.Kind);
+                Assert.NotNull(icon.Drawing);
+                var key = Assert.IsType<string>(button.Tag);
+                Assert.Equal<MaterialIconKind?>(MainWindowViewModel.FormatBarIcons[key], icon.Kind);
+                Assert.Empty(button.GetVisualDescendants().OfType<TextBlock>());
 
                 // VR-002: aviso de una línea, en el idioma activo.
                 var tooltip = Assert.IsType<string>(ToolTip.GetTip(button));
