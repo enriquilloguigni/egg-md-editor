@@ -8,8 +8,8 @@ namespace EggMdEditor.App;
 
 /// <summary>
 /// Aplicación del tema de la interfaz (OP-002, COM-003): recibe el tema
-/// {Claro,Oscuro} de ENT-003 y lo aplica a las superficies de la aplicación de
-/// forma síncrona.
+/// efectivo {Claro,Oscuro} resuelto de la preferencia de ENT-003 y lo aplica a
+/// las superficies de la aplicación de forma síncrona.
 /// </summary>
 public interface IThemeApplier
 {
@@ -25,8 +25,9 @@ public interface IThemeApplier
 /// <see cref="Application.RequestedThemeVariant"/> en la raíz de la aplicación
 /// para que el repintado sea consistente en todas las ventanas y controles de
 /// SC-001..SC-003 (COM-003). En F-001 la preferencia no se persiste: cada
-/// arranque hereda el tema del SO (ENT-003) y la primera conmutación lo fija
-/// en la sesión, sin cambio parcial ante una entrada inválida.
+/// arranque usa Sistema y hereda el tema del SO (ENT-003); la conmutación de
+/// OP-002 fija el tema efectivo en la sesión, sin cambio parcial ante una
+/// entrada inválida.
 /// </summary>
 public sealed class ApplicationThemeApplier : IThemeApplier, IDisposable
 {
@@ -133,7 +134,9 @@ public sealed class ApplicationThemeApplier : IThemeApplier, IDisposable
         if (e.PropertyName is nameof(Session.Theme)
             or nameof(Session.CurrentTheme)
             or nameof(Session.ActiveTheme)
-            or nameof(Session.Tema))
+            or nameof(Session.Tema)
+            or nameof(Session.ThemePreference)
+            or nameof(Session.CurrentThemePreference))
         {
             Apply(session.Theme);
         }
