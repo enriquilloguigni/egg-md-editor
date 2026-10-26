@@ -9,7 +9,7 @@
   },
   "features": {
     "F-001-entorno-de-aplicacion": {
-      "status": "verifying",
+      "status": "implementing",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -25,8 +25,8 @@
         "states-transitions": "approved",
         "acceptance-criteria": "approved"
       },
-      "spec_version": "v1",
-      "plan_version": "v1",
+      "spec_version": "v2",
+      "plan_version": "v2",
       "tasks": {
         "T-001": "done",
         "T-002": "done",
@@ -46,8 +46,8 @@
       "verification": {
         "run": "v1",
         "execution": "E-002",
-        "spec": "v1",
-        "plan": "v1",
+        "spec": "v2",
+        "plan": "v2",
         "commit": "b1f4e944fcf8966860f4fb122bcf79487e84d537",
         "stale": false,
         "evidence_sha256": "36c63ac4c750e444ba4bd1b6e985dac956a7b8a332615b5c4277cb2d48077fdb",
@@ -184,7 +184,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-26T19:05:36.368Z",
+  "updated_at": "2026-10-26T19:49:23.077Z",
   "owner": "EG",
   "sources": [
     {
@@ -279,6 +279,45 @@
       "result": "pass",
       "decided_by": "humano",
       "decided_at": "2026-10-23",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "SPEC_REVIEW",
+      "artifact": "F-001 spec/ (13 documentos, v2)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "agente",
+      "decided_at": "2026-10-26",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "UI_REVIEW",
+      "artifact": "F-001 spec/screens.md + spec/visual-resources.md (SC-001, v2)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "agente",
+      "decided_at": "2026-10-26",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "PLAN_REVIEW",
+      "artifact": "F-001 plan/ (plan.md v2 + mockups.md v2, SC-001)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "agente",
+      "decided_at": "2026-10-26",
       "approver": "EG",
       "norm": {
         "metodologia": "1.10",
