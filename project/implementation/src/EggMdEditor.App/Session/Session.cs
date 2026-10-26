@@ -14,6 +14,7 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
 
     private string _language;
     private Theme _theme;
+    private ThemePreference _themePreference;
     private MenuState _menuState;
     private int _selectedMenuIndex = 1;
     private bool _noticeVisible;
@@ -23,49 +24,41 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
     private bool _syncingPreferences;
 
     public Session()
-        : this(I18nCatalog.Instance, "es", Theme.Light, MenuState.Closed, false, true)
+        : this(I18nCatalog.Instance, "es", Theme.Light, MenuState.Closed, false, true, 1, ThemePreference.System)
     {
     }
 
     public Session(II18nCatalog catalog)
-        : this(catalog, catalog?.CurrentLanguage ?? "es", Theme.Light, MenuState.Closed, false, true)
+        : this(catalog, catalog?.CurrentLanguage ?? "es", Theme.Light, MenuState.Closed, false, true, 1, ThemePreference.System)
     {
     }
 
     public Session(UiPreferences preferences)
-        : this(I18nCatalog.Instance, preferences?.Language ?? "es", preferences?.Theme ?? Theme.Light, MenuState.Closed, false, true)
+        : this(
+            I18nCatalog.Instance,
+            preferences?.Language ?? "es",
+            preferences?.Theme ?? Theme.Light,
+            MenuState.Closed,
+            false,
+            true,
+            1,
+            preferences?.ThemePreference ?? ThemePreference.System)
     {
-        if (preferences is not null)
-        {
-            _syncingPreferences = true;
-            try
-            {
-                _preferences.Language = preferences.Language;
-                _preferences.Theme = preferences.Theme;
-            }
-            finally
-            {
-                _syncingPreferences = false;
-            }
-        }
+        CopyPreferencesFrom(preferences);
     }
 
     public Session(II18nCatalog catalog, UiPreferences preferences)
-        : this(catalog, preferences?.Language ?? catalog?.CurrentLanguage ?? "es", preferences?.Theme ?? Theme.Light, MenuState.Closed, false, true)
+        : this(
+            catalog,
+            preferences?.Language ?? catalog?.CurrentLanguage ?? "es",
+            preferences?.Theme ?? Theme.Light,
+            MenuState.Closed,
+            false,
+            true,
+            1,
+            preferences?.ThemePreference ?? ThemePreference.System)
     {
-        if (preferences is not null)
-        {
-            _syncingPreferences = true;
-            try
-            {
-                _preferences.Language = preferences.Language;
-                _preferences.Theme = preferences.Theme;
-            }
-            finally
-            {
-                _syncingPreferences = false;
-            }
-        }
+        CopyPreferencesFrom(preferences);
     }
 
     public Session(
@@ -75,16 +68,23 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
         MenuState menuState,
         bool noticeVisible,
         bool windowOpen = true,
-        int selectedMenuIndex = 1)
+        int selectedMenuIndex = 1,
+        ThemePreference themePreference = ThemePreference.System)
     {
         _catalog = catalog ?? I18nCatalog.Instance;
         _language = UiPreferences.NormalizeLanguage(language);
         _theme = UiPreferences.NormalizeTheme(theme);
+        _themePreference = UiPreferences.NormalizeThemePreference(themePreference);
+        if (_themePreference is ThemePreference.Light or ThemePreference.Dark)
+        {
+            _theme = UiPreferences.EffectiveTheme(_themePreference, _theme);
+        }
+
         _menuState = menuState;
         _selectedMenuIndex = IsValidMenuPosition(selectedMenuIndex) ? selectedMenuIndex : 1;
         _noticeVisible = noticeVisible;
         _windowOpen = windowOpen;
-        _preferences = new UiPreferences(_language, _theme);
+        _preferences = new UiPreferences(_language, _theme, _themePreference);
         _preferences.PropertyChanged += OnPreferencesPropertyChanged;
 
         // Sync catalog best-effort without throwing on construction.
@@ -127,7 +127,7 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
 
             // Sync language/theme best-effort without partial change.
             TrySetLanguage(_preferences.Language);
-            TrySetTheme(_preferences.Theme);
+            TrySetThemePreference(_preferences.ThemePreference, _preferences.Theme);
         }
     }
 
@@ -183,6 +183,29 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
     {
         get => _theme;
         set => Theme = value;
+    }
+
+    /// <summary>
+    /// Preferencia de tema de ENT-003 {Claro,Oscuro,Sistema}: default Sistema.
+    /// El tema efectivo de ENT-001 se expone en <see cref="Theme"/> y se
+    /// resuelve del SO al arrancar o al elegir Sistema (OP-002).
+    /// </summary>
+    public ThemePreference ThemePreference
+    {
+        get => _themePreference;
+        set => TrySetThemePreference(value);
+    }
+
+    public ThemePreference CurrentThemePreference
+    {
+        get => _themePreference;
+        set => ThemePreference = value;
+    }
+
+    public ThemePreference TemaPreferencia
+    {
+        get => _themePreference;
+        set => ThemePreference = value;
     }
 
     public MenuState Menu
@@ -399,27 +422,73 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
     // Theme operations
     public bool TrySetTheme(Theme theme)
     {
-        // OP-002: entrada {Claro,Oscuro}; fuera de ese catálogo se aborta sin
-        // cambio parcial y las preferencias (ENT-003) conservan el tema activo.
+        // OP-002: entrada de tema efectivo {Claro,Oscuro}; fuera de ese
+        // catálogo se aborta sin cambio parcial y las preferencias (ENT-003)
+        // conservan el tema activo.
         if (theme is not (Theme.Light or Theme.Dark))
         {
             return false;
         }
 
-        if (_theme == theme)
+        return TrySetThemePreference(UiPreferences.ThemePreferenceFor(theme), theme);
+    }
+
+    /// <summary>
+    /// OP-002: fija la preferencia de tema {Claro,Oscuro,Sistema}. Sin una
+    /// resolución del SO disponible, Sistema conserva el tema efectivo actual.
+    /// </summary>
+    public bool TrySetThemePreference(ThemePreference preference) =>
+        TrySetThemePreference(preference, _theme);
+
+    /// <summary>
+    /// OP-002/TR-008/TR-009: fija preferencia y tema efectivo de forma
+    /// atómica; Sistema se resuelve con <paramref name="systemTheme"/>. Una
+    /// entrada fuera del catálogo no altera el estado válido.
+    /// </summary>
+    public bool TrySetThemePreference(ThemePreference preference, Theme systemTheme)
+    {
+        if (!UiPreferences.IsSupportedThemePreference(preference))
         {
-            _syncingPreferences = true;
-            try { _preferences.TrySetTheme(theme); } finally { _syncingPreferences = false; }
+            return false;
+        }
+
+        var effective = UiPreferences.EffectiveTheme(preference, systemTheme);
+        var preferenceChanged = _themePreference != preference;
+        var themeChanged = _theme != effective;
+
+        _themePreference = preference;
+        _theme = effective;
+
+        _syncingPreferences = true;
+        try
+        {
+            _preferences.TrySetThemePreference(preference, effective);
+        }
+        finally
+        {
+            _syncingPreferences = false;
+        }
+
+        if (!preferenceChanged && !themeChanged)
+        {
             return true;
         }
 
-        _theme = theme;
-        _syncingPreferences = true;
-        try { _preferences.TrySetTheme(theme); } finally { _syncingPreferences = false; }
-        OnPropertyChanged(nameof(Theme));
-        OnPropertyChanged(nameof(CurrentTheme));
-        OnPropertyChanged(nameof(ActiveTheme));
-        OnPropertyChanged(nameof(Tema));
+        if (themeChanged)
+        {
+            OnPropertyChanged(nameof(Theme));
+            OnPropertyChanged(nameof(CurrentTheme));
+            OnPropertyChanged(nameof(ActiveTheme));
+            OnPropertyChanged(nameof(Tema));
+        }
+
+        if (preferenceChanged)
+        {
+            OnPropertyChanged(nameof(ThemePreference));
+            OnPropertyChanged(nameof(CurrentThemePreference));
+            OnPropertyChanged(nameof(TemaPreferencia));
+        }
+
         return true;
     }
 
@@ -441,12 +510,22 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
 
     public bool TrySetTheme(string? theme)
     {
-        if (!UiPreferences.TryParseTheme(theme, out var parsed))
+        if (!UiPreferences.TryParseThemePreference(theme, out var parsed))
         {
             return false;
         }
 
-        return TrySetTheme(parsed);
+        return TrySetThemePreference(parsed);
+    }
+
+    public bool TrySetThemePreference(string? preference)
+    {
+        if (!UiPreferences.TryParseThemePreference(preference, out var parsed))
+        {
+            return false;
+        }
+
+        return TrySetThemePreference(parsed);
     }
 
     public void SetTheme(Theme theme)
@@ -652,7 +731,8 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
             _menuState,
             _noticeVisible,
             _windowOpen,
-            _selectedMenuIndex);
+            _selectedMenuIndex,
+            _themePreference);
     }
 
     protected void OnPropertyChanged(string propertyName)
@@ -680,11 +760,37 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
         if (e.PropertyName == nameof(UiPreferences.Theme)
             || e.PropertyName == nameof(UiPreferences.CurrentTheme)
             || e.PropertyName == nameof(UiPreferences.ActiveTheme)
-            || e.PropertyName == nameof(UiPreferences.Tema))
+            || e.PropertyName == nameof(UiPreferences.Tema)
+            || e.PropertyName == nameof(UiPreferences.ThemePreference)
+            || e.PropertyName == nameof(UiPreferences.CurrentThemePreference)
+            || e.PropertyName == nameof(UiPreferences.TemaPreferencia))
         {
-            _syncingPreferences = true;
-            try { TrySetTheme(_preferences.Theme); }
-            finally { _syncingPreferences = false; }
+            TrySetThemePreference(_preferences.ThemePreference, _preferences.Theme);
+        }
+    }
+
+    /// <summary>
+    /// Copia idioma, preferencia de tema y tema efectivo de las preferencias
+    /// recibidas en la sesión, sin realimentar el evento de preferencias.
+    /// </summary>
+    private void CopyPreferencesFrom(UiPreferences? preferences)
+    {
+        if (preferences is null)
+        {
+            return;
+        }
+
+        _syncingPreferences = true;
+        try
+        {
+            _preferences.TrySetLanguage(preferences.Language);
+            _preferences.TrySetThemePreference(
+                preferences.ThemePreference,
+                preferences.Theme);
+        }
+        finally
+        {
+            _syncingPreferences = false;
         }
     }
 
@@ -722,6 +828,8 @@ public interface ISession
     string CurrentLanguage { get; set; }
     Theme Theme { get; set; }
     Theme CurrentTheme { get; set; }
+    ThemePreference ThemePreference { get; set; }
+    ThemePreference CurrentThemePreference { get; set; }
     MenuState MenuState { get; set; }
     bool IsMenuOpen { get; set; }
     int SelectedMenuIndex { get; set; }
@@ -739,6 +847,9 @@ public interface ISession
 
     bool TrySetTheme(Theme theme);
     bool TrySetTheme(string? theme);
+    bool TrySetThemePreference(ThemePreference preference);
+    bool TrySetThemePreference(ThemePreference preference, Theme systemTheme);
+    bool TrySetThemePreference(string? preference);
     void SetTheme(Theme theme);
     void SetTheme(string theme);
     void ToggleTheme();
