@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -9,6 +10,7 @@ using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using EggMdEditor.App.I18n;
+using Material.Icons.Avalonia;
 using Xunit;
 using AvaloniaThemeVariant = Avalonia.Styling.ThemeVariant;
 
@@ -45,6 +47,7 @@ public class HelpSurfaceTests
         Assert.Contains("Egg MD Editor", viewModel.Content, StringComparison.Ordinal);
         Assert.Contains("Versión: " + viewModel.Version, viewModel.Content, StringComparison.Ordinal);
         Assert.Contains("Avalonia UI", viewModel.Content, StringComparison.Ordinal);
+        Assert.Contains(IconLibrary.PackageName, viewModel.Content, StringComparison.Ordinal);
         Assert.Contains("MIT", viewModel.Content, StringComparison.Ordinal);
 
         // BR-013/COM-002: la superficie se relabeliza en caliente.
@@ -58,6 +61,42 @@ public class HelpSurfaceTests
             viewModel.Sections.Select(section => section.Title));
         Assert.Contains("Version: " + viewModel.Version, viewModel.Content, StringComparison.Ordinal);
         Assert.Contains("MIT license", viewModel.Content, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AboutSectionAttributesTheMitIconLibraryWithNameVersionAndLicense()
+    {
+        var catalog = new I18nCatalog();
+        var session = new Session(catalog);
+        var viewModel = new HelpWindowViewModel(session, catalog);
+
+        // NFR-011: el Acerca de de SC-003 atribuye la librería de iconos de
+        // VR-001 con nombre, versión y licencia MIT.
+        Assert.Contains(IconLibrary.PackageName, viewModel.Content, StringComparison.Ordinal);
+        Assert.Contains(IconLibrary.IconSetName, viewModel.Content, StringComparison.Ordinal);
+        Assert.Contains(IconLibrary.Version, viewModel.Content, StringComparison.Ordinal);
+        Assert.Contains("licencia " + IconLibrary.License, viewModel.Content, StringComparison.Ordinal);
+
+        Assert.True(session.TrySetLanguage("en"));
+        Assert.Contains("Icon library:", viewModel.Content, StringComparison.Ordinal);
+        Assert.Contains(IconLibrary.PackageName, viewModel.Content, StringComparison.Ordinal);
+        Assert.Contains(IconLibrary.Version, viewModel.Content, StringComparison.Ordinal);
+        Assert.Contains(IconLibrary.License + " license", viewModel.Content, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void IconLibraryAttributionMatchesTheReferencedPackageVersion()
+    {
+        var assembly = typeof(MaterialIcon).Assembly;
+        var informational = assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion;
+        var version = string.IsNullOrWhiteSpace(informational)
+            ? assembly.GetName().Version?.ToString(3)
+            : informational.Split('+')[0];
+
+        // NFR-011: la versión atribuida en SC-003 es la del paquete cargado.
+        Assert.Equal(IconLibrary.Version, version);
     }
 
     [Fact]
@@ -155,6 +194,8 @@ public class HelpSurfaceTests
             Assert.Equal(3, list.ItemCount);
             Assert.Equal("Acerca de", title.Text);
             Assert.Contains("MIT", content.Text, StringComparison.Ordinal);
+            Assert.Contains(IconLibrary.PackageName, content.Text, StringComparison.Ordinal);
+            Assert.Contains(IconLibrary.Version, content.Text, StringComparison.Ordinal);
             Assert.Equal("Copiar texto", copy.Content);
             Assert.Equal("Cerrar", close.Content);
 
