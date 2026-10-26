@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
@@ -193,15 +194,19 @@ public class HelpSurfaceTests
             window.Show();
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            var helpMenu = Assert.IsType<MenuItem>(window.FindControl<MenuItem>("HelpMenu"));
-            Assert.True(helpMenu.HasSubMenu);
-            Assert.Equal("Guía de Markdown", Assert.IsType<MenuItem>(helpMenu.Items[0]).Header);
-            Assert.Equal("Atajos de teclado", Assert.IsType<MenuItem>(helpMenu.Items[1]).Header);
-            Assert.IsType<Separator>(helpMenu.Items[2]);
-            Assert.Equal("Acerca de Egg MD Editor", Assert.IsType<MenuItem>(helpMenu.Items[3]).Header);
+            var helpButton = Assert.IsType<ToggleButton>(window.FindControl<ToggleButton>("HelpMenuButton"));
+            Assert.NotNull(helpButton);
+            Assert.Equal("Guía de Markdown", Assert.IsType<Button>(window.FindControl<Button>("HelpGuideItem")).Content as string);
+            Assert.Equal("Atajos de teclado", Assert.IsType<Button>(window.FindControl<Button>("HelpShortcutsItem")).Content as string);
+            Assert.IsType<Separator>(window.FindControl<Separator>("HelpMenuSeparator"));
+            Assert.Equal("Acerca de Egg MD Editor", Assert.IsType<Button>(window.FindControl<Button>("HelpAboutItem")).Content as string);
 
-            var about = Assert.IsType<MenuItem>(window.FindControl<MenuItem>("HelpAboutItem"));
-            about.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+            helpButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+            Assert.True(viewModel.IsMenuOpen);
+
+            var about = Assert.IsType<Button>(window.FindControl<Button>("HelpAboutItem"));
+            about.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             var help = window.HelpWindow;
@@ -211,15 +216,15 @@ public class HelpSurfaceTests
             Assert.Equal("Acerca de", help.ViewModel.ActiveSectionTitle);
 
             // La misma superficie se reutiliza al navegar desde el menú.
-            var guide = Assert.IsType<MenuItem>(window.FindControl<MenuItem>("HelpGuideItem"));
-            guide.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+            var guide = Assert.IsType<Button>(window.FindControl<Button>("HelpGuideItem"));
+            guide.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             Assert.Same(help, window.HelpWindow);
             Assert.Equal(HelpSection.Guide, help.ViewModel.ActiveSectionKind);
 
-            var shortcuts = Assert.IsType<MenuItem>(window.FindControl<MenuItem>("HelpShortcutsItem"));
-            shortcuts.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+            var shortcuts = Assert.IsType<Button>(window.FindControl<Button>("HelpShortcutsItem"));
+            shortcuts.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             Assert.Same(help, window.HelpWindow);
@@ -290,15 +295,15 @@ public class HelpSurfaceTests
             window.Show();
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            var about = Assert.IsType<MenuItem>(window.FindControl<MenuItem>("HelpAboutItem"));
-            Assert.Equal("Acerca de Egg MD Editor", about.Header);
+            var about = Assert.IsType<Button>(window.FindControl<Button>("HelpAboutItem"));
+            Assert.Equal("Acerca de Egg MD Editor", about.Content as string);
 
             Assert.True(viewModel.TryChangeLanguage("en"));
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            Assert.Equal("About Egg MD Editor", about.Header);
-            Assert.Equal("Markdown guide", Assert.IsType<MenuItem>(window.FindControl<MenuItem>("HelpGuideItem")).Header);
-            Assert.Equal("Keyboard shortcuts", Assert.IsType<MenuItem>(window.FindControl<MenuItem>("HelpShortcutsItem")).Header);
+            Assert.Equal("About Egg MD Editor", about.Content as string);
+            Assert.Equal("Markdown guide", Assert.IsType<Button>(window.FindControl<Button>("HelpGuideItem")).Content as string);
+            Assert.Equal("Keyboard shortcuts", Assert.IsType<Button>(window.FindControl<Button>("HelpShortcutsItem")).Content as string);
         }
         finally
         {
