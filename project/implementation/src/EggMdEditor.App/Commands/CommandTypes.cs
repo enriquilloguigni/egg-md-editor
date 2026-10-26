@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace EggMdEditor.App;
 
 /// <summary>
@@ -10,41 +6,20 @@ namespace EggMdEditor.App;
 /// </summary>
 public enum CommandResult
 {
-    None = 0,
     NoEffect = 0,
     Handled = 1,
     Ignored = 2,
-    Unregistered = 3,
     NotFound = 3,
     NotAvailable = 4,
-    Inert = 4,
 }
 
 public enum DispatchResult
 {
-    None = 0,
     NoEffect = 0,
     Handled = 1,
     Ignored = 2,
     NotFound = 3,
     NotAvailable = 4,
-}
-
-public enum CommandStatus
-{
-    Registered = 0,
-    Unregistered = 1,
-    Available = 2,
-    Inert = 3,
-    Disabled = 4,
-}
-
-public enum ShortcutStatus
-{
-    Active = 0,
-    Inactive = 1,
-    Disabled = 2,
-    Inert = 3,
 }
 
 /// <summary>
@@ -58,92 +33,21 @@ public class SharedCommand
     public SharedCommand(string name)
     {
         Name = name ?? string.Empty;
-        Id = name ?? string.Empty;
         Command = Name;
     }
 
     public SharedCommand(string name, string? command)
     {
         Name = name ?? string.Empty;
-        Id = name ?? string.Empty;
         Command = command ?? Name;
     }
 
     public string Name { get; set; } = string.Empty;
-    public string Id { get; set; } = string.Empty;
-    public string Key { get; set; } = string.Empty;
     public string Command { get; set; } = string.Empty;
-    public string CommandName { get; set; } = string.Empty;
-    public string Action { get; set; } = string.Empty;
     public string Argument { get; set; } = string.Empty;
-    public string Parameter
-    {
-        get => Argument;
-        set => Argument = value ?? string.Empty;
-    }
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public bool IsAvailable { get; set; }
-    public bool Available { get; set; }
-    public bool Active { get; set; } = true;
-    public bool Enabled { get; set; } = true;
 
-    public string Identifier => string.IsNullOrWhiteSpace(Id) ? Name : Id;
-    public string DisplayName => string.IsNullOrWhiteSpace(Title) ? Name : Title;
-
-    public override string ToString() => string.IsNullOrWhiteSpace(Command) ? Name : Command;
-}
-
-/// <summary>
-/// Alias de comando compartido con múltiples nombres compatibles.
-/// </summary>
-public class Command : SharedCommand
-{
-    public Command() : base() { }
-    public Command(string name) : base(name) { }
-    public Command(string name, string? command) : base(name, command) { }
-}
-
-public class EditorCommand : SharedCommand
-{
-    public EditorCommand() : base() { }
-    public EditorCommand(string name) : base(name) { }
-    public EditorCommand(string name, string? command) : base(name, command) { }
-}
-
-public class AppCommand : SharedCommand
-{
-    public AppCommand() : base() { }
-    public AppCommand(string name) : base(name) { }
-    public AppCommand(string name, string? command) : base(name, command) { }
-}
-
-public class MenuCommand : SharedCommand
-{
-    public MenuCommand() : base() { }
-    public MenuCommand(string name) : base(name) { }
-    public MenuCommand(string name, string? command) : base(name, command) { }
-}
-
-public class ToolbarCommand : SharedCommand
-{
-    public ToolbarCommand() : base() { }
-    public ToolbarCommand(string name) : base(name) { }
-    public ToolbarCommand(string name, string? command) : base(name, command) { }
-}
-
-public class BarCommand : SharedCommand
-{
-    public BarCommand() : base() { }
-    public BarCommand(string name) : base(name) { }
-    public BarCommand(string name, string? command) : base(name, command) { }
-}
-
-public class ShortcutCommand : SharedCommand
-{
-    public ShortcutCommand() : base() { }
-    public ShortcutCommand(string name) : base(name) { }
-    public ShortcutCommand(string name, string? command) : base(name, command) { }
+    public override string ToString() =>
+        string.IsNullOrWhiteSpace(Command) ? Name : Command;
 }
 
 /// <summary>
@@ -161,41 +65,25 @@ public class Shortcut
     public Shortcut(string combination, string command)
     {
         Combination = combination ?? string.Empty;
-        Key = Combination;
-        Keys = Combination;
         Command = command ?? string.Empty;
-        CommandName = Command;
         Active = true;
         IsAvailable = IsAvailableCommand(Command);
     }
 
     public Shortcut(string combination, SharedCommand? command)
-        : this(combination, command?.Name ?? command?.Command ?? string.Empty)
+        : this(combination, ResolveCommandName(command))
     {
         CommandRef = command;
+        Argument = command?.Argument ?? string.Empty;
     }
 
     public string Combination { get; set; } = string.Empty;
-    public string Key { get; set; } = string.Empty;
-    public string Keys { get; set; } = string.Empty;
-    public string ShortcutKey { get; set; } = string.Empty;
-    public string KeyCombination { get; set; } = string.Empty;
     public string Command { get; set; } = string.Empty;
-    public string CommandName { get; set; } = string.Empty;
-    public string Action { get; set; } = string.Empty;
     public string Argument { get; set; } = string.Empty;
-    public string Parameter
-    {
-        get => Argument;
-        set => Argument = value ?? string.Empty;
-    }
     public SharedCommand? CommandRef { get; set; }
     public bool Active { get; set; } = true;
     public bool Enabled { get; set; } = true;
     public bool IsAvailable { get; set; }
-    public string Description { get; set; } = string.Empty;
-
-    public string Identifier => string.IsNullOrWhiteSpace(Combination) ? Key : Combination;
 
     public static bool IsAvailableCommandPublic(string? command) => IsAvailableCommand(command);
 
@@ -211,53 +99,21 @@ public class Shortcut
             or "openmenu" or "closemenu" or "togglemenu"
             or "shownotice" or "hidetooltip" or "togglenotice"
             or "changelanguage" or "switchlanguage"
-            or "changetheme" or "togglettheme" or "toggletheme"
+            or "changetheme" or "toggletheme"
             or "requestfocus" or "escape" or "esc";
     }
 
+    private static string ResolveCommandName(SharedCommand? command)
+    {
+        if (command is null)
+        {
+            return string.Empty;
+        }
+
+        return string.IsNullOrWhiteSpace(command.Name) ? command.Command : command.Name;
+    }
+
     public override string ToString() => $"{Combination} -> {Command}";
-}
-
-public class KeyboardShortcut : Shortcut
-{
-    public KeyboardShortcut() : base() { }
-    public KeyboardShortcut(string combination, string command) : base(combination, command) { }
-    public KeyboardShortcut(string combination, SharedCommand? command) : base(combination, command) { }
-}
-
-public class KeyShortcut : Shortcut
-{
-    public KeyShortcut() : base() { }
-    public KeyShortcut(string combination, string command) : base(combination, command) { }
-    public KeyShortcut(string combination, SharedCommand? command) : base(combination, command) { }
-}
-
-public class KeyBinding : Shortcut
-{
-    public KeyBinding() : base() { }
-    public KeyBinding(string combination, string command) : base(combination, command) { }
-    public KeyBinding(string combination, SharedCommand? command) : base(combination, command) { }
-}
-
-public class ShortcutBinding : Shortcut
-{
-    public ShortcutBinding() : base() { }
-    public ShortcutBinding(string combination, string command) : base(combination, command) { }
-    public ShortcutBinding(string combination, SharedCommand? command) : base(combination, command) { }
-}
-
-public class Binding : Shortcut
-{
-    public Binding() : base() { }
-    public Binding(string combination, string command) : base(combination, command) { }
-    public Binding(string combination, SharedCommand? command) : base(combination, command) { }
-}
-
-public class KeyBindingEntry : Shortcut
-{
-    public KeyBindingEntry() : base() { }
-    public KeyBindingEntry(string combination, string command) : base(combination, command) { }
-    public KeyBindingEntry(string combination, SharedCommand? command) : base(combination, command) { }
 }
 
 public static class CommandNames
