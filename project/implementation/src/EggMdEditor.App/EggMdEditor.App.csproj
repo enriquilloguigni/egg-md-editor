@@ -11,10 +11,25 @@
     <PackageReference Include="Avalonia.Desktop" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
+    <!--
+      T-018: el modo de prueba E2E (EGGMD_TEST_MODE) ejecuta la aplicación con
+      la plataforma headless para poder validar AC-005/AC-006/AC-007 a nivel de
+      proceso en entornos sin servidor gráfico. En ejecución normal se sigue
+      usando UsePlatformDetect y esta dependencia no interviene.
+    -->
+    <PackageReference Include="Avalonia.Headless" />
     <PackageReference Include="Material.Icons" VersionOverride="3.0.2" />
     <PackageReference Include="Material.Icons.Avalonia" VersionOverride="3.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" VersionOverride="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" VersionOverride="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      T-018: las pruebas E2E comparten los nombres de las variables de entorno
+      del arnés con StartupTestMode, evitando que ambas definiciones diverjan.
+    -->
+    <InternalsVisibleTo Include="EggMdEditor.App.Tests" />
   </ItemGroup>
 
 </Project>
