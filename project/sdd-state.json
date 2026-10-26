@@ -9,7 +9,7 @@
   },
   "features": {
     "F-001-entorno-de-aplicacion": {
-      "status": "implementing",
+      "status": "verifying",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -49,14 +49,14 @@
         "T-019": "done"
       },
       "verification": {
-        "run": "v1",
-        "execution": "E-002",
+        "run": "v2",
+        "execution": "E-003",
         "spec": "v2",
         "plan": "v2",
-        "commit": "b1f4e944fcf8966860f4fb122bcf79487e84d537",
+        "commit": "60f8af180e44b97eeb550e522184879c43a40f2f",
         "stale": false,
-        "evidence_sha256": "36c63ac4c750e444ba4bd1b6e985dac956a7b8a332615b5c4277cb2d48077fdb",
-        "visual_sha256": "ddfabf7b3835fbf40575e6018fd12c2fc8df7c652c4bc7390bd215a8ddc35b04"
+        "evidence_sha256": "4c61e637165971965f1e9f6e777234e300abbfb83c3462b4f73ae0c7e74c6a9f",
+        "visual_sha256": "c8cec06fee99c288780fdecd946dc74818630b6af76f2b3af77b1b5f5db26477"
       }
     }
   },
@@ -189,7 +189,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-26T21:02:12.418Z",
+  "updated_at": "2026-10-26T21:07:19.331Z",
   "owner": "EG",
   "sources": [
     {
