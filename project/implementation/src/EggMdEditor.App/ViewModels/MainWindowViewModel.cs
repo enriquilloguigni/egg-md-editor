@@ -19,7 +19,7 @@ namespace EggMdEditor.App;
 /// tema (OP-002) y las superficies de ayuda (SC-003) y diálogo genérico
 /// (SC-002) son las únicas acciones disponibles y ninguna altera el documento.
 /// </summary>
-public partial class MainWindowViewModel : INotifyPropertyChanged
+public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
 {
     private ICommand? _changeLanguageCommand;
     private ICommand? _changeThemeCommand;
@@ -36,6 +36,24 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     private readonly List<string> _menuShortcutCombinations = new();
     private bool _registeringShortcuts;
     private DialogViewModel? _dialog;
+
+    public MainWindowViewModel()
+    {
+        RegisterAvailableShortcuts();
+    }
+
+    public MainWindowViewModel(Session? session)
+        : base(session)
+    {
+        Catalog = session?.Catalog;
+        RegisterAvailableShortcuts();
+    }
+
+    public MainWindowViewModel(II18nCatalog? catalog)
+        : base(catalog)
+    {
+        RegisterAvailableShortcuts();
+    }
 
     /// <summary>Claves i18n de los 6 menús de FR-011, en el orden declarado.</summary>
     public static IReadOnlyList<string> MenuKeys { get; } = Array.AsReadOnly(
@@ -1150,8 +1168,6 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         if (existing is not null)
         {
             existing.Command = commandName;
-            existing.CommandName = commandName;
-            existing.Action = commandName;
             existing.Active = true;
             existing.Enabled = true;
             existing.IsAvailable = Shortcut.IsAvailableCommandPublic(commandName);
