@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Que la aplicación arranque como entorno base en una sola ventana, con menú principal persistente, barra de formato, atajos de teclado, interfaz conmutable español/inglés sobre i18n extensible y tema claro/oscuro, mostrando la forma completa de menú y barra (sus opciones visibles) sin conectarlas aún a sus acciones.
+Que el usuario encuentre al abrir la aplicación una única ventana de trabajo con un menú principal persistente de seis rótulos navegables, una barra de formato con doce controles identificables, atajos de teclado, una interfaz conmutable entre español e inglés y un tema claro, oscuro o heredado del sistema, de modo que reconozca la estructura completa del editor y pueda recorrer sus opciones —los seis rótulos del menú, no sus entradas internas— aunque las acciones asociadas todavía no estén conectadas.
 
 ## Prioridad
 
@@ -14,6 +14,7 @@ Sí — su comportamiento puede comprobarse de forma aislada del resto de Featur
 
 ## Referencias Project Spec
 
+- `FR-009` — presentación y navegación (tema Claro/Oscuro/Sistema).
 - `FR-010` — localización y ayuda (interfaz es/en, guía, atajos, Acerca de).
 - `FR-011` — menú principal persistente (Archivos, Edición, Ver, Formato, Herramientas, Ayuda); en esta Feature solo su parte visual.
 - `FR-012` — barra de formato con icono y aviso flotante; en esta Feature solo su parte visual.
@@ -32,4 +33,4 @@ Ninguna — F-001 no depende de ninguna otra Feature (roadmap v1).
 
 ## Estado
 
-planned — spec v1 y plan v1 vigentes; PLAN_REVIEW pendiente.
+implementing — spec v2 y plan v2 vigentes; re-ejecución de gates en curso.
