@@ -2,7 +2,7 @@
 
 Regla anti-sobre-registro:
 
-- Solo las operaciones relevantes para diagnosticar generan `LOG-xxx`; el resto de eventos internos de `SC-001` (apertura de menús, avisos flotantes, atajos inertes, conmutación de tema) no se registran.
+- Solo las operaciones relevantes para diagnosticar generan `LOG-xxx`; el resto de eventos internos de `SC-001` (apertura de menús, navegación secuencial de rótulos, avisos flotantes, atajos inertes, conmutación de tema) no se registran.
 - La trazabilidad de usuario antes/después vive en `audit.md` y los errores de negocio en `error-handling.md`; este documento solo define el registro técnico que dichos fallos enlazan con `Log: Requerido. Referencia: LOG-xxx`.
 - Correlación: proceso con una única sesión y ventana `SC-001`; todo registro comparte el identificador de sesión, lleva marca de tiempo ISO 8601 y sale por la salida estándar del proceso — nada se escribe a disco ni sale del equipo (C-001, NFR-010).
 
@@ -22,6 +22,6 @@ LOG-003 — Cierre de `SC-001` y fin de sesión
 
 - **Registro:** inicio del cierre y fin del proceso — ambos eventos · **resultado:** cierre limpio sin procesos residuales o fallo con tipo y mensaje de la excepción de liberación · **nivel:** `Info` en éxito, `Error` en fallo (enlazado desde `error-handling.md`).
 - **Datos:** hora · sesión · duración total de la sesión en ms.
-- **No debe registrarse:** la elección de idioma como preferencia (no se persiste en F-001, FR-013 → F-010), estado de menú y avisos, estado antes/después de la sesión.
+- **No debe registrarse:** la elección de idioma o de tema como preferencia (no se persiste en F-001, FR-013 → F-010), estado de menú/rótulo y avisos, estado antes/después de la sesión.
 
-Sin LOG — `No requerido / Fuera de alcance:` interacciones de menú, barra de formato, tema y atajos (`COM-001`, `COM-003`, `COM-004`, `COM-006`); no son operaciones diagnosticables y no alteran el documento (ADR-001).
+Sin LOG — `No requerido / Fuera de alcance:` interacciones de menú, barra de formato, tema, navegación secuencial y atajos (`COM-001`, `COM-003`, `COM-004`, `COM-006`); no son operaciones diagnosticables y no alteran el documento (ADR-001).
