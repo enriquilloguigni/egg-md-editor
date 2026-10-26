@@ -1,0 +1,16 @@
+{
+  "feature": "F-001-entorno-de-aplicacion",
+  "execution": "E-002",
+  "command": "dotnet test project/implementation/tests/EggMdEditor.App.Tests/EggMdEditor.App.Tests.csproj",
+  "exit_code": 0,
+  "passed": true,
+  "duration_ms": 9200,
+  "env": {
+    "os": "Linux",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "executed_at": "2026-10-24 14:22:38",
+  "stdout_tail": "  Determinando los proyectos que se van a restaurar...\n  Todos los proyectos están actualizados para la restauración.\n  EggMdEditor.App -> /home/enriquilloguigni/source/github/egg-md-editor/project/implementation/src/EggMdEditor.App/bin/Debug/net10.0/EggMdEditor.App.dll\n  EggMdEditor.App.Tests -> /home/enriquilloguigni/source/github/egg-md-editor/project/implementation/tests/EggMdEditor.App.Tests/bin/Debug/net10.0/EggMdEditor.App.Tests.dll\n  Ejecutar pruebas: '/home/enriquilloguigni/source/github/egg-md-editor/project/implementation/tests/EggMdEditor.App.Tests/bin/Debug/net10.0/EggMdEditor.App.Tests.dll' [net10.0|x64]\n  Correcta. Error: 0, Correcto: 119, Omitido: 0, Total: 119, Duración: 3s 216ms - EggMdEditor.App.Tests.dll (net10.0|x64)\n  Pruebas correctas: '/home/enriquilloguigni/source/github/egg-md-editor/project/implementation/tests/EggMdEditor.App.Tests/bin/Debug/net10.0/EggMdEditor.App.Tests.dll' [net10.0|x64]\n",
+  "stderr_tail": ""
+}
