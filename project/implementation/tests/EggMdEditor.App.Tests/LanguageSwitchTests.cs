@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using EggMdEditor.App.I18n;
@@ -59,9 +60,9 @@ public class LanguageSwitchTests
             window.Show();
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            var menu = Assert.IsType<Menu>(window.FindControl<Menu>("MainMenu"));
-            var menuItems = menu.Items.Cast<MenuItem>().ToList();
-            Assert.Equal("Archivo", menuItems[0].Header);
+            var labels = Assert.IsType<StackPanel>(window.FindControl<StackPanel>("MenuLabels"));
+            var menuButtons = labels.Children.OfType<ToggleButton>().ToList();
+            Assert.Equal("Archivo", menuButtons[0].Content as string);
             Assert.True(viewModel.IsSpanish);
             Assert.False(viewModel.IsEnglish);
 
@@ -80,8 +81,11 @@ public class LanguageSwitchTests
             Assert.True(session.NoticeVisible);
 
             // Rótulos del menú y de la barra relabelizados en la misma ventana.
-            Assert.Equal(ExpectedEnglishHeaders, menuItems.Select(item => item.Header as string));
+            Assert.Equal(ExpectedEnglishHeaders, menuButtons.Select(button => button.Content as string));
             Assert.Equal("Interface language", viewModel.LanguageMenuHeader);
+            Assert.Equal("Previous", viewModel.PreviousMenuLabel);
+            Assert.Equal("Next", viewModel.NextMenuLabel);
+            Assert.True(menuButtons[0].IsChecked);
 
             var bar = Assert.IsType<ItemsControl>(window.FindControl<ItemsControl>("FormatBar"));
             var buttons = bar.GetVisualDescendants().OfType<Button>().ToList();
@@ -107,24 +111,21 @@ public class LanguageSwitchTests
             window.Show();
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            var menu = Assert.IsType<Menu>(window.FindControl<Menu>("MainMenu"));
-            var tools = Assert.IsType<MenuItem>(menu.Items[4]);
-            var languageMenu = Assert.IsType<MenuItem>(Assert.Single(tools.Items));
-            var options = languageMenu.Items.Cast<MenuItem>().ToList();
+            var spanish = Assert.IsType<RadioButton>(window.FindControl<RadioButton>("SpanishLanguageItem"));
+            var english = Assert.IsType<RadioButton>(window.FindControl<RadioButton>("EnglishLanguageItem"));
 
-            Assert.Equal(2, options.Count);
-            Assert.Equal("Español", options[0].Header);
-            Assert.Equal("English", options[1].Header);
-            Assert.True(options[0].IsChecked);
-            Assert.False(options[1].IsChecked);
+            Assert.Equal("Español", spanish.Content as string);
+            Assert.Equal("English", english.Content as string);
+            Assert.True(spanish.IsChecked);
+            Assert.False(english.IsChecked);
 
             Assert.True(viewModel.ChangeLanguageCommand.CanExecute("en"));
             viewModel.ChangeLanguageCommand.Execute("en");
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             Assert.Equal("en", catalog.CurrentLanguage);
-            Assert.False(options[0].IsChecked);
-            Assert.True(options[1].IsChecked);
+            Assert.False(spanish.IsChecked);
+            Assert.True(english.IsChecked);
         }
         finally
         {
@@ -150,29 +151,27 @@ public class LanguageSwitchTests
             window.Show();
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            var menu = Assert.IsType<Menu>(window.FindControl<Menu>("MainMenu"));
-            var menuItems = menu.Items.Cast<MenuItem>().ToList();
-            var headersBefore = menuItems.Select(item => item.Header as string).ToArray();
+            var labels = Assert.IsType<StackPanel>(window.FindControl<StackPanel>("MenuLabels"));
+            var menuButtons = labels.Children.OfType<ToggleButton>().ToList();
+            var headersBefore = menuButtons.Select(button => button.Content as string).ToArray();
 
             var bar = Assert.IsType<ItemsControl>(window.FindControl<ItemsControl>("FormatBar"));
             var tooltipsBefore = bar.GetVisualDescendants().OfType<Button>()
                 .Select(button => ToolTip.GetTip(button) as string)
                 .ToArray();
 
-            var tools = Assert.IsType<MenuItem>(menuItems[4]);
-            var options = Assert.IsType<MenuItem>(Assert.Single(tools.Items))
-                .Items.Cast<MenuItem>()
-                .ToList();
-            Assert.True(options[0].IsChecked);
-            Assert.False(options[1].IsChecked);
+            var spanish = Assert.IsType<RadioButton>(window.FindControl<RadioButton>("SpanishLanguageItem"));
+            var english = Assert.IsType<RadioButton>(window.FindControl<RadioButton>("EnglishLanguageItem"));
+            Assert.True(spanish.IsChecked);
+            Assert.False(english.IsChecked);
 
             // ERR-003: el idioma destino no está cargado -> aborto sin cambio.
-            // El handler de menú marca la opción antes de despachar el comando.
-            options[1].SetCurrentValue(MenuItem.IsCheckedProperty, true);
-            Assert.True(options[1].IsChecked);
-            Assert.False(options[0].IsChecked);
+            // El selector de radio marca la opción antes de ejecutar el comando.
+            english.SetCurrentValue(ToggleButton.IsCheckedProperty, true);
+            Assert.True(english.IsChecked);
+            Assert.False(spanish.IsChecked);
 
-            options[1].RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(MenuItem.ClickEvent));
+            viewModel.ChangeLanguageCommand.Execute("en");
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
             Assert.Equal("es", catalog.CurrentLanguage);
@@ -180,13 +179,13 @@ public class LanguageSwitchTests
             Assert.Equal("es", session.Preferences.Language);
             Assert.Equal(MenuState.Open, session.MenuState);
             Assert.True(session.NoticeVisible);
-            Assert.Equal(headersBefore, menuItems.Select(item => item.Header as string));
+            Assert.Equal(headersBefore, menuButtons.Select(button => button.Content as string));
             Assert.Equal(
                 tooltipsBefore,
                 bar.GetVisualDescendants().OfType<Button>()
                     .Select(button => ToolTip.GetTip(button) as string));
-            Assert.True(options[0].IsChecked);
-            Assert.False(options[1].IsChecked);
+            Assert.True(spanish.IsChecked);
+            Assert.False(english.IsChecked);
 
             Assert.Contains(logger.Entries, entry => entry.Level == LogLevel.Error);
         }
@@ -251,7 +250,10 @@ public class LanguageSwitchTests
             [MainWindowViewModel.EnglishLanguageKey] = "English",
         };
 
-        foreach (var key in MainWindowViewModel.MenuKeys.Concat(MainWindowViewModel.FormatBarKeys))
+        foreach (var key in MainWindowViewModel.MenuKeys
+                     .Concat(MainWindowViewModel.FormatBarKeys)
+                     .Append(MainWindowViewModel.PreviousMenuKey)
+                     .Append(MainWindowViewModel.NextMenuKey))
         {
             es[key] = "ES " + key;
             if (!string.Equals(key, omitEnglishKey, StringComparison.Ordinal))
