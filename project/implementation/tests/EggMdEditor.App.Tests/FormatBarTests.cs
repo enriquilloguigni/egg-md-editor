@@ -159,7 +159,8 @@ public class FormatBarTests
 
             Assert.NotNull(container);
             Assert.NotNull(documentArea);
-            Assert.Equal(Dock.Top, DockPanel.GetDock(container));
+            Assert.Equal(1, Grid.GetRow(container));
+            Assert.Equal(2, Grid.GetRow(documentArea));
             Assert.Same(viewModel, window.DataContext);
         }
         finally
