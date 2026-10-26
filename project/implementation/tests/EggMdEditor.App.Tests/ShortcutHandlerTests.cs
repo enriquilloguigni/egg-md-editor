@@ -1,5 +1,6 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
@@ -177,6 +178,8 @@ public class ShortcutHandlerTests
 
             Assert.True(viewModel.IsMenuOpen);
             Assert.Equal("Menu.File", viewModel.OpenMenuKey);
+            Assert.Equal("Menu.File", viewModel.SelectedMenuKey);
+            Assert.Equal(1, viewModel.SelectedMenuIndex);
 
             // TR-005: Esc cierra el menú sin acción de dominio (ADR-001).
             window.KeyPressQwerty(PhysicalKey.Escape, RawInputModifiers.None);
@@ -256,12 +259,14 @@ public class ShortcutHandlerTests
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
             Assert.Equal("Menu.Format", viewModel.OpenMenuKey);
 
-            var formatMenu = window.FindControl<MenuItem>("FormatMenu");
-            var fileMenu = window.FindControl<MenuItem>("FileMenu");
+            var formatMenu = window.FindControl<ToggleButton>("FormatMenuButton");
+            var fileMenu = window.FindControl<ToggleButton>("FileMenuButton");
             Assert.NotNull(formatMenu);
             Assert.NotNull(fileMenu);
             Assert.True(formatMenu.IsFocused);
             Assert.False(fileMenu.IsFocused);
+            Assert.True(formatMenu.IsChecked);
+            Assert.Equal(4, viewModel.SelectedMenuIndex);
         }
         finally
         {
