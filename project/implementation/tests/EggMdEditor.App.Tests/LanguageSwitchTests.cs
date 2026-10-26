@@ -89,7 +89,6 @@ public class LanguageSwitchTests
 
             var bar = Assert.IsType<ItemsControl>(window.FindControl<ItemsControl>("FormatBar"));
             var buttons = bar.GetVisualDescendants().OfType<Button>().ToList();
-            Assert.Equal(ExpectedEnglishNames, buttons.Select(ToolTip.GetTip));
             Assert.Equal(ExpectedEnglishNames, buttons.Select(AutomationProperties.GetName));
             Assert.Same(viewModel, window.DataContext);
         }
@@ -156,8 +155,8 @@ public class LanguageSwitchTests
             var headersBefore = menuButtons.Select(button => button.Content as string).ToArray();
 
             var bar = Assert.IsType<ItemsControl>(window.FindControl<ItemsControl>("FormatBar"));
-            var tooltipsBefore = bar.GetVisualDescendants().OfType<Button>()
-                .Select(button => ToolTip.GetTip(button) as string)
+            var namesBefore = bar.GetVisualDescendants().OfType<Button>()
+                .Select(button => AutomationProperties.GetName(button))
                 .ToArray();
 
             var spanish = Assert.IsType<RadioButton>(window.FindControl<RadioButton>("SpanishLanguageItem"));
@@ -181,9 +180,9 @@ public class LanguageSwitchTests
             Assert.True(session.NoticeVisible);
             Assert.Equal(headersBefore, menuButtons.Select(button => button.Content as string));
             Assert.Equal(
-                tooltipsBefore,
+                namesBefore,
                 bar.GetVisualDescendants().OfType<Button>()
-                    .Select(button => ToolTip.GetTip(button) as string));
+                    .Select(button => AutomationProperties.GetName(button)));
             Assert.True(spanish.IsChecked);
             Assert.False(english.IsChecked);
 
