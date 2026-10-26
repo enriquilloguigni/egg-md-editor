@@ -25,6 +25,7 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     private ICommand? _selectNextMenuCommand;
     private ICommand? _selectPreviousMenuCommand;
     private Theme _theme = Theme.Light;
+    private ThemePreference _themePreference = ThemePreference.System;
     private IThemeApplier? _themeApplier;
     private MenuState _menuState = MenuState.Closed;
     private string? _openMenuKey;
@@ -49,6 +50,12 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     public const string LanguageMenuKey = "Menu.Tools.Language";
     public const string SpanishLanguageKey = "Language.Spanish";
     public const string EnglishLanguageKey = "Language.English";
+
+    /// <summary>Entrada Herramientas → Tema (OP-002, SC-001).</summary>
+    public const string ThemeMenuKey = "Menu.Tools.Theme";
+    public const string LightThemeKey = "Theme.Light";
+    public const string DarkThemeKey = "Theme.Dark";
+    public const string SystemThemeKey = "Theme.System";
 
     /// <summary>Rótulo del botón de navegación secuencial «Anterior» (OP-007).</summary>
     public const string PreviousMenuKey = "Menu.Previous";
@@ -332,6 +339,18 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>Rótulo de la opción English de la selección de idioma.</summary>
     public string EnglishOptionHeader => ResolveCatalog().Get(EnglishLanguageKey);
 
+    /// <summary>Entrada Herramientas → Tema de la interfaz (OP-002, SC-001).</summary>
+    public string ThemeMenuHeader => ResolveCatalog().Get(ThemeMenuKey);
+
+    /// <summary>Rótulo de la opción Claro del selector de tema.</summary>
+    public string LightThemeOptionHeader => ResolveCatalog().Get(LightThemeKey);
+
+    /// <summary>Rótulo de la opción Oscuro del selector de tema.</summary>
+    public string DarkThemeOptionHeader => ResolveCatalog().Get(DarkThemeKey);
+
+    /// <summary>Rótulo de la opción Sistema del selector de tema.</summary>
+    public string SystemThemeOptionHeader => ResolveCatalog().Get(SystemThemeKey);
+
     /// <summary>
     /// Registro técnico de LOG-002. Se inyecta desde la composición de la
     /// aplicación; sin logger el cambio de idioma sigue funcionando igual.
@@ -353,15 +372,42 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         _changeLanguageCommand ??= new RelayCommand<string?>(code => TryChangeLanguage(code));
 
     /// <summary>
-    /// Tema activo de la interfaz (ENT-003, OP-002). La aplicación lo aplica
-    /// de forma global (COM-003) para que todas las superficies de SC-001
-    /// repinten de forma consistente.
+    /// Tema efectivo activo de la interfaz (ENT-001, ST-009/ST-010, OP-002).
+    /// La aplicación lo aplica de forma global (COM-003) para que todas las
+    /// superficies de SC-001 repinten de forma consistente.
     /// </summary>
     public Theme CurrentTheme => Session?.Theme ?? Preferences?.Theme ?? _theme;
 
     public bool IsLightTheme => CurrentTheme == Theme.Light;
 
     public bool IsDarkTheme => CurrentTheme == Theme.Dark;
+
+    /// <summary>
+    /// Preferencia de tema de Herramientas → Tema (ENT-003, OP-002):
+    /// {Claro,Oscuro,Sistema}, default Sistema.
+    /// </summary>
+    public ThemePreference CurrentThemePreference =>
+        Session?.ThemePreference ?? Preferences?.ThemePreference ?? _themePreference;
+
+    /// <summary>Opción Claro marcada en el selector de tema (mutuamente excluyente).</summary>
+    public bool IsLightThemeSelected =>
+        CurrentThemePreference == ThemePreference.Light;
+
+    /// <summary>Opción Oscuro marcada en el selector de tema (mutuamente excluyente).</summary>
+    public bool IsDarkThemeSelected =>
+        CurrentThemePreference == ThemePreference.Dark;
+
+    /// <summary>Opción Sistema marcada en el selector de tema (mutuamente excluyente).</summary>
+    public bool IsSystemThemeSelected =>
+        CurrentThemePreference == ThemePreference.System;
+
+    /// <summary>
+    /// Resolución del tema del SO para la opción Sistema (OP-002, TR-008/
+    /// TR-009). La composición usa la plataforma; las pruebas pueden
+    /// sustituirla por un valor determinista.
+    /// </summary>
+    public Func<Theme> SystemThemeResolver { get; set; } =
+        () => ApplicationThemeApplier.ResolveSystemTheme();
 
     /// <summary>
     /// Aplicador del tema de la aplicación (COM-003). La composición de la
@@ -375,55 +421,82 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Comando de conmutación de tema (OP-002). El parámetro es el tema
-    /// destino {light|claro, dark|oscuro}; un valor no soportado no altera el
-    /// tema activo (TR-008/TR-009).
+    /// Comando de conmutación de tema (OP-002). El parámetro es la
+    /// preferencia destino {light|claro, dark|oscuro, system|sistema}; un
+    /// valor no soportado no altera el tema activo (TR-008/TR-009).
     /// </summary>
     public ICommand ChangeThemeCommand =>
         _changeThemeCommand ??= new RelayCommand<string?>(theme => TryChangeTheme(theme));
 
     /// <summary>
     /// Conmuta el tema (OP-002, TR-008/TR-009): actualiza la sesión y las
-    /// preferencias (ENT-003); la aplicación aplica el tema a todas las
-    /// superficies (COM-003). Ante un tema no soportado se aborta sin cambio
-    /// parcial y se conserva el tema activo.
+    /// preferencias (ENT-003); la aplicación aplica el tema efectivo a todas
+    /// las superficies (COM-003). Ante una preferencia no soportada se aborta
+    /// sin cambio parcial y se conserva el estado válido.
     /// </summary>
     public bool TryChangeTheme(Theme theme)
     {
         if (theme is not (Theme.Light or Theme.Dark))
         {
+            RestoreThemeSelection();
             return false;
         }
+
+        return TryChangeTheme(UiPreferences.ThemePreferenceFor(theme));
+    }
+
+    /// <summary>
+    /// OP-002: selecciona Claro, Oscuro o Sistema. Sistema se resuelve del SO
+    /// en el momento de la selección (TR-008/TR-009); el tema efectivo se
+    /// aplica en caliente y no se persiste en F-001.
+    /// </summary>
+    public bool TryChangeTheme(ThemePreference preference)
+    {
+        if (!UiPreferences.IsSupportedThemePreference(preference))
+        {
+            RestoreThemeSelection();
+            return false;
+        }
+
+        var effective = ResolveEffectiveTheme(preference);
 
         if (Session is not null)
         {
-            if (!Session.TrySetTheme(theme))
+            if (!Session.TrySetThemePreference(preference, effective))
             {
+                RestoreThemeSelection();
                 return false;
             }
         }
-        else if (Preferences is not null && !Preferences.TrySetTheme(theme))
+        else if (Preferences is not null
+                 && !Preferences.TrySetThemePreference(preference, effective))
         {
+            RestoreThemeSelection();
             return false;
         }
 
-        _theme = theme;
-        ThemeApplier?.Apply(theme);
-        OnPropertyChanged(nameof(CurrentTheme));
-        OnPropertyChanged(nameof(IsLightTheme));
-        OnPropertyChanged(nameof(IsDarkTheme));
+        _theme = effective;
+        _themePreference = preference;
+        ThemeApplier?.Apply(effective);
+        RaiseThemeChanged();
         return true;
     }
 
     /// <summary>Conmuta el tema desde el selector de tema (OP-002).</summary>
     public bool TryChangeTheme(string? theme)
     {
-        return UiPreferences.TryParseTheme(theme, out var parsed) && TryChangeTheme(parsed);
+        if (!UiPreferences.TryParseThemePreference(theme, out var parsed))
+        {
+            RestoreThemeSelection();
+            return false;
+        }
+
+        return TryChangeTheme(parsed);
     }
 
     /// <summary>
-    /// Alterna entre ST-009 (claro) y ST-010 (oscuro) según el tema activo
-    /// (TR-008/TR-009).
+    /// Alterna entre ST-009 (claro) y ST-010 (oscuro) según el tema efectivo
+    /// activo (TR-008/TR-009). El selector pasa a la opción concreta.
     /// </summary>
     public bool ToggleTheme() =>
         TryChangeTheme(CurrentTheme == Theme.Dark ? Theme.Light : Theme.Dark);
@@ -746,6 +819,49 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(IsEnglish));
     }
 
+    /// <summary>
+    /// Resuelve el tema efectivo de una preferencia de OP-002. Sistema se
+    /// hereda del SO; cualquier fallo o valor no soportado conserva el tema
+    /// efectivo actual (sin cambio parcial).
+    /// </summary>
+    private Theme ResolveEffectiveTheme(ThemePreference preference)
+    {
+        if (preference != ThemePreference.System)
+        {
+            return UiPreferences.EffectiveTheme(preference, CurrentTheme);
+        }
+
+        try
+        {
+            return UiPreferences.NormalizeTheme(SystemThemeResolver());
+        }
+        catch (Exception)
+        {
+            return UiPreferences.NormalizeTheme(CurrentTheme);
+        }
+    }
+
+    private void RestoreThemeSelection()
+    {
+        // Al abortar, se reemite la preferencia real para que el selector de
+        // radio no conserve una marca que no corresponde al estado válido.
+        OnPropertyChanged(nameof(CurrentThemePreference));
+        OnPropertyChanged(nameof(IsLightThemeSelected));
+        OnPropertyChanged(nameof(IsDarkThemeSelected));
+        OnPropertyChanged(nameof(IsSystemThemeSelected));
+    }
+
+    private void RaiseThemeChanged()
+    {
+        OnPropertyChanged(nameof(CurrentTheme));
+        OnPropertyChanged(nameof(IsLightTheme));
+        OnPropertyChanged(nameof(IsDarkTheme));
+        OnPropertyChanged(nameof(CurrentThemePreference));
+        OnPropertyChanged(nameof(IsLightThemeSelected));
+        OnPropertyChanged(nameof(IsDarkThemeSelected));
+        OnPropertyChanged(nameof(IsSystemThemeSelected));
+    }
+
     private void RaiseLanguageChanged()
     {
         OnPropertyChanged(nameof(Menus));
@@ -762,6 +878,10 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(LanguageMenuHeader));
         OnPropertyChanged(nameof(SpanishOptionHeader));
         OnPropertyChanged(nameof(EnglishOptionHeader));
+        OnPropertyChanged(nameof(ThemeMenuHeader));
+        OnPropertyChanged(nameof(LightThemeOptionHeader));
+        OnPropertyChanged(nameof(DarkThemeOptionHeader));
+        OnPropertyChanged(nameof(SystemThemeOptionHeader));
         OnPropertyChanged(nameof(HelpGuideHeader));
         OnPropertyChanged(nameof(HelpShortcutsHeader));
         OnPropertyChanged(nameof(HelpAboutHeader));
