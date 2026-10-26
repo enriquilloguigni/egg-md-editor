@@ -10,22 +10,25 @@ using Microsoft.Extensions.Logging;
 namespace EggMdEditor.App;
 
 /// <summary>
-/// ViewModel de la ventana principal SC-001 (T-006): expone los 6 menús
-/// principales de FR-011 (ENT-004) en orden, con el rótulo resuelto desde el
-/// catálogo i18n (ENT-006) en el idioma activo. Solo presentación: no hay
-/// acciones conectadas a documento (ADR-001); la conmutación de idioma
-/// (OP-001) y de tema (OP-002) y las superficies de ayuda (SC-003) y diálogo
-/// genérico (SC-002) son las únicas acciones disponibles y ninguna altera el
-/// documento.
+/// ViewModel de la ventana principal SC-001 (T-006, T-015): expone los 6
+/// rótulos de FR-011 (ENT-004) como botones en orden y su navegación
+/// secuencial cíclica (OP-007), con el texto resuelto desde el catálogo i18n
+/// (ENT-006) en el idioma activo. Solo presentación: no hay acciones
+/// conectadas a documento (ADR-001); la conmutación de idioma (OP-001) y de
+/// tema (OP-002) y las superficies de ayuda (SC-003) y diálogo genérico
+/// (SC-002) son las únicas acciones disponibles y ninguna altera el documento.
 /// </summary>
 public partial class MainWindowViewModel : INotifyPropertyChanged
 {
     private ICommand? _changeLanguageCommand;
     private ICommand? _changeThemeCommand;
+    private ICommand? _selectNextMenuCommand;
+    private ICommand? _selectPreviousMenuCommand;
     private Theme _theme = Theme.Light;
     private IThemeApplier? _themeApplier;
     private MenuState _menuState = MenuState.Closed;
     private string? _openMenuKey;
+    private int _selectedMenuIndex = 1;
     private bool _noticeVisible;
     private string? _activeNoticeKey;
     private readonly List<string> _menuShortcutCombinations = new();
@@ -46,6 +49,12 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     public const string LanguageMenuKey = "Menu.Tools.Language";
     public const string SpanishLanguageKey = "Language.Spanish";
     public const string EnglishLanguageKey = "Language.English";
+
+    /// <summary>Rótulo del botón de navegación secuencial «Anterior» (OP-007).</summary>
+    public const string PreviousMenuKey = "Menu.Previous";
+
+    /// <summary>Rótulo del botón de navegación secuencial «Siguiente» (OP-007).</summary>
+    public const string NextMenuKey = "Menu.Next";
 
     /// <summary>Entradas de FR-010 en el menú Ayuda (SC-003).</summary>
     public const string HelpGuideMenuKey = "Menu.Help.Guide";
@@ -140,6 +149,60 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>Entrada Ayuda → Acerca de Egg MD Editor (SC-003, FR-010).</summary>
     public string HelpAboutHeader => ResolveCatalog().Get(HelpAboutMenuKey);
+
+    /// <summary>
+    /// Posición del rótulo seleccionado de ENT-004 (1–6; 1 = Archivo), según
+    /// ENT-001/ENT-004 y ST-011. Sin sesión compuesta se conserva en el
+    /// propio ViewModel para que la superficie siga siendo operable.
+    /// </summary>
+    public int SelectedMenuIndex => Session?.SelectedMenuIndex ?? _selectedMenuIndex;
+
+    /// <summary>Clave i18n del rótulo seleccionado (ENT-004, OP-007).</summary>
+    public string SelectedMenuKey => MenuKeys[SelectedMenuIndex - 1];
+
+    /// <summary>Rótulo seleccionado resuelto en el idioma activo.</summary>
+    public string SelectedMenuHeader => ResolveCatalog().Get(SelectedMenuKey);
+
+    /// <summary>ST-011: Archivo es el rótulo seleccionado inicial.</summary>
+    public bool IsFileMenuSelected => SelectedMenuIndex == 1;
+
+    public bool IsEditMenuSelected => SelectedMenuIndex == 2;
+
+    public bool IsViewMenuSelected => SelectedMenuIndex == 3;
+
+    public bool IsFormatMenuSelected => SelectedMenuIndex == 4;
+
+    public bool IsToolsMenuSelected => SelectedMenuIndex == 5;
+
+    public bool IsHelpMenuSelected => SelectedMenuIndex == 6;
+
+    /// <summary>
+    /// Submenú visible del rótulo seleccionado: solo Herramientas y Ayuda
+    /// tienen entradas internas en SC-001; el resto de rótulos se abre y
+    /// cierra sin opciones conectadas (BR-F001-002, ADR-001).
+    /// </summary>
+    public bool IsMenuDropdownOpen =>
+        IsMenuOpen && (IsToolsMenuSelected || IsHelpMenuSelected);
+
+    /// <summary>Rótulo del botón «Anterior» en el idioma activo (OP-007).</summary>
+    public string PreviousMenuLabel => ResolveCatalog().Get(PreviousMenuKey);
+
+    /// <summary>Rótulo del botón «Siguiente» en el idioma activo (OP-007).</summary>
+    public string NextMenuLabel => ResolveCatalog().Get(NextMenuKey);
+
+    /// <summary>
+    /// OP-007/TR-011: retrocede el rótulo seleccionado con salto cíclico
+    /// (Archivo → Ayuda) sin abrir el menú ni alterar el documento.
+    /// </summary>
+    public ICommand SelectPreviousMenuCommand =>
+        _selectPreviousMenuCommand ??= new RelayCommand(() => SelectPreviousMenu());
+
+    /// <summary>
+    /// OP-007/TR-010: avanza el rótulo seleccionado con salto cíclico
+    /// (Ayuda → Archivo) sin abrir el menú ni alterar el documento.
+    /// </summary>
+    public ICommand SelectNextMenuCommand =>
+        _selectNextMenuCommand ??= new RelayCommand(() => SelectNextMenu());
 
     /// <summary>
     /// Superficie de diálogo genérica SC-002 (T-014). En F-001 permanece
@@ -407,6 +470,7 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         }
 
         _openMenuKey = key;
+        SetSelectedMenuPosition(MenuPosition(key));
         RaiseMenuChanged();
         return true;
     }
@@ -471,6 +535,43 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         }
 
         return OpenMenu(key);
+    }
+
+    /// <summary>
+    /// OP-007/TR-010: avanza exactamente una posición con salto cíclico de
+    /// Ayuda a Archivo. La navegación solo cambia la selección: no abre el
+    /// menú ni altera el documento (BR-F001-010); si había un rótulo
+    /// desplegado, se cierra para no dejar un submenú sobre otro rótulo.
+    /// </summary>
+    public bool SelectNextMenu() =>
+        SelectMenuPosition((SelectedMenuIndex % MenuKeys.Count) + 1);
+
+    /// <summary>
+    /// OP-007/TR-011: retrocede exactamente una posición con salto cíclico de
+    /// Archivo a Ayuda, con el mismo contrato que <see cref="SelectNextMenu"/>.
+    /// </summary>
+    public bool SelectPreviousMenu() =>
+        SelectMenuPosition(((SelectedMenuIndex + 4) % MenuKeys.Count) + 1);
+
+    /// <summary>
+    /// Cambia el rótulo seleccionado (ST-011) validando el rango 1–6. Una
+    /// posición fuera del catálogo no altera el estado válido.
+    /// </summary>
+    public bool SelectMenuPosition(int position)
+    {
+        if (position < 1 || position > MenuKeys.Count)
+        {
+            return false;
+        }
+
+        if (IsMenuOpen)
+        {
+            CloseMenu();
+        }
+
+        SetSelectedMenuPosition(position);
+        RaiseMenuSelectionChanged();
+        return true;
     }
 
     /// <summary>
@@ -664,6 +765,9 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(HelpGuideHeader));
         OnPropertyChanged(nameof(HelpShortcutsHeader));
         OnPropertyChanged(nameof(HelpAboutHeader));
+        OnPropertyChanged(nameof(SelectedMenuHeader));
+        OnPropertyChanged(nameof(PreviousMenuLabel));
+        OnPropertyChanged(nameof(NextMenuLabel));
         OnPropertyChanged(nameof(AvailableShortcuts));
         // SC-002: la superficie genérica relabeliza sus textos propios si
         // estuviera abierta durante la conmutación (BR-F001-005).
@@ -679,6 +783,49 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(MenuState));
         OnPropertyChanged(nameof(IsMenuOpen));
         OnPropertyChanged(nameof(OpenMenuKey));
+        OnPropertyChanged(nameof(IsMenuDropdownOpen));
+        // La marca visible del rótulo seleccionado se reemite también al
+        // abrir/cerrar: el ToggleButton pudo cambiar su estado local antes de
+        // que el ViewModel confirme la selección.
+        RaiseMenuSelectionChanged();
+    }
+
+    private void RaiseMenuSelectionChanged()
+    {
+        OnPropertyChanged(nameof(SelectedMenuIndex));
+        OnPropertyChanged(nameof(SelectedMenuKey));
+        OnPropertyChanged(nameof(SelectedMenuHeader));
+        OnPropertyChanged(nameof(IsFileMenuSelected));
+        OnPropertyChanged(nameof(IsEditMenuSelected));
+        OnPropertyChanged(nameof(IsViewMenuSelected));
+        OnPropertyChanged(nameof(IsFormatMenuSelected));
+        OnPropertyChanged(nameof(IsToolsMenuSelected));
+        OnPropertyChanged(nameof(IsHelpMenuSelected));
+        OnPropertyChanged(nameof(IsMenuDropdownOpen));
+    }
+
+    private void SetSelectedMenuPosition(int position)
+    {
+        if (Session is not null)
+        {
+            Session.SelectedMenuIndex = position;
+            return;
+        }
+
+        _selectedMenuIndex = position;
+    }
+
+    private static int MenuPosition(string menuKey)
+    {
+        for (var index = 0; index < MenuKeys.Count; index++)
+        {
+            if (string.Equals(MenuKeys[index], menuKey, StringComparison.Ordinal))
+            {
+                return index + 1;
+            }
+        }
+
+        return 1;
     }
 
     private void RaiseNoticeChanged()
