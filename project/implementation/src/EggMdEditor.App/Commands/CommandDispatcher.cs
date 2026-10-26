@@ -33,32 +33,13 @@ public class CommandDispatcher
         Catalog = catalog;
     }
 
-    public CommandDispatcher(UiPreferences? preferences)
-        : this((Session?)null, (ShortcutRegistry?)null)
-    {
-        Preferences = preferences;
-    }
-
     public CommandDispatcher(Session? session, ShortcutRegistry? shortcuts)
     {
         Session = session;
         ShortcutsRegistry = shortcuts ?? new ShortcutRegistry(this);
-        // keep a synchronized view
-        foreach (var s in ShortcutsRegistry.Shortcuts)
+        if (shortcuts is not null && shortcuts.Dispatcher is null)
         {
-            ShortcutsRegistry.RegisterShortcutInternal(s, false);
-        }
-    }
-
-    public CommandDispatcher(Session? session, IEnumerable<Shortcut>? shortcuts)
-        : this(session, (ShortcutRegistry?)null)
-    {
-        if (shortcuts is not null)
-        {
-            foreach (var s in shortcuts)
-            {
-                RegisterShortcut(s);
-            }
+            shortcuts.Dispatcher = this;
         }
     }
 
@@ -67,41 +48,7 @@ public class CommandDispatcher
     public UiPreferences? Preferences { get; set; }
     public ShortcutRegistry ShortcutsRegistry { get; set; }
 
-    // Compatibility property names for the shortcut registry.
-    public ShortcutRegistry Shortcuts
-    {
-        get => ShortcutsRegistry;
-        set => ShortcutsRegistry = value ?? new ShortcutRegistry(this);
-    }
-
-    public ShortcutRegistry ShortcutRegistry
-    {
-        get => ShortcutsRegistry;
-        set => ShortcutsRegistry = value ?? new ShortcutRegistry(this);
-    }
-
-    public ShortcutRegistry Registry
-    {
-        get => ShortcutsRegistry;
-        set => ShortcutsRegistry = value ?? new ShortcutRegistry(this);
-    }
-
-    public ShortcutRegistry KeyBindings
-    {
-        get => ShortcutsRegistry;
-        set => ShortcutsRegistry = value ?? new ShortcutRegistry(this);
-    }
-
-    public ShortcutRegistry Bindings
-    {
-        get => ShortcutsRegistry;
-        set => ShortcutsRegistry = value ?? new ShortcutRegistry(this);
-    }
-
     public IReadOnlyList<SharedCommand> Commands => _commands.AsReadOnly();
-    public IReadOnlyList<Shortcut> RegisteredShortcuts => _shortcuts.AsReadOnly();
-    public IEnumerable<Shortcut> AllShortcuts => _shortcuts;
-    public int CommandCount => _commands.Count;
     public int ShortcutCount => _shortcuts.Count;
 
     // ---- Command registration ----
@@ -112,7 +59,7 @@ public class CommandDispatcher
             return false;
         }
 
-        var name = FirstNonEmpty(command.Name, command.Id, command.Command, command.CommandName);
+        var name = FirstNonEmpty(command.Name, command.Command);
         if (string.IsNullOrWhiteSpace(name))
         {
             name = command.ToString();
@@ -128,9 +75,7 @@ public class CommandDispatcher
         }
         _commandMap[name] = command;
         if (string.IsNullOrWhiteSpace(command.Name)) command.Name = name;
-        if (string.IsNullOrWhiteSpace(command.Id)) command.Id = name;
         if (string.IsNullOrWhiteSpace(command.Command)) command.Command = name;
-        if (string.IsNullOrWhiteSpace(command.CommandName)) command.CommandName = name;
         return true;
     }
 
@@ -144,28 +89,6 @@ public class CommandDispatcher
         return RegisterCommand(new SharedCommand(name!));
     }
 
-    public bool RegisterCommand(string? name, string? command)
-    {
-        return RegisterCommand(new SharedCommand(name ?? string.Empty, command));
-    }
-
-    public bool AddCommand(SharedCommand? command) => RegisterCommand(command);
-    public bool AddCommand(string? name) => RegisterCommand(name);
-    public bool AddCommand(string? name, string? command) => RegisterCommand(name, command);
-
-    public bool Register(SharedCommand? command) => RegisterCommand(command);
-    public bool Register(string? name) => RegisterCommand(name);
-    public bool Register(string? name, string? command) => RegisterCommand(name, command);
-
-    public bool Add(SharedCommand? command) => RegisterCommand(command);
-    public bool Add(string? name) => RegisterCommand(name);
-    public bool Add(string? name, string? command) => RegisterCommand(name, command);
-
-    public bool TryRegisterCommand(SharedCommand? command) => RegisterCommand(command);
-    public bool TryRegisterCommand(string? name) => RegisterCommand(name);
-    public bool TryRegister(SharedCommand? command) => RegisterCommand(command);
-    public bool TryRegister(string? name) => RegisterCommand(name);
-
     public bool ContainsCommand(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -176,11 +99,6 @@ public class CommandDispatcher
         return _commandMap.ContainsKey(name!);
     }
 
-    public bool Contains(string? name) => ContainsCommand(name);
-    public bool HasCommand(string? name) => ContainsCommand(name);
-    public bool IsRegistered(string? name) => ContainsCommand(name);
-    public bool IsCommandRegistered(string? name) => ContainsCommand(name);
-
     public SharedCommand? ResolveCommand(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -188,21 +106,15 @@ public class CommandDispatcher
             return null;
         }
 
-        if (_commandMap.TryGetValue(name!, out var cmd))
+        if (_commandMap.TryGetValue(name!, out var command))
         {
-            return cmd;
+            return command;
         }
 
         return _commands.FirstOrDefault(c =>
             string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(c.Id, name, StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(c.Command, name, StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(c.CommandName, name, StringComparison.OrdinalIgnoreCase));
+            string.Equals(c.Command, name, StringComparison.OrdinalIgnoreCase));
     }
-
-    public SharedCommand? GetCommand(string? name) => ResolveCommand(name);
-    public SharedCommand? FindCommand(string? name) => ResolveCommand(name);
-    public SharedCommand? LookupCommand(string? name) => ResolveCommand(name);
 
     public bool RemoveCommand(string? name)
     {
@@ -211,9 +123,9 @@ public class CommandDispatcher
             return false;
         }
 
-        var cmd = _commandMap[name!];
+        var command = _commandMap[name!];
         _commandMap.Remove(name!);
-        _commands.Remove(cmd);
+        _commands.Remove(command);
         return true;
     }
 
@@ -232,7 +144,7 @@ public class CommandDispatcher
         }
 
         NormalizeShortcut(shortcut);
-        var key = FirstNonEmpty(shortcut.Combination, shortcut.Key, shortcut.Keys, shortcut.ShortcutKey, shortcut.KeyCombination);
+        var key = FirstNonEmpty(shortcut.Combination);
         if (string.IsNullOrWhiteSpace(key))
         {
             return false;
@@ -243,7 +155,7 @@ public class CommandDispatcher
             _shortcuts.Add(shortcut);
         }
         _shortcutMap[key] = shortcut;
-        ShortcutsRegistry.RegisterShortcutInternal(shortcut, false);
+        ShortcutsRegistry.RegisterShortcutInternal(shortcut);
         return true;
     }
 
@@ -257,15 +169,6 @@ public class CommandDispatcher
         return RegisterShortcut(new Shortcut(combination ?? string.Empty, command));
     }
 
-    public bool AddShortcut(Shortcut? shortcut) => RegisterShortcut(shortcut);
-    public bool AddShortcut(string? combination, string? command) => RegisterShortcut(combination, command);
-    public bool AddShortcut(string? combination, SharedCommand? command) => RegisterShortcut(combination, command);
-
-    public bool Add(Shortcut? shortcut) => RegisterShortcut(shortcut);
-    public bool TryRegisterShortcut(Shortcut? shortcut) => RegisterShortcut(shortcut);
-    public bool TryRegisterShortcut(string? combination, string? command) => RegisterShortcut(combination, command);
-    public bool TryAddShortcut(Shortcut? shortcut) => RegisterShortcut(shortcut);
-
     public Shortcut? ResolveShortcut(string? combination)
     {
         if (string.IsNullOrWhiteSpace(combination))
@@ -273,20 +176,17 @@ public class CommandDispatcher
             return null;
         }
 
-        if (_shortcutMap.TryGetValue(combination!, out var s))
+        if (_shortcutMap.TryGetValue(combination!, out var shortcut))
         {
-            return s;
+            return shortcut;
         }
 
-        return _shortcuts.FirstOrDefault(x => NormalizeKey(x.Combination) == NormalizeKey(combination)
-            || NormalizeKey(x.Key) == NormalizeKey(combination)
-            || NormalizeKey(x.Keys) == NormalizeKey(combination));
+        return _shortcuts.FirstOrDefault(x =>
+            string.Equals(
+                NormalizeKey(x.Combination),
+                NormalizeKey(combination),
+                StringComparison.Ordinal));
     }
-
-    public Shortcut? GetShortcut(string? combination) => ResolveShortcut(combination);
-    public Shortcut? FindShortcut(string? combination) => ResolveShortcut(combination);
-    public Shortcut? LookupShortcut(string? combination) => ResolveShortcut(combination);
-    public Shortcut? FindByKey(string? combination) => ResolveShortcut(combination);
 
     public bool TryGetShortcut(string? combination, out Shortcut? shortcut)
     {
@@ -294,27 +194,23 @@ public class CommandDispatcher
         return shortcut is not null;
     }
 
-    public bool TryGet(string? combination, out Shortcut? shortcut) => TryGetShortcut(combination, out shortcut);
-
     public bool ContainsShortcut(string? combination) => ResolveShortcut(combination) is not null;
-    public bool IsRegisteredShortcut(string? combination) => ContainsShortcut(combination);
-    public bool HasShortcut(string? combination) => ContainsShortcut(combination);
 
     public bool RemoveShortcut(string? combination)
     {
-        var s = ResolveShortcut(combination);
-        if (s is null)
+        var shortcut = ResolveShortcut(combination);
+        if (shortcut is null)
         {
             return false;
         }
 
-        _shortcuts.Remove(s);
-        var key = FirstNonEmpty(s.Combination, s.Key, s.Keys);
+        _shortcuts.Remove(shortcut);
+        var key = FirstNonEmpty(shortcut.Combination);
         if (!string.IsNullOrWhiteSpace(key))
         {
             _shortcutMap.Remove(key);
         }
-        ShortcutsRegistry.RemoveShortcutInternal(s);
+        ShortcutsRegistry.RemoveShortcutInternal(shortcut);
         return true;
     }
 
@@ -329,7 +225,7 @@ public class CommandDispatcher
     /// <summary>
     /// Ejecuta un comando registrado (OP-005). Solo los comandos de acciones
     /// disponibles en F-001 producen efecto; el resto permanece inerte
-    /// (BR-F001-003, ADR-001). <paramref name="argument"/> transporta el
+    /// (BR-F001-003, ADR-001). <paramref name="command"/> transporta el
     /// parámetro de la acción (p. ej. la entrada de menú de OP-003).
     /// </summary>
     public bool Dispatch(string? command)
@@ -358,13 +254,6 @@ public class CommandDispatcher
 
         return ExecuteAvailableCommand(command, command.Argument);
     }
-
-    public bool Dispatch(object? command) => command switch
-    {
-        SharedCommand sharedCommand => Dispatch(sharedCommand),
-        string text => Dispatch(text),
-        _ => false,
-    };
 
     /// <summary>
     /// OP-005: invoke de un atajo registrado en ENT-007. Un atajo no
@@ -411,53 +300,8 @@ public class CommandDispatcher
         return ToCommandResult(command, Dispatch(command));
     }
 
-    public CommandResult DispatchCommand(object? command)
-    {
-        return command switch
-        {
-            SharedCommand sharedCommand => DispatchCommand(sharedCommand),
-            string text => DispatchCommand(text),
-            _ => CommandResult.NoEffect,
-        };
-    }
-
     public DispatchResult Execute(string? command) => ToDispatchResult(DispatchCommand(command));
     public DispatchResult Execute(SharedCommand? command) => ToDispatchResult(DispatchCommand(command));
-    public DispatchResult Execute(object? command) => ToDispatchResult(DispatchCommand(command));
-
-    public bool Invoke(string? command) => Dispatch(command);
-    public bool Invoke(SharedCommand? command) => Dispatch(command);
-    public bool Invoke(object? command) => Dispatch(command);
-
-    public bool Handle(string? command) => Dispatch(command);
-    public bool Handle(SharedCommand? command) => Dispatch(command);
-    public bool Handle(object? command) => Dispatch(command);
-
-    public bool Run(string? command) => Dispatch(command);
-    public bool Trigger(string? command) => Dispatch(command);
-    public bool Process(string? command) => Dispatch(command);
-
-    public bool TryDispatch(string? command) => Dispatch(command);
-    public bool TryDispatch(SharedCommand? command) => Dispatch(command);
-    public bool TryExecute(string? command) => Dispatch(command);
-    public bool TryExecute(SharedCommand? command) => Dispatch(command);
-    public bool TryInvoke(string? command) => Dispatch(command);
-    public bool TryHandle(string? command) => Dispatch(command);
-
-    public object? ExecuteCommand(string? command) => Dispatch(command) ? CommandResult.Handled : null;
-    public object? InvokeCommand(string? command) => ExecuteCommand(command);
-    public object? HandleCommand(string? command) => ExecuteCommand(command);
-
-    public bool InvokeShortcut(string? combination) => DispatchShortcut(combination);
-    public bool TriggerShortcut(string? combination) => DispatchShortcut(combination);
-    public bool HandleShortcut(string? combination) => DispatchShortcut(combination);
-    public bool HandleKey(string? combination) => DispatchShortcut(combination);
-    public bool HandleKeyPress(string? combination) => DispatchShortcut(combination);
-    public bool OnKeyPress(string? combination) => DispatchShortcut(combination);
-    public bool OnKeyDown(string? combination) => DispatchShortcut(combination);
-
-    public SharedCommand? Resolve(string? name) => ResolveCommand(name);
-    public string? GetCommandName(string? name) => ResolveCommand(name)?.Name;
 
     /// <summary>
     /// Punto único de ejecución de las acciones disponibles en F-001
@@ -531,7 +375,7 @@ public class CommandDispatcher
 
     protected static string ResolveCommandName(SharedCommand command)
     {
-        return FirstNonEmpty(command.Command, command.CommandName, command.Name, command.Id, command.Action);
+        return FirstNonEmpty(command.Command, command.Name);
     }
 
     private SharedCommand? ResolveShortcutCommand(Shortcut shortcut)
@@ -541,7 +385,7 @@ public class CommandDispatcher
             return shortcut.CommandRef;
         }
 
-        var name = FirstNonEmpty(shortcut.Command, shortcut.CommandName, shortcut.Action);
+        var name = FirstNonEmpty(shortcut.Command);
         if (string.IsNullOrWhiteSpace(name))
         {
             return null;
@@ -601,11 +445,11 @@ public class CommandDispatcher
 
     private static string FirstNonEmpty(params string?[] values)
     {
-        foreach (var v in values)
+        foreach (var value in values)
         {
-            if (!string.IsNullOrWhiteSpace(v))
+            if (!string.IsNullOrWhiteSpace(value))
             {
-                return v!.Trim();
+                return value!.Trim();
             }
         }
 
@@ -619,35 +463,21 @@ public class CommandDispatcher
             return string.Empty;
         }
 
-        return value!.Trim().Replace(" ", string.Empty).ToLowerInvariant();
+        return value!.Trim().Replace(" ", string.Empty, StringComparison.Ordinal).ToLowerInvariant();
     }
 
     private static void NormalizeShortcut(Shortcut shortcut)
     {
-        if (string.IsNullOrWhiteSpace(shortcut.Combination))
-        {
-            shortcut.Combination = FirstNonEmpty(shortcut.Key, shortcut.Keys, shortcut.ShortcutKey, shortcut.KeyCombination);
-        }
-        if (string.IsNullOrWhiteSpace(shortcut.Key)) shortcut.Key = shortcut.Combination;
-        if (string.IsNullOrWhiteSpace(shortcut.Keys)) shortcut.Keys = shortcut.Combination;
-        if (string.IsNullOrWhiteSpace(shortcut.ShortcutKey)) shortcut.ShortcutKey = shortcut.Combination;
-        if (string.IsNullOrWhiteSpace(shortcut.KeyCombination)) shortcut.KeyCombination = shortcut.Combination;
-
-        if (string.IsNullOrWhiteSpace(shortcut.Command))
-        {
-            shortcut.Command = FirstNonEmpty(shortcut.CommandName, shortcut.Action);
-        }
-        if (string.IsNullOrWhiteSpace(shortcut.CommandName)) shortcut.CommandName = shortcut.Command;
-        if (string.IsNullOrWhiteSpace(shortcut.Action)) shortcut.Action = shortcut.Command;
-
         if (shortcut.CommandRef is not null)
         {
             if (string.IsNullOrWhiteSpace(shortcut.Command))
             {
-                shortcut.Command = FirstNonEmpty(shortcut.CommandRef.Name, shortcut.CommandRef.Command);
+                shortcut.Command = FirstNonEmpty(shortcut.CommandRef.Command, shortcut.CommandRef.Name);
             }
-            if (string.IsNullOrWhiteSpace(shortcut.CommandName)) shortcut.CommandName = shortcut.Command;
-            if (string.IsNullOrWhiteSpace(shortcut.Argument)) shortcut.Argument = shortcut.CommandRef.Argument;
+            if (string.IsNullOrWhiteSpace(shortcut.Argument))
+            {
+                shortcut.Argument = shortcut.CommandRef.Argument;
+            }
         }
 
         var availableName = FirstNonEmpty(
@@ -669,45 +499,18 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
     private CommandDispatcher? _dispatcher;
 
     public ShortcutRegistry()
-        : this((CommandDispatcher?)null, (IEnumerable<Shortcut>?)null)
+        : this((CommandDispatcher?)null)
     {
     }
 
     public ShortcutRegistry(CommandDispatcher? dispatcher)
-        : this(dispatcher, (IEnumerable<Shortcut>?)null)
-    {
-    }
-
-    public ShortcutRegistry(IEnumerable<Shortcut>? shortcuts)
-        : this((CommandDispatcher?)null, shortcuts)
-    {
-    }
-
-    public ShortcutRegistry(CommandDispatcher? dispatcher, IEnumerable<Shortcut>? shortcuts)
     {
         _dispatcher = dispatcher;
-        if (shortcuts is not null)
-        {
-            foreach (var s in shortcuts)
-            {
-                Register(s);
-            }
-        }
     }
 
-    internal void RegisterShortcutInternal(Shortcut shortcut, bool normalize = true)
+    internal void RegisterShortcutInternal(Shortcut shortcut)
     {
-        if (shortcut is null)
-        {
-            return;
-        }
-
-        if (normalize)
-        {
-            // best-effort normalization via reflection-free duplicate logic
-        }
-
-        var key = FirstNonEmptyStatic(shortcut.Combination, shortcut.Key, shortcut.Keys, shortcut.ShortcutKey, shortcut.KeyCombination);
+        var key = FirstNonEmptyStatic(shortcut.Combination);
         if (string.IsNullOrWhiteSpace(key))
         {
             return;
@@ -723,7 +526,7 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
     internal void RemoveShortcutInternal(Shortcut shortcut)
     {
         _shortcuts.Remove(shortcut);
-        var key = FirstNonEmptyStatic(shortcut.Combination, shortcut.Key, shortcut.Keys, shortcut.ShortcutKey, shortcut.KeyCombination);
+        var key = FirstNonEmptyStatic(shortcut.Combination);
         if (!string.IsNullOrWhiteSpace(key))
         {
             _map.Remove(key);
@@ -737,10 +540,6 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
     }
 
     public IReadOnlyList<Shortcut> Shortcuts => _shortcuts.AsReadOnly();
-    public IEnumerable<Shortcut> Bindings => _shortcuts;
-    public IEnumerable<Shortcut> Items => _shortcuts;
-    public IEnumerable<Shortcut> All => _shortcuts;
-    public IEnumerable<Shortcut> Registered => _shortcuts;
     public int Count => _shortcuts.Count;
 
     public IEnumerator<Shortcut> GetEnumerator() => _shortcuts.GetEnumerator();
@@ -753,7 +552,7 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
             return false;
         }
 
-        var key = FirstNonEmptyStatic(shortcut.Combination, shortcut.Key, shortcut.Keys, shortcut.ShortcutKey, shortcut.KeyCombination);
+        var key = FirstNonEmptyStatic(shortcut.Combination);
         if (string.IsNullOrWhiteSpace(key))
         {
             return false;
@@ -778,24 +577,6 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
         return Register(new Shortcut(combination ?? string.Empty, command));
     }
 
-    public bool Add(Shortcut? shortcut) => Register(shortcut);
-    public bool Add(string? combination, string? command) => Register(combination, command);
-    public bool Add(string? combination, SharedCommand? command) => Register(combination, command);
-
-    public bool TryRegister(Shortcut? shortcut) => Register(shortcut);
-    public bool TryRegister(string? combination, string? command) => Register(combination, command);
-
-    public bool RegisterShortcut(Shortcut? shortcut) => Register(shortcut);
-    public bool RegisterShortcut(string? combination, string? command) => Register(combination, command);
-    public bool RegisterShortcut(string? combination, SharedCommand? command) => Register(combination, command);
-
-    public bool AddShortcut(Shortcut? shortcut) => Register(shortcut);
-    public bool AddShortcut(string? combination, string? command) => Register(combination, command);
-
-    public bool TryAdd(Shortcut? shortcut) => Register(shortcut);
-    public bool TryAddShortcut(Shortcut? shortcut) => Register(shortcut);
-
-    public Shortcut? Resolve(string? combination) => Find(combination);
     public Shortcut? Find(string? combination)
     {
         if (string.IsNullOrWhiteSpace(combination))
@@ -803,22 +584,17 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
             return null;
         }
 
-        if (_map.TryGetValue(combination!, out var s))
+        if (_map.TryGetValue(combination!, out var shortcut))
         {
-            return s;
+            return shortcut;
         }
 
         return _shortcuts.FirstOrDefault(x =>
-            NormalizeKeyStatic(x.Combination) == NormalizeKeyStatic(combination) ||
-            NormalizeKeyStatic(x.Key) == NormalizeKeyStatic(combination) ||
-            NormalizeKeyStatic(x.Keys) == NormalizeKeyStatic(combination));
+            string.Equals(
+                NormalizeKeyStatic(x.Combination),
+                NormalizeKeyStatic(combination),
+                StringComparison.Ordinal));
     }
-
-    public Shortcut? Get(string? combination) => Find(combination);
-    public Shortcut? GetShortcut(string? combination) => Find(combination);
-    public Shortcut? Lookup(string? combination) => Find(combination);
-    public Shortcut? FindByKey(string? combination) => Find(combination);
-    public Shortcut? FindByCombination(string? combination) => Find(combination);
 
     public bool TryGet(string? combination, out Shortcut? shortcut)
     {
@@ -826,12 +602,7 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
         return shortcut is not null;
     }
 
-    public bool TryGetShortcut(string? combination, out Shortcut? shortcut) => TryGet(combination, out shortcut);
-
     public bool Contains(string? combination) => Find(combination) is not null;
-    public bool ContainsShortcut(string? combination) => Contains(combination);
-    public bool Has(string? combination) => Contains(combination);
-    public bool IsRegistered(string? combination) => Contains(combination);
 
     public bool Remove(Shortcut? shortcut)
     {
@@ -841,7 +612,7 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
         }
 
         _shortcuts.Remove(shortcut);
-        var key = FirstNonEmptyStatic(shortcut.Combination, shortcut.Key, shortcut.Keys, shortcut.ShortcutKey, shortcut.KeyCombination);
+        var key = FirstNonEmptyStatic(shortcut.Combination);
         if (!string.IsNullOrWhiteSpace(key))
         {
             _map.Remove(key);
@@ -852,18 +623,9 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
 
     public bool Remove(string? combination)
     {
-        var s = Find(combination);
-        if (s is null)
-        {
-            return false;
-        }
-
-        return Remove(s);
+        var shortcut = Find(combination);
+        return shortcut is not null && Remove(shortcut);
     }
-
-    public bool RemoveShortcut(string? combination) => Remove(combination);
-    public bool Delete(string? combination) => Remove(combination);
-    public bool Unregister(string? combination) => Remove(combination);
 
     public void Clear()
     {
@@ -871,19 +633,12 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
         _map.Clear();
     }
 
-    public void ClearAll() => Clear();
-    public void Reset() => Clear();
-
     /// <summary>
     /// OP-005: ejecuta el atajo a través del dispatcher compartido solo si su
     /// comando está disponible en F-001 (BR-F001-003). Sin dispatcher, o con
     /// un atajo cuyo comando pertenece a otra Feature, no hay efecto.
     /// </summary>
-    public bool Invoke(string? combination)
-    {
-        var shortcut = Find(combination);
-        return Invoke(shortcut);
-    }
+    public bool Invoke(string? combination) => Invoke(Find(combination));
 
     public bool Invoke(Shortcut? shortcut)
     {
@@ -895,61 +650,13 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
         return _dispatcher?.DispatchShortcut(shortcut) ?? false;
     }
 
-    public bool TryInvoke(string? combination) => Invoke(combination);
-    public bool Handle(string? combination) => Invoke(combination);
-    public bool HandleKey(string? combination) => Invoke(combination);
-    public bool HandleKeyPress(string? combination) => Invoke(combination);
-    public bool OnKeyPress(string? combination) => Invoke(combination);
-    public bool OnKeyDown(string? combination) => Invoke(combination);
-    public bool Trigger(string? combination) => Invoke(combination);
-    public bool Execute(string? combination) => Invoke(combination);
-    public bool Dispatch(string? combination) => Invoke(combination);
-
-    public Shortcut? InvokeAndGet(string? combination)
-    {
-        var s = Find(combination);
-        if (s is null || !s.Active)
-        {
-            return null;
-        }
-
-        return s;
-    }
-
-    public string? InvokeAndGetCommand(string? combination)
-    {
-        var s = Find(combination);
-        if (s is null || !s.Active)
-        {
-            return null;
-        }
-
-        return s.IsAvailable ? s.Command : null;
-    }
-
-    public CommandResult InvokeWithResult(string? combination)
-    {
-        var shortcut = Find(combination);
-        if (shortcut is null || !shortcut.Active || !shortcut.Enabled)
-        {
-            return CommandResult.NotFound;
-        }
-
-        if (!shortcut.IsAvailable)
-        {
-            return CommandResult.Inert;
-        }
-
-        return Invoke(shortcut) ? CommandResult.Handled : CommandResult.NoEffect;
-    }
-
     private static string FirstNonEmptyStatic(params string?[] values)
     {
-        foreach (var v in values)
+        foreach (var value in values)
         {
-            if (!string.IsNullOrWhiteSpace(v))
+            if (!string.IsNullOrWhiteSpace(value))
             {
-                return v!.Trim();
+                return value!.Trim();
             }
         }
 
@@ -963,18 +670,6 @@ public class ShortcutRegistry : System.Collections.Generic.IEnumerable<Shortcut>
             return string.Empty;
         }
 
-        return value!.Trim().Replace(" ", string.Empty).ToLowerInvariant();
+        return value!.Trim().Replace(" ", string.Empty, StringComparison.Ordinal).ToLowerInvariant();
     }
-}
-
-// Extension to expose IsAvailableCommand check from Shortcut without breaking encapsulation.
-internal static class ShortcutInternals
-{
-    public static bool IsAvailableCommandPublic(string? command) => Shortcut.IsAvailableCommandPublic(command);
-}
-
-// Add public static helper on Shortcut via partial? We'll add method instead by editing class? Use extension below.
-public static class ShortcutExtensions
-{
-    public static bool IsAvailableCommand(this Shortcut s) => s.IsAvailable;
 }
