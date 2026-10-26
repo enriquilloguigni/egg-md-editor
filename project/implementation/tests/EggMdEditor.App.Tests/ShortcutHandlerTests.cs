@@ -131,10 +131,10 @@ public class ShortcutHandlerTests
         // Atajos no registrados o de acciones de otras Features: inertes.
         Assert.False(dispatcher.DispatchShortcut("Ctrl+B"));
         Assert.False(dispatcher.Dispatch("Save"));
-        Assert.Equal(CommandResult.NotAvailable, dispatcher.DispatchCommand("Save"));
 
         Assert.True(dispatcher.Dispatch(CommandNames.OpenMenu));
-        Assert.Equal(DispatchResult.Handled, dispatcher.Execute(CommandNames.CloseMenu));
+        Assert.Equal(MenuState.Open, session.MenuState);
+        Assert.True(dispatcher.Dispatch(CommandNames.CloseMenu));
         Assert.Equal(MenuState.Closed, session.MenuState);
     }
 
