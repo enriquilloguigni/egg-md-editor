@@ -14,7 +14,7 @@ public partial class MainWindow : Window
 {
     private readonly MainWindowViewModel _viewModel;
     private readonly ShortcutHandler _shortcutHandler;
-    private MenuItem? _lastOpenMenuItem;
+    private Button? _lastOpenMenuButton;
     private HelpWindow? _helpWindow;
 
     /// <summary>
@@ -52,17 +52,6 @@ public partial class MainWindow : Window
         // idioma de SC-001 en caliente (BR-013, COM-002).
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
-        // OP-003/TR-004/TR-005 (COM-006): el cierre del menú se refleja en
-        // cuanto la entrada deja de estar desplegada, tanto si lo cierra el
-        // propio control (Esc/clic fuera) como si lo cierra la ventana.
-        foreach (var item in MainMenu.Items)
-        {
-            if (item is MenuItem menuItem)
-            {
-                menuItem.PropertyChanged += OnTopLevelMenuItemPropertyChanged;
-            }
-        }
-
         // El túnel permite observar Esc y el clic fuera aunque el control
         // pulsado marque el evento como manejado en la fase de burbuja.
         AddHandler(PointerPressedEvent, OnWindowPointerPressed, RoutingStrategies.Tunnel);
@@ -70,30 +59,48 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// TR-004: abrir una entrada de menú de ENT-004 actualiza el estado del
-    /// menú (ST-005 → ST-006) y deja el foco en la entrada. Las entradas de
-    /// F-001 no tienen acciones de dominio conectadas (ADR-001).
+    /// TR-004/COM-006: activar un rótulo de ENT-004 lo selecciona y abre o
+    /// cierra el menú (ST-005 ↔ ST-006), dejando el foco en el botón. Las
+    /// entradas de F-001 no tienen acciones de dominio conectadas (ADR-001).
     /// </summary>
-    private void OnMenuEntryClick(object? sender, RoutedEventArgs e)
+    private void OnMenuLabelClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem item || !ReferenceEquals(e.Source, item))
+        if (sender is not Button button || button.Tag is not string menuKey)
         {
             return;
         }
 
-        // Las entradas con submenú ya se abren por sí mismas; su ciclo de
-        // vida se sigue con IsSubMenuOpen (SubmenuOpened/PropertyChanged).
-        if (item.HasSubMenu)
+        _lastOpenMenuButton = button;
+        _viewModel.ToggleMenu(menuKey);
+        button.Focus();
+    }
+
+    /// <summary>
+    /// OP-007/TR-010/TR-011: los botones «Anterior»/«Siguiente» cambian el
+    /// rótulo seleccionado. El manejador marca el clic como atendido para que
+    /// el comando enlazado no lo ejecute por segunda vez; así la acción es
+    /// idéntica tanto con interacción real como en pruebas de superficie.
+    /// </summary>
+    private void OnMenuNavigationClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button)
         {
             return;
         }
 
-        _viewModel.ToggleMenu(item.Tag as string);
-        if (_viewModel.IsMenuOpen)
+        switch (button.Tag as string)
         {
-            _lastOpenMenuItem = item;
-            item.Focus();
+            case "Navigation.Previous":
+                _viewModel.SelectPreviousMenu();
+                break;
+            case "Navigation.Next":
+                _viewModel.SelectNextMenu();
+                break;
+            default:
+                return;
         }
+
+        e.Handled = true;
     }
 
     /// <summary>
@@ -142,12 +149,12 @@ public partial class MainWindow : Window
     /// </summary>
     private void OnHelpEntryClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem item)
+        if (sender is not Button button)
         {
             return;
         }
 
-        var section = item.Tag switch
+        var section = button.Tag switch
         {
             "Help.Guide" => HelpSection.Guide,
             "Help.Shortcuts" => HelpSection.Shortcuts,
@@ -186,40 +193,6 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// TR-004 (COM-006): una entrada con submenú se despliega; el estado de
-    /// sesión pasa a ST-006 antes de que el usuario interactúe con él.
-    /// </summary>
-    private void OnMenuSubmenuOpened(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not MenuItem item
-            || !ReferenceEquals(e.Source, item)
-            || !IsTopLevelMenu(item))
-        {
-            return;
-        }
-
-        _lastOpenMenuItem = item;
-        _viewModel.OpenMenu(item.Tag as string);
-    }
-
-    /// <summary>
-    /// TR-005: al cerrarse la entrada desplegada (Esc o clic fuera) el estado
-    /// vuelve a ST-005.
-    /// </summary>
-    private void OnTopLevelMenuItemPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-    {
-        if (e.Property != MenuItem.IsSubMenuOpenProperty
-            || sender is not MenuItem item
-            || item.IsSubMenuOpen
-            || !IsTopLevelMenu(item))
-        {
-            return;
-        }
-
-        _viewModel.CloseMenu(item.Tag as string);
-    }
-
-    /// <summary>
     /// OP-004/TR-006 (COM-004): el puntero entra en un control válido de la
     /// barra de formato (ENT-005) y se muestra su aviso flotante.
     /// </summary>
@@ -255,7 +228,7 @@ public partial class MainWindow : Window
         }
 
         if (e.Source is Visual source
-            && (ReferenceEquals(source, MainMenu) || MainMenu.IsVisualAncestorOf(source)))
+            && (IsWithinMenuBar(source) || IsWithinMenuDropdown(source)))
         {
             return;
         }
@@ -288,8 +261,7 @@ public partial class MainWindow : Window
                 return;
             }
 
-            CloseOpenMenuItem();
-            _lastOpenMenuItem?.Focus();
+            _lastOpenMenuButton?.Focus();
             e.Handled = true;
             return;
         }
@@ -350,18 +322,10 @@ public partial class MainWindow : Window
         }
     }
 
-    private void CloseOpenMenuItem()
-    {
-        if (_lastOpenMenuItem is { IsSubMenuOpen: true } openItem)
-        {
-            openItem.Close();
-        }
-    }
-
     /// <summary>
-    /// TR-004: deja el foco en la entrada de menú abierta por Alt+letra y,
-    /// si tiene submenú, lo despliega para que el estado de sesión y la
-    /// superficie visible coincidan.
+    /// TR-004: deja el foco en el rótulo abierto por Alt+letra. El estado del
+    /// menú ya lo actualizó el dispatcher; la superficie visible se enlaza al
+    /// ViewModel.
     /// </summary>
     private void FocusMenuEntry(string? menuKey)
     {
@@ -370,30 +334,33 @@ public partial class MainWindow : Window
             return;
         }
 
-        var item = MainMenu.Items
-            .OfType<MenuItem>()
-            .FirstOrDefault(menuItem =>
-                string.Equals(menuItem.Tag as string, menuKey, StringComparison.Ordinal));
-        if (item is null)
+        var button = MenuLabelButtons.FirstOrDefault(menuButton =>
+            string.Equals(menuButton.Tag as string, menuKey, StringComparison.Ordinal));
+        if (button is null)
         {
             return;
         }
 
-        if (_lastOpenMenuItem is not null
-            && !ReferenceEquals(_lastOpenMenuItem, item)
-            && _lastOpenMenuItem.IsSubMenuOpen)
-        {
-            _lastOpenMenuItem.Close();
-        }
-
-        _lastOpenMenuItem = item;
-        if (item.HasSubMenu)
-        {
-            item.IsSubMenuOpen = true;
-        }
-
-        item.Focus();
+        _lastOpenMenuButton = button;
+        button.Focus();
     }
 
-    private bool IsTopLevelMenu(MenuItem item) => MainMenu.Items.Contains(item);
+    private IEnumerable<Button> MenuLabelButtons
+    {
+        get
+        {
+            yield return FileMenuButton;
+            yield return EditMenuButton;
+            yield return ViewMenuButton;
+            yield return FormatMenuButton;
+            yield return ToolsMenuButton;
+            yield return HelpMenuButton;
+        }
+    }
+
+    private bool IsWithinMenuBar(Visual source) =>
+        ReferenceEquals(source, MainMenuBar) || MainMenuBar.IsVisualAncestorOf(source);
+
+    private bool IsWithinMenuDropdown(Visual source) =>
+        ReferenceEquals(source, MenuDropdown) || MenuDropdown.IsVisualAncestorOf(source);
 }
