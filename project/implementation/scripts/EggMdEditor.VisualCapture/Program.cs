@@ -88,10 +88,19 @@ internal static class Program
         switch (request.Surface)
         {
             case CaptureSurface.MainWindow:
-                // SC-001 en estado base: menú cerrado y sin aviso visible.
+                // SC-001 en estado base: menú cerrado. A/B no muestran aviso;
+                // C lo muestra sobre el primer control de la barra (VR-002).
                 viewModel.CloseMenu();
-                viewModel.HideNotice();
-                CaptureWindow(new MainWindow(viewModel), request.OutputPath);
+                if (request.State == CaptureState.Notice)
+                {
+                    viewModel.ShowNotice(MainWindowViewModel.FormatBarKeys[0]);
+                }
+                else
+                {
+                    viewModel.HideNotice();
+                }
+
+                CaptureWindow(new MainWindow(viewModel), request.OutputPath, request.State);
                 break;
 
             case CaptureSurface.Dialog:
@@ -116,7 +125,10 @@ internal static class Program
         }
     }
 
-    private static void CaptureWindow(Window window, string outputPath)
+    private static void CaptureWindow(
+        Window window,
+        string outputPath,
+        CaptureState? state = null)
     {
         var fullPath = Path.GetFullPath(outputPath);
         var directory = Path.GetDirectoryName(fullPath);
@@ -132,6 +144,15 @@ internal static class Program
             window.Show();
             Avalonia.Threading.Dispatcher.UIThread.RunJobs();
             window.UpdateLayout();
+
+            // Estado C: la captura solo es válida si el aviso flotante está
+            // realmente visible sobre la superficie (VR-002, HV-002).
+            if (state == CaptureState.Notice
+                && window.FindControl<Border>("FormatNotice") is not { IsVisible: true })
+            {
+                throw new InvalidOperationException(
+                    "El aviso flotante de SC-001 no está visible en la captura C.");
+            }
 
             using var frame = window.CaptureRenderedFrame()
                 ?? throw new InvalidOperationException("La superficie no generó ningún fotograma.");
@@ -156,5 +177,18 @@ internal static class Program
         {
             throw new InvalidOperationException($"La captura no se escribió en '{fullPath}'.");
         }
+
+        if (!HasPngSignature(fullPath))
+        {
+            throw new InvalidOperationException($"La captura no es un PNG válido: '{fullPath}'.");
+        }
+    }
+
+    private static bool HasPngSignature(string path)
+    {
+        ReadOnlySpan<byte> expected = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+        Span<byte> signature = stackalloc byte[expected.Length];
+        using var stream = File.OpenRead(path);
+        return stream.Read(signature) == expected.Length && signature.SequenceEqual(expected);
     }
 }
