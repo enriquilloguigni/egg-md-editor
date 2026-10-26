@@ -142,7 +142,6 @@ public class FormatBarTests
             var buttons = bar.GetVisualDescendants().OfType<Button>().ToList();
             Assert.Equal(12, buttons.Count);
             Assert.Equal(ExpectedKeys, buttons.Select(button => button.Tag as string));
-            Assert.Equal(ExpectedSpanishNames, buttons.Select(ToolTip.GetTip));
             Assert.Equal(ExpectedSpanishNames, buttons.Select(AutomationProperties.GetName));
 
             Assert.All(buttons, button =>
@@ -156,20 +155,36 @@ public class FormatBarTests
                 Assert.Equal<MaterialIconKind?>(MainWindowViewModel.FormatBarIcons[key], icon.Kind);
                 Assert.Empty(button.GetVisualDescendants().OfType<TextBlock>());
 
-                // VR-002: aviso de una línea, en el idioma activo.
-                var tooltip = Assert.IsType<string>(ToolTip.GetTip(button));
-                Assert.DoesNotContain('\n', tooltip);
-
                 // NFR-009: el nombre accesible no se sustituye por el aviso.
                 var accessibleName = AutomationProperties.GetName(button);
                 Assert.False(string.IsNullOrWhiteSpace(accessibleName));
-                Assert.Equal(tooltip, accessibleName);
 
                 // ADR-001: control visible, sin comando ni acción conectada.
                 Assert.Null(button.Command);
                 Assert.True(button.IsEnabled);
                 Assert.True(button.IsVisible);
             });
+
+            // VR-002: el aviso flotante visible muestra, uno por uno, el
+            // nombre i18n de cada control y nunca sustituye su nombre accesible.
+            var notice = Assert.IsType<Border>(window.FindControl<Border>("FormatNotice"));
+            for (var index = 0; index < buttons.Count; index++)
+            {
+                var key = Assert.IsType<string>(buttons[index].Tag);
+                Assert.True(viewModel.ShowNotice(key));
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.True(notice.IsVisible);
+                Assert.Equal(ExpectedSpanishNames[index], viewModel.VisibleNotice);
+                Assert.Equal(
+                    ExpectedSpanishNames[index],
+                    notice.GetVisualDescendants().OfType<TextBlock>().Single().Text);
+                Assert.Equal(
+                    ExpectedSpanishNames[index],
+                    AutomationProperties.GetName(buttons[index]));
+
+                Assert.True(viewModel.HideNotice(key));
+            }
         }
         finally
         {
