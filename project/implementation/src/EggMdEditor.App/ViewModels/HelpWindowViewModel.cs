@@ -264,9 +264,8 @@ public sealed class HelpWindowViewModel : INotifyPropertyChanged, IDisposable
 
     private void OnSessionPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        // Session.TrySetLanguage notifica Language junto al resto de alias;
-        // con una sola notificación se evita reconstruir la superficie varias
-        // veces por conmutación.
+        // Session.TrySetLanguage notifica Language una sola vez; así se evita
+        // reconstruir la superficie varias veces por conmutación.
         if (e.PropertyName != nameof(Session.Language))
         {
             return;
