@@ -88,11 +88,9 @@ public sealed class I18nCatalog : II18nCatalog
     public string? SessionId { get; set; }
 
     public string CurrentLanguage => _currentLanguage;
-    public string Language => _currentLanguage;
     public string FallbackLanguage => _fallbackLanguage;
 
     public IReadOnlyList<string> SupportedLanguages => new List<string>(_resources.Keys);
-    public IReadOnlyList<string> Languages => SupportedLanguages;
 
     public string Get(string key)
     {
@@ -119,12 +117,6 @@ public sealed class I18nCatalog : II18nCatalog
     }
 
     public string this[string key] => Get(key);
-
-    public string GetString(string key) => Get(key);
-    public string Resolve(string key) => Get(key);
-    public string Translate(string key) => Get(key);
-    public string Localize(string key) => Get(key);
-    public string GetLocalizedString(string key) => Get(key);
 
     public bool TryGet(string key, out string value)
     {
@@ -239,8 +231,6 @@ public sealed class I18nCatalog : II18nCatalog
         }
         return result.AsReadOnly();
     }
-
-    public IEnumerable<string> UnresolvedKeys => GetUnresolvedKeys();
 
     private static string NormalizeLanguage(string language)
     {
