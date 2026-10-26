@@ -307,6 +307,7 @@ public partial class MainWindow : Window
         }
         finally
         {
+            StartupTestMode.Record("window-closed", $"state={WindowState}");
             _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
 
             try
