@@ -198,10 +198,23 @@ public partial class MainWindow : Window
     /// </summary>
     private void OnFormatControlPointerEntered(object? sender, PointerEventArgs e)
     {
-        if (sender is Control control && control.Tag is string key)
+        if (sender is Control control && control.Tag is string key && _viewModel.ShowNotice(key))
         {
-            _viewModel.ShowNotice(key);
+            // VR-002: la burbuja se superpone al área de documento junto al
+            // control apuntado, no en una posición fija de la ventana.
+            PositionNotice(control);
         }
+    }
+
+    private void PositionNotice(Control control)
+    {
+        if (control.TranslatePoint(new Point(0, control.Bounds.Height), this) is not { } position)
+        {
+            return;
+        }
+
+        Canvas.SetLeft(FormatNotice, position.X);
+        Canvas.SetTop(FormatNotice, position.Y + 8);
     }
 
     /// <summary>
