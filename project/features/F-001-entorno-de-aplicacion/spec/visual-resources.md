@@ -1,16 +1,16 @@
 # Visual Resources — F-001 Entorno de aplicación
 
 ## VR-001 — Iconos de los controles de la barra de formato
-Tipo: Icono (conjunto, un glyph por control).
-Propósito: identificar visualmente cada control de la barra de formato (100 % de FR-012 en su parte visual) y exponer su nombre accesible para lectores de pantalla (NFR-009).
-Origen: biblioteca de iconos existente (selección en Plan/Implementation; licencias MIT-compatibles), patrón ventana-principal del design-system.
-Ubicación/referencia: SC-001 — Ventana principal · barra de formato, un icono por control en orden de escritura; superficie ventana-principal.
-Formato y dimensiones: un glyph por control; tamaño, altura y espaciado según TK-004; contraste AA en ambos temas.
-Comportamiento visual: glyph estable al pasar el puntero (sin indicar acción conectada, ADR-001); el nombre accesible no se sustituye por el aviso flotante.
+Tipo: Icono (conjunto, un icono por control).
+Propósito: identificar visualmente cada uno de los 12 controles de la barra de formato (FR-012 en su parte visual) y exponer su nombre accesible para lectores de pantalla (NFR-009).
+Origen: biblioteca de iconos con licencia MIT-compatible, seleccionada en Plan/Implementation; prohibido usar glifos de texto como iconos; la atribución de la biblioteca se muestra en SC-003/Acerca de (NFR-011).
+Ubicación/referencia: SC-001 — Ventana principal · barra de formato, un icono por control en el orden de escritura; superficie ventana-principal.
+Formato y dimensiones: un icono por control; tamaño, altura y espaciado según TK-004; contraste AA en ambos temas.
+Comportamiento visual: icono estable al pasar el puntero (sin indicar acción conectada); el nombre accesible no se sustituye por el aviso flotante.
 
 Referencias:
-- ADR-001 (propósito — parte visual de FR-012).
-- NFR-011 (origen — licencias MIT-compatibles).
+- ADR-001 (propósito y comportamiento visual — parte visual de FR-012; sin indicar acción conectada).
+- NFR-011 (origen — licencias MIT-compatibles y atribución).
 - TK-001 (formato y dimensiones — contraste AA en ambos temas).
 - VR-002 (comportamiento visual — aviso flotante no sustituye el nombre accesible).
 
@@ -24,3 +24,5 @@ Comportamiento visual: visible mientras el puntero permanece sobre el control y 
 
 Referencias:
 - TK-001 (formato y dimensiones — contraste AA).
+
+VR-003 — No requerido / Fuera de alcance: el tema Claro/Oscuro/Sistema se define por TK-001 (paleta semántica claro/oscuro) y se verifica como estado visual de SC-001; no es un recurso gráfico propio.
