@@ -1,6 +1,8 @@
 using System.Linq;
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using EggMdEditor.App.I18n;
@@ -61,6 +63,12 @@ public class MainWindowTests
         Assert.Equal(ExpectedSpanishHeaders, viewModel.Menus.Select(menu => menu.Header));
         Assert.Equal("Archivo", viewModel.FileMenuHeader);
         Assert.Equal("Ayuda", viewModel.HelpMenuHeader);
+        Assert.Equal(1, viewModel.SelectedMenuIndex);
+        Assert.Equal("Menu.File", viewModel.SelectedMenuKey);
+        Assert.Equal("Archivo", viewModel.SelectedMenuHeader);
+        Assert.True(viewModel.IsFileMenuSelected);
+        Assert.Equal("Anterior", viewModel.PreviousMenuLabel);
+        Assert.Equal("Siguiente", viewModel.NextMenuLabel);
     }
 
     [Fact]
@@ -72,30 +80,55 @@ public class MainWindowTests
         var viewModel = new MainWindowViewModel(catalog);
 
         Assert.Equal(ExpectedEnglishHeaders, viewModel.Menus.Select(menu => menu.Header));
+        Assert.Equal("Previous", viewModel.PreviousMenuLabel);
+        Assert.Equal("Next", viewModel.NextMenuLabel);
     }
 
     [AvaloniaFact]
-    public void Window_ShowsTheSixMenusWithoutConnectedActions()
+    public void Window_ShowsTheSixMenuLabelsAsButtonsAndTheTwoNavigationButtons()
     {
         var viewModel = new MainWindowViewModel(new I18nCatalog());
         var window = new MainWindow(viewModel);
 
         try
         {
-            var menu = window.FindControl<Menu>("MainMenu");
+            window.Show();
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            Assert.NotNull(menu);
-            Assert.Same(viewModel, window.DataContext);
-            Assert.Equal(6, menu.Items.Count);
+            var labels = window.FindControl<StackPanel>("MenuLabels");
+            Assert.NotNull(labels);
 
-            var menuItems = menu.Items.Cast<MenuItem>().ToList();
-            Assert.Equal(ExpectedKeys, menuItems.Select(item => item.Tag as string));
-            Assert.Equal(ExpectedSpanishHeaders, menuItems.Select(item => item.Header as string));
-            Assert.All(menuItems, item =>
+            var buttons = labels.Children.OfType<ToggleButton>().ToList();
+            Assert.Equal(6, buttons.Count);
+            Assert.Equal(ExpectedKeys, buttons.Select(button => button.Tag as string));
+            Assert.Equal(
+                ExpectedSpanishHeaders,
+                buttons.Select(button => button.Content as string));
+            Assert.Equal(
+                ExpectedSpanishHeaders,
+                buttons.Select(button => AutomationProperties.GetName(button)));
+            Assert.All(buttons, button =>
             {
-                Assert.Null(item.Command);
-                Assert.True(item.IsEnabled);
+                Assert.Null(button.Command);
+                Assert.True(button.IsEnabled);
+                Assert.True(button.IsVisible);
             });
+
+            // ST-011: Archivo nace seleccionado y el estado es visible y
+            // accesible mediante el ToggleButton marcado.
+            Assert.True(buttons[0].IsChecked);
+            Assert.All(buttons.Skip(1), button => Assert.False(button.IsChecked));
+
+            var previous = window.FindControl<Button>("PreviousMenuButton");
+            var next = window.FindControl<Button>("NextMenuButton");
+            Assert.NotNull(previous);
+            Assert.NotNull(next);
+            Assert.Equal("Anterior", previous.Content as string);
+            Assert.Equal("Siguiente", next.Content as string);
+            Assert.Equal("Anterior", AutomationProperties.GetName(previous));
+            Assert.Equal("Siguiente", AutomationProperties.GetName(next));
+            Assert.Same(viewModel.SelectPreviousMenuCommand, previous.Command);
+            Assert.Same(viewModel.SelectNextMenuCommand, next.Command);
 
             Assert.Equal(1280, window.Width);
             Assert.Equal(720, window.Height);
