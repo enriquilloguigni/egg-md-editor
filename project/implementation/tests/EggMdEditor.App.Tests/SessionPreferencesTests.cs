@@ -88,24 +88,20 @@ public class SessionPreferencesTests
     }
 
     [Fact]
-    public void Singleton_Instance()
+    public void Sessions_AreIndependent()
     {
-        Assert.Same(Session.Instance, Session.Instance);
-    }
+        var first = new Session(new I18nCatalog());
+        var second = new Session(new I18nCatalog());
 
-    [Fact]
-    public void Clone_Preserves()
-    {
-        var s = new Session();
-        s.Language = "en";
-        s.Theme = Theme.Dark;
-        s.OpenMenu();
-        s.ShowNotice();
-        var c = s.Clone();
-        Assert.Equal("en", c.Language);
-        Assert.Equal(Theme.Dark, c.Theme);
-        Assert.Equal(MenuState.Open, c.MenuState);
-        Assert.True(c.NoticeVisible);
+        first.Language = "en";
+        first.Theme = Theme.Dark;
+        first.ShowNotice();
+
+        // T-019: sin singleton ni Clone, cada sesión conserva su propio estado.
+        Assert.Equal("es", second.Language);
+        Assert.Equal(Theme.Light, second.Theme);
+        Assert.False(second.NoticeVisible);
+        Assert.NotSame(first.Preferences, second.Preferences);
     }
 
     [Fact]
@@ -117,41 +113,6 @@ public class SessionPreferencesTests
         p.Theme = Theme.Dark;
         Assert.True(raised);
         Assert.Equal(Theme.Dark, p.Theme);
-    }
-
-    [Fact]
-    public void Session_CloneKeepsItsOwnPreferences()
-    {
-        var s = new Session(new I18nCatalog());
-        s.Language = "en";
-        s.Theme = Theme.Dark;
-
-        var clone = s.Clone();
-        clone.Preferences.Language = "es";
-        clone.Preferences.Theme = Theme.Light;
-
-        Assert.Equal("en", s.Language);
-        Assert.Equal(Theme.Dark, s.Theme);
-        Assert.Equal("es", clone.Language);
-        Assert.Equal(Theme.Light, clone.Theme);
-    }
-
-    [Fact]
-    public void UiPreferences_CloneKeepsLanguageThemeAndPreference()
-    {
-        var preferences = new UiPreferences("en", Theme.Dark, ThemePreference.Dark);
-        var clone = preferences.Clone();
-
-        Assert.Equal("en", clone.Language);
-        Assert.Equal(Theme.Dark, clone.Theme);
-        Assert.Equal(ThemePreference.Dark, clone.ThemePreference);
-
-        clone.Language = "es";
-        clone.Theme = Theme.Light;
-
-        Assert.Equal("en", preferences.Language);
-        Assert.Equal(Theme.Dark, preferences.Theme);
-        Assert.Equal(ThemePreference.Dark, preferences.ThemePreference);
     }
 
     [Fact]
