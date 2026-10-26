@@ -45,10 +45,13 @@
       },
       "verification": {
         "run": "v1",
-        "execution": "E-001",
+        "execution": "E-002",
         "spec": "v1",
         "plan": "v1",
-        "commit": "0f12830668871f3e79cb9094b463225ea669394c"
+        "commit": "b1f4e944fcf8966860f4fb122bcf79487e84d537",
+        "stale": false,
+        "evidence_sha256": "36c63ac4c750e444ba4bd1b6e985dac956a7b8a332615b5c4277cb2d48077fdb",
+        "visual_sha256": "ddfabf7b3835fbf40575e6018fd12c2fc8df7c652c4bc7390bd215a8ddc35b04"
       }
     }
   },
@@ -129,9 +132,59 @@
       ],
       "impact": "medium",
       "resolved_by": "humano"
+    },
+    {
+      "id": "PD-RES-001",
+      "status": "resolved",
+      "question": "SC-001: ¿rige la Spec (BR-F001-008: solo menú y barra, área vacía) o el mockup (3 columnas, 5 controles)? ¿Y cuál es el inventario normativo de FR-012? — RESUELTO: rige la Spec; inventario = 12 controles de requerimiento.txt en orden de escritura; actualizar mockup y Spec/Plan v2.",
+      "artifact": "project/features/F-001-entorno-de-aplicacion/spec/business-rules.md + plan/mockups.md",
+      "blocks": [
+        "Spec",
+        "Plan",
+        "PLAN_COVERED"
+      ],
+      "impact": "high",
+      "resolved_by": "humano"
+    },
+    {
+      "id": "PD-RES-002",
+      "status": "resolved",
+      "question": "¿La conmutación de tema (OP-002, TR-008/TR-009) debe tener entrada visible en SC-001 o se retira de F-001? — RESUELTO: añadir entrada visible Tema (Claro/Oscuro/Sistema) en Herramientas y capturar estado oscuro.",
+      "artifact": "project/features/F-001-entorno-de-aplicacion/spec/data-structures.md + states-transitions.md",
+      "blocks": [
+        "Implementation",
+        "PLAN_COVERED"
+      ],
+      "impact": "medium",
+      "resolved_by": "humano"
+    },
+    {
+      "id": "PD-RES-003",
+      "status": "resolved",
+      "question": "¿F-001 muestra solo los 6 rótulos de menú o también entradas internas visibles? — RESUELTO: 6 rótulos como botones y dos botones de navegación secuencial: uno para aumentar el rótulo y otro para disminuirlo.",
+      "artifact": "project/features/F-001-entorno-de-aplicacion/feature.md + spec/process.md",
+      "blocks": [
+        "Spec",
+        "Plan",
+        "PLAN_COVERED"
+      ],
+      "impact": "medium",
+      "resolved_by": "humano"
+    },
+    {
+      "id": "PD-RES-004",
+      "status": "resolved",
+      "question": "¿Se corrigen todos los hallazgos restantes (E2E de AC-005/006/007, iconos MIT, alias especulativos) antes de re-verificar o se aceptan como deuda? — RESUELTO: corregir todos.",
+      "artifact": "project/features/F-001-entorno-de-aplicacion/verification/results/v1/result.md",
+      "blocks": [
+        "Implementation",
+        "PLAN_COVERED"
+      ],
+      "impact": "high",
+      "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-24T00:54:56.075Z",
+  "updated_at": "2026-10-26T19:05:36.368Z",
   "owner": "EG",
   "sources": [
     {
