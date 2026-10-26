@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using EggMdEditor.App.I18n;
+using Material.Icons;
 using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
@@ -70,35 +71,35 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Controles de la barra de formato de FR-012 en orden de escritura
-    /// (ENT-005): clave i18n estable y glyph de su icono (VR-001). El orden
-    /// de la lista es el orden visible de la barra: no admite controles de
-    /// más ni ausentes.
+    /// (ENT-005): clave i18n estable e icono Material Design (VR-001). El
+    /// orden de la lista es el orden visible de la barra: no admite controles
+    /// de más ni ausentes. Ningún icono es un glifo de texto.
     /// </summary>
-    private static readonly (string Key, string Glyph)[] FormatBarLayout =
+    private static readonly (string Key, MaterialIconKind Icon)[] FormatBarLayout =
     [
-        ("barra.enfasis", "B"),
-        ("barra.encabezados", "H▾"),
-        ("barra.listas", "≡"),
-        ("barra.cita", "“"),
-        ("barra.codigo", "</>"),
-        ("barra.enlace", "↗"),
-        ("barra.imagen", "▣"),
-        ("barra.tabla", "▦"),
-        ("barra.nota-al-pie", "†"),
-        ("barra.formula", "Σ"),
-        ("barra.diagrama", "◇"),
-        ("barra.indice", "⋮"),
+        ("barra.enfasis", MaterialIconKind.FormatBold),
+        ("barra.encabezados", MaterialIconKind.FormatHeader1),
+        ("barra.listas", MaterialIconKind.FormatListBulleted),
+        ("barra.cita", MaterialIconKind.FormatQuoteClose),
+        ("barra.codigo", MaterialIconKind.CodeTags),
+        ("barra.enlace", MaterialIconKind.LinkVariant),
+        ("barra.imagen", MaterialIconKind.ImageOutline),
+        ("barra.tabla", MaterialIconKind.Table),
+        ("barra.nota-al-pie", MaterialIconKind.FormatSuperscript),
+        ("barra.formula", MaterialIconKind.FunctionVariant),
+        ("barra.diagrama", MaterialIconKind.FlowchartOutline),
+        ("barra.indice", MaterialIconKind.Toc),
     ];
 
     /// <summary>Claves i18n de los controles de la barra de formato, en orden.</summary>
     public static IReadOnlyList<string> FormatBarKeys { get; } = Array.AsReadOnly(
         FormatBarLayout.Select(control => control.Key).ToArray());
 
-    /// <summary>Glyph del icono (VR-001) de cada control, por clave i18n.</summary>
-    public static IReadOnlyDictionary<string, string> FormatBarGlyphs { get; } =
+    /// <summary>Icono (VR-001) de cada control, por clave i18n.</summary>
+    public static IReadOnlyDictionary<string, MaterialIconKind> FormatBarIcons { get; } =
         FormatBarLayout.ToDictionary(
             control => control.Key,
-            control => control.Glyph,
+            control => control.Icon,
             StringComparer.Ordinal);
 
     /// <summary>
@@ -122,9 +123,10 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Controles visibles de la barra de formato de SC-001 (ENT-005), en el
-    /// orden de escritura de FR-012: clave i18n, glyph del icono (VR-001) y
-    /// nombre resuelto en el idioma activo, que alimenta tanto el aviso
-    /// flotante (VR-002) como el nombre accesible (NFR-009).
+    /// orden de escritura de FR-012: clave i18n, icono de la librería
+    /// MIT-compatible (VR-001) y nombre resuelto en el idioma activo, que
+    /// alimenta tanto el aviso flotante (VR-002) como el nombre accesible
+    /// (NFR-009).
     /// </summary>
     public IReadOnlyList<FormatBarControlDefinition> FormatBarControls
     {
@@ -134,7 +136,7 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
             var controls = new List<FormatBarControlDefinition>(FormatBarKeys.Count);
             foreach (var key in FormatBarKeys)
             {
-                controls.Add(new FormatBarControlDefinition(key, FormatBarGlyphs[key], catalog.Get(key)));
+                controls.Add(new FormatBarControlDefinition(key, FormatBarIcons[key], catalog.Get(key)));
             }
 
             return new ReadOnlyCollection<FormatBarControlDefinition>(controls);
@@ -1172,11 +1174,11 @@ public sealed record MainMenuDefinition(string Key, string Header);
 
 /// <summary>
 /// Control de la barra de formato de SC-001 (ENT-005): clave i18n estable,
-/// glyph del icono (VR-001) y nombre resuelto en el idioma activo, que se
-/// muestra como aviso flotante (VR-002) y se expone como nombre accesible
-/// (NFR-009). Sin acción conectada en F-001 (ADR-001).
+/// icono de la librería MIT-compatible (VR-001) y nombre resuelto en el idioma
+/// activo, que se muestra como aviso flotante (VR-002) y se expone como nombre
+/// accesible (NFR-009). Sin acción conectada en F-001 (ADR-001).
 /// </summary>
 /// <param name="Key">Clave del catálogo i18n (ENT-006); también identifica la posición.</param>
-/// <param name="Glyph">Glyph visible del icono del control (VR-001).</param>
+/// <param name="Icon">Icono vectorial del control (VR-001), nunca un glifo de texto.</param>
 /// <param name="Name">Nombre del control en el idioma activo (VR-002, NFR-009).</param>
-public sealed record FormatBarControlDefinition(string Key, string Glyph, string Name);
+public sealed record FormatBarControlDefinition(string Key, MaterialIconKind Icon, string Name);
