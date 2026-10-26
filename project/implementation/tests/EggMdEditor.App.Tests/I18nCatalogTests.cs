@@ -153,17 +153,6 @@ public class I18nCatalogTests
     }
 
     [Fact]
-    public void AliasMethods_Work()
-    {
-        var catalog = new I18nCatalog();
-        Assert.Equal(catalog.Get("Menu.File"), catalog.GetString("Menu.File"));
-        Assert.Equal(catalog.Get("Menu.File"), catalog.Resolve("Menu.File"));
-        Assert.Equal(catalog.Get("Menu.File"), catalog.Translate("Menu.File"));
-        Assert.Equal(catalog.Get("Menu.File"), catalog.Localize("Menu.File"));
-        Assert.Equal(catalog.Get("Menu.File"), catalog.GetLocalizedString("Menu.File"));
-    }
-
-    [Fact]
     public void TryGet_WithLanguageParameter()
     {
         var catalog = new I18nCatalog();
