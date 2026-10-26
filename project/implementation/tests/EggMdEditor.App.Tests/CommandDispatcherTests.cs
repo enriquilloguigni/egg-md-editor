@@ -82,14 +82,17 @@ public class CommandDispatcherTests
         Assert.True(dispatcher.Dispatch(CommandNames.OpenMenu));
         Assert.True(session.IsMenuOpen);
 
-        Assert.Equal(DispatchResult.Handled, dispatcher.Execute(CommandNames.CloseMenu));
+        Assert.True(dispatcher.Dispatch(CommandNames.CloseMenu));
         Assert.False(session.IsMenuOpen);
 
         Assert.False(dispatcher.Dispatch("Save"));
-        Assert.Equal(CommandResult.NotAvailable, dispatcher.DispatchCommand("Save"));
         Assert.False(dispatcher.Dispatch((string?)null));
         Assert.False(dispatcher.Dispatch((SharedCommand?)null));
-        Assert.Equal(CommandResult.NoEffect, dispatcher.DispatchCommand((string?)null));
+
+        // T-019: los alias retirados ya no son comandos disponibles.
+        Assert.False(dispatcher.Dispatch("CloseWindow"));
+        Assert.False(dispatcher.Dispatch("SwitchLanguage"));
+        Assert.False(dispatcher.Dispatch("HideTooltip"));
 
         // Sin sesión compuesta no hay efecto observable.
         Assert.False(new CommandDispatcher().Dispatch(CommandNames.OpenMenu));
