@@ -36,6 +36,9 @@
                     <SolidColorBrush x:Key="MenuSelectionForegroundBrush" Color="#FFFFFF" />
                     <SolidColorBrush x:Key="MenuPanelBackgroundBrush" Color="#FFFFFF" />
                     <SolidColorBrush x:Key="MenuPanelBorderBrush" Color="#D0D0D0" />
+                    <SolidColorBrush x:Key="NoticeBackgroundBrush" Color="#212121" />
+                    <SolidColorBrush x:Key="NoticeForegroundBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="NoticeBorderBrush" Color="#000000" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="DialogOverlayBrush" Color="#99000000" />
@@ -52,6 +55,9 @@
                     <SolidColorBrush x:Key="MenuSelectionForegroundBrush" Color="#0B0B0B" />
                     <SolidColorBrush x:Key="MenuPanelBackgroundBrush" Color="#2D2D2D" />
                     <SolidColorBrush x:Key="MenuPanelBorderBrush" Color="#4A4A4A" />
+                    <SolidColorBrush x:Key="NoticeBackgroundBrush" Color="#F5F5F5" />
+                    <SolidColorBrush x:Key="NoticeForegroundBrush" Color="#0B0B0B" />
+                    <SolidColorBrush x:Key="NoticeBorderBrush" Color="#FFFFFF" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
