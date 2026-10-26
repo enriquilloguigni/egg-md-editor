@@ -21,8 +21,10 @@ public partial class App : Application
     private ApplicationThemeApplier? _themeApplier;
     private Session? _session;
     private Window? _mainWindow;
+    private MainWindowViewModel? _viewModel;
     private bool _startupFailed;
     private bool _exitHandled;
+    private static int _testActivationCount;
 
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
@@ -71,6 +73,13 @@ public partial class App : Application
 
         _lifecycle.BeginStartup();
 
+        // T-018/ERR-001: el arnés E2E simula un fallo de inicialización antes
+        // de crear SC-001. La ruta de diagnóstico es la normal del proceso.
+        if (StartupTestMode.FailStartup)
+        {
+            throw new InvalidOperationException(StartupTestMode.StartupFailureMessage);
+        }
+
         var catalog = new I18nCatalog(
             ApplicationLogging.CreateSessionLogger(
                 _loggerFactory,
@@ -103,7 +112,9 @@ public partial class App : Application
             SessionId = _lifecycle.SessionId,
         };
 
+        _viewModel = viewModel;
         _mainWindow = new MainWindow(viewModel, _lifecycle);
+        StartupTestMode.Record("window-created", "count=1");
         desktop.MainWindow = _mainWindow;
         desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
@@ -141,10 +152,81 @@ public partial class App : Application
                     return;
                 }
 
+                // T-018/ERR-002: SC-001 llegó a crearse pero no completa su
+                // primera presentación. El dispatcher encamina la excepción a
+                // OnDispatcherUnhandledException, que finaliza con error.
+                if (StartupTestMode.FailRender)
+                {
+                    throw new InvalidOperationException(StartupTestMode.RenderFailureMessage);
+                }
+
                 _lifecycle?.MarkInitialized(_session?.Language ?? I18nCatalog.Spanish);
                 Avalonia.Threading.Dispatcher.UIThread.UnhandledException -= OnDispatcherUnhandledException;
+                StartupTestMode.Record(
+                    "window-presented",
+                    $"count=1;language={_session?.Language ?? I18nCatalog.Spanish};"
+                    + $"theme={_session?.Theme};themePreference={_session?.ThemePreference}");
+                ApplyTestModeActions();
             },
             DispatcherPriority.Loaded);
+    }
+
+    /// <summary>
+    /// T-018: acciones controladas por el arnés E2E después de presentar
+    /// SC-001. En ejecución normal no hace nada.
+    /// </summary>
+    private void ApplyTestModeActions()
+    {
+        if (!StartupTestMode.IsEnabled
+            || _mainWindow is not { } window
+            || _viewModel is not { } viewModel)
+        {
+            return;
+        }
+
+        if (StartupTestMode.MinimizeOnReady)
+        {
+            window.WindowState = WindowState.Minimized;
+            StartupTestMode.Record("window-minimized", $"state={window.WindowState}");
+        }
+
+        var language = StartupTestMode.SwitchLanguage;
+        if (!string.IsNullOrWhiteSpace(language)
+            && !string.Equals(language, viewModel.CurrentLanguage, StringComparison.OrdinalIgnoreCase)
+            && viewModel.TryChangeLanguage(language))
+        {
+            StartupTestMode.Record("language-changed", $"language={viewModel.CurrentLanguage}");
+        }
+
+        var theme = StartupTestMode.SwitchTheme;
+        if (!string.IsNullOrWhiteSpace(theme) && viewModel.TryChangeTheme(theme))
+        {
+            StartupTestMode.Record(
+                "theme-changed",
+                $"theme={viewModel.CurrentTheme};preference={viewModel.CurrentThemePreference}");
+        }
+
+        if (StartupTestMode.CloseAfterMilliseconds is int closeAfter)
+        {
+            // Mismo camino que el cierre de la ventana por la barra de título
+            // (TR-001/OP-006): OnClosed y la finalización de la sesión.
+            DispatcherTimer.RunOnce(
+                () =>
+                {
+                    try
+                    {
+                        if (window.IsVisible)
+                        {
+                            window.Close();
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // El diagnóstico del cierre lo posee ApplicationLifecycle.
+                    }
+                },
+                TimeSpan.FromMilliseconds(closeAfter));
+        }
     }
 
     private void OnDispatcherUnhandledException(
@@ -191,6 +273,7 @@ public partial class App : Application
         // sesión. En un arranque fallido no hay SC-001 usable que cerrar.
         if (!_startupFailed)
         {
+            StartupTestMode.Record("shutdown-requested");
             _lifecycle?.BeginShutdown();
         }
     }
@@ -381,5 +464,15 @@ public partial class App : Application
         }
 
         window.Activate();
+
+        if (StartupTestMode.IsEnabled)
+        {
+            // AC-005: evidencia del efecto real sobre la ventana primaria,
+            // no solo de la recepción de la solicitud.
+            var activationCount = Interlocked.Increment(ref _testActivationCount);
+            StartupTestMode.Record(
+                "activation-applied",
+                $"count={activationCount};state={window.WindowState};visible={window.IsVisible}");
+        }
     }
 }
