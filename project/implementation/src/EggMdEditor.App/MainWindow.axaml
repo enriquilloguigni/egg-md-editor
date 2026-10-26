@@ -191,10 +191,9 @@
       <Border x:Name="DocumentArea" Grid.Row="2" />
     </Grid>
 
-    <!-- Herramientas → Idioma y las entradas de Ayuda (SC-003) conservan su
-         superficie y sus comandos. El submenú se superpone a la barra de
-         formato sin desplazar el documento (BR-F001-001). T-016 añadirá Tema
-         a esta misma sección de Herramientas. -->
+    <!-- Herramientas → Idioma y Tema, y las entradas de Ayuda (SC-003)
+         conservan su superficie y sus comandos. El submenú se superpone a la
+         barra de formato sin desplazar el documento (BR-F001-001). -->
     <Canvas x:Name="MenuOverlay"
             IsVisible="{Binding IsMenuDropdownOpen}"
             IsEnabled="{Binding !Dialog.IsOpen}"
@@ -240,6 +239,42 @@
                          CommandParameter="en"
                          AutomationProperties.AutomationId="Language.en"
                          AutomationProperties.Name="{Binding EnglishOptionHeader}" />
+
+            <Separator x:Name="ToolsThemeSeparator" Margin="4,8,4,4" />
+            <TextBlock x:Name="ToolsThemeHeader"
+                       Text="{Binding ThemeMenuHeader}"
+                       Margin="8,4,8,4"
+                       Foreground="{DynamicResource DialogMutedBrush}" />
+            <!-- OP-002 (T-016): selección de tema mutuamente excluyente
+                 Claro/Oscuro/Sistema. Sistema es el valor inicial y hereda
+                 el tema del SO; el cambio se aplica en caliente. -->
+            <RadioButton x:Name="LightThemeItem"
+                         Classes="menu-option"
+                         GroupName="InterfaceTheme"
+                         Content="{Binding LightThemeOptionHeader}"
+                         IsChecked="{Binding IsLightThemeSelected, Mode=OneWay}"
+                         Command="{Binding ChangeThemeCommand}"
+                         CommandParameter="light"
+                         AutomationProperties.AutomationId="Theme.light"
+                         AutomationProperties.Name="{Binding LightThemeOptionHeader}" />
+            <RadioButton x:Name="DarkThemeItem"
+                         Classes="menu-option"
+                         GroupName="InterfaceTheme"
+                         Content="{Binding DarkThemeOptionHeader}"
+                         IsChecked="{Binding IsDarkThemeSelected, Mode=OneWay}"
+                         Command="{Binding ChangeThemeCommand}"
+                         CommandParameter="dark"
+                         AutomationProperties.AutomationId="Theme.dark"
+                         AutomationProperties.Name="{Binding DarkThemeOptionHeader}" />
+            <RadioButton x:Name="SystemThemeItem"
+                         Classes="menu-option"
+                         GroupName="InterfaceTheme"
+                         Content="{Binding SystemThemeOptionHeader}"
+                         IsChecked="{Binding IsSystemThemeSelected, Mode=OneWay}"
+                         Command="{Binding ChangeThemeCommand}"
+                         CommandParameter="system"
+                         AutomationProperties.AutomationId="Theme.system"
+                         AutomationProperties.Name="{Binding SystemThemeOptionHeader}" />
           </StackPanel>
 
           <StackPanel x:Name="HelpMenuEntries"
