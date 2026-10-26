@@ -1,5 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="EggMdEditor.App.App"
              RequestedThemeVariant="Default">
     <!-- T-002/T-009 (ENT-003, OP-002): FluentTheme claro/oscuro. "Default"
@@ -7,6 +8,10 @@
          arrancar y la conmutación de la sesión lo fija después (COM-003). -->
     <Application.Styles>
         <FluentTheme />
+        <!-- T-017 (VR-001, NFR-011): estilos de la librería de iconos
+             Material.Icons.Avalonia 3.0.2 (MIT), que pinta cada icono como
+             geometría vectorial en lugar de un glifo de texto. -->
+        <materialIcons:MaterialIconStyles />
     </Application.Styles>
 
     <!-- T-014 (SC-002/SC-003): tokens de superficie de las nuevas pantallas.
