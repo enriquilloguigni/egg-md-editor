@@ -138,4 +138,32 @@ public class MainWindowTests
             window.Close();
         }
     }
+
+    [AvaloniaFact]
+    public void Window_DeclaresAndEnforcesTheSc001MinimumSize()
+    {
+        var viewModel = new MainWindowViewModel(new I18nCatalog());
+        var window = new MainWindow(viewModel);
+
+        try
+        {
+            // SC-001/NFR-001: tamaño mínimo 1280×720.
+            Assert.Equal(1280, window.MinWidth);
+            Assert.Equal(720, window.MinHeight);
+
+            window.Width = 800;
+            window.Height = 600;
+            window.Show();
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+            window.UpdateLayout();
+
+            // Aunque se solicite un tamaño menor, la ventana no baja del mínimo.
+            Assert.True(window.Bounds.Width >= 1280);
+            Assert.True(window.Bounds.Height >= 720);
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
 }
