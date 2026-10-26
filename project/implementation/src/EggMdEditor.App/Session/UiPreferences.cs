@@ -54,60 +54,15 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
         get => _language;
         set
         {
-            if (TrySetLanguage(value))
-            {
-                return;
-            }
             // keep previous on failure (abort without partial change)
+            TrySetLanguage(value);
         }
-    }
-
-    public string Idioma
-    {
-        get => _language;
-        set => Language = value;
-    }
-
-    public Theme Tema
-    {
-        get => _theme;
-        set => Theme = value;
-    }
-
-    public string CurrentLanguage
-    {
-        get => _language;
-        set => Language = value;
-    }
-
-    public string ActiveLanguage
-    {
-        get => _language;
-        set => Language = value;
-    }
-
-    public string LanguageCode
-    {
-        get => _language;
-        set => Language = value;
     }
 
     public Theme Theme
     {
         get => _theme;
         set => TrySetTheme(value);
-    }
-
-    public Theme CurrentTheme
-    {
-        get => _theme;
-        set => Theme = value;
-    }
-
-    public Theme ActiveTheme
-    {
-        get => _theme;
-        set => Theme = value;
     }
 
     /// <summary>
@@ -118,18 +73,6 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
     {
         get => _themePreference;
         set => TrySetThemePreference(value);
-    }
-
-    public ThemePreference CurrentThemePreference
-    {
-        get => _themePreference;
-        set => ThemePreference = value;
-    }
-
-    public ThemePreference TemaPreferencia
-    {
-        get => _themePreference;
-        set => ThemePreference = value;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -149,25 +92,8 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
 
         _language = code;
         OnPropertyChanged(nameof(Language));
-        OnPropertyChanged(nameof(CurrentLanguage));
-        OnPropertyChanged(nameof(ActiveLanguage));
-        OnPropertyChanged(nameof(LanguageCode));
         return true;
     }
-
-    public bool TrySetLanguage(Language language) => TrySetLanguage(ToCode(language));
-
-    public bool TrySetLanguage(AppLanguage language) => TrySetLanguage(language == AppLanguage.English || language == AppLanguage.En ? "en" : "es");
-    public bool TrySetLanguage(UiLanguage language) => TrySetLanguage(language == UiLanguage.English || language == UiLanguage.En ? "en" : "es");
-
-    public void SetLanguage(AppLanguage language) => SetLanguage(language == AppLanguage.English || language == AppLanguage.En ? "en" : "es");
-    public void SetLanguage(UiLanguage language) => SetLanguage(language == UiLanguage.English || language == UiLanguage.En ? "en" : "es");
-
-    public void ChangeLanguage(AppLanguage language) => SetLanguage(language);
-    public void ChangeLanguage(UiLanguage language) => SetLanguage(language);
-
-    public void SwitchLanguage(AppLanguage language) => SetLanguage(language);
-    public void SwitchLanguage(UiLanguage language) => SetLanguage(language);
 
     public void SetLanguage(string language)
     {
@@ -176,14 +102,6 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
             throw new InvalidOperationException($"Idioma no soportado: '{language}'.");
         }
     }
-
-    public void SetLanguage(Language language) => SetLanguage(ToCode(language));
-
-    public void ChangeLanguage(string language) => SetLanguage(language);
-    public void ChangeLanguage(Language language) => SetLanguage(language);
-
-    public void SwitchLanguage(string language) => SetLanguage(language);
-    public void SwitchLanguage(Language language) => SetLanguage(language);
 
     public bool TrySetTheme(Theme theme)
     {
@@ -231,16 +149,11 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
         if (themeChanged)
         {
             OnPropertyChanged(nameof(Theme));
-            OnPropertyChanged(nameof(CurrentTheme));
-            OnPropertyChanged(nameof(ActiveTheme));
-            OnPropertyChanged(nameof(Tema));
         }
 
         if (preferenceChanged)
         {
             OnPropertyChanged(nameof(ThemePreference));
-            OnPropertyChanged(nameof(CurrentThemePreference));
-            OnPropertyChanged(nameof(TemaPreferencia));
         }
 
         return true;
@@ -251,22 +164,6 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
         return TryParseThemePreference(preference, out var parsed)
             && TrySetThemePreference(parsed);
     }
-
-    public bool TrySetTheme(AppTheme theme) => TrySetTheme((Theme)theme);
-    public bool TrySetTheme(ThemeMode theme) => TrySetTheme((Theme)theme);
-    public bool TrySetTheme(ThemeVariant theme) => TrySetTheme((Theme)theme);
-
-    public void SetTheme(AppTheme theme) => SetTheme((Theme)theme);
-    public void SetTheme(ThemeMode theme) => SetTheme((Theme)theme);
-    public void SetTheme(ThemeVariant theme) => SetTheme((Theme)theme);
-
-    public void ChangeTheme(AppTheme theme) => SetTheme(theme);
-    public void ChangeTheme(ThemeMode theme) => SetTheme(theme);
-    public void ChangeTheme(ThemeVariant theme) => SetTheme(theme);
-
-    public void SwitchTheme(AppTheme theme) => SetTheme(theme);
-    public void SwitchTheme(ThemeMode theme) => SetTheme(theme);
-    public void SwitchTheme(ThemeVariant theme) => SetTheme(theme);
 
     public bool TrySetTheme(string? theme)
     {
@@ -293,12 +190,6 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
             throw new InvalidOperationException($"Tema no soportado: '{theme}'.");
         }
     }
-
-    public void ChangeTheme(Theme theme) => SetTheme(theme);
-    public void ChangeTheme(string theme) => SetTheme(theme);
-
-    public void SwitchTheme(Theme theme) => SetTheme(theme);
-    public void SwitchTheme(string theme) => SetTheme(theme);
 
     public void ToggleTheme()
     {
@@ -447,37 +338,15 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
                 return false;
         }
     }
-
-    public static string ToCode(Language language) => language switch
-    {
-        EggMdEditor.App.Language.English or EggMdEditor.App.Language.En or EggMdEditor.App.Language.Ingles or EggMdEditor.App.Language.Inglés => "en",
-        _ => "es",
-    };
-
-    public static Theme FromString(string? value)
-    {
-        return TryParseTheme(value, out var t) ? t : Theme.Light;
-    }
 }
 
 public interface IUiPreferences
 {
     string Language { get; set; }
-    string Idioma { get; set; }
-    string CurrentLanguage { get; set; }
-    string ActiveLanguage { get; set; }
-    string LanguageCode { get; set; }
     Theme Theme { get; set; }
-    Theme Tema { get; set; }
-    Theme CurrentTheme { get; set; }
-    Theme ActiveTheme { get; set; }
     ThemePreference ThemePreference { get; set; }
-    ThemePreference CurrentThemePreference { get; set; }
-    ThemePreference TemaPreferencia { get; set; }
     bool TrySetLanguage(string? language);
-    bool TrySetLanguage(Language language);
     void SetLanguage(string language);
-    void SetLanguage(Language language);
     bool TrySetTheme(Theme theme);
     bool TrySetTheme(string? theme);
     bool TrySetThemePreference(ThemePreference preference);
