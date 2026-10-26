@@ -22,20 +22,22 @@ internal enum CaptureSurface
 }
 
 /// <summary>
-/// Estado visual de la captura: A es el estado base claro y B el estado
-/// oscuro declarado en plan/mockups.md (SC-001).
+/// Estado visual de la captura: A es el estado base claro, B el estado
+/// oscuro y C el aviso flotante visible, declarados en plan/mockups.md
+/// (SC-001).
 /// </summary>
 internal enum CaptureState
 {
     Base = 0,
     Dark = 1,
+    Notice = 2,
 }
 
 /// <summary>
 /// Petición de captura resuelta a partir de la línea de comandos:
-/// <c>&lt;superficie&gt; &lt;SC&gt; [A|B] &lt;salida&gt;</c> o, sin superficie,
-/// <c>&lt;SC&gt; [A|B] &lt;salida&gt;</c>. El estado también se admite como
-/// sufijo del escenario (<c>SC-001:B</c>).
+/// <c>&lt;superficie&gt; &lt;SC&gt; [A|B|C] &lt;salida&gt;</c> o, sin superficie,
+/// <c>&lt;SC&gt; [A|B|C] &lt;salida&gt;</c>. El estado también se admite como
+/// sufijo del escenario (<c>SC-001:C</c>).
 /// </summary>
 internal readonly record struct CaptureRequest(
     CaptureSurface Surface,
@@ -46,13 +48,13 @@ internal readonly record struct CaptureRequest(
     public const string Usage =
         """
         Uso:
-          dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- <superficie> <SC> [A|B] <salida>
-          dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- <SC> [A|B] <salida>
-          dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- <superficie> <SC>:<A|B> <salida>
+          dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- <superficie> <SC> [A|B|C] <salida>
+          dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- <SC> [A|B|C] <salida>
+          dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- <superficie> <SC>:<A|B|C> <salida>
 
         Superficies: ventana-principal, diálogo, ayuda
         Escenarios: SC-001 (ventana-principal), SC-002 (diálogo), SC-003 (ayuda)
-        Estados: A (claro, por defecto), B (oscuro)
+        Estados: A (claro, por defecto), B (oscuro), C (aviso flotante visible, solo SC-001)
         """;
 
     public string SurfaceName => CaptureSurfaces.CanonicalName(Surface);
@@ -85,7 +87,7 @@ internal readonly record struct CaptureRequest(
         {
             error = $"Superficie o escenario desconocido: '{args[scenarioIndex]}'. " +
                     "Superficies válidas: ventana-principal, diálogo, ayuda; " +
-                    "escenarios válidos: SC-001, SC-002, SC-003; estado: A o B.";
+                    "escenarios válidos: SC-001, SC-002, SC-003; estado: A, B o C.";
             return false;
         }
 
@@ -123,7 +125,7 @@ internal readonly record struct CaptureRequest(
 
                 if (firstIsState && secondIsState)
                 {
-                    error = "Solo se admite un estado visual (A o B).";
+                    error = "Solo se admite un estado visual (A, B o C).";
                     return false;
                 }
 
@@ -153,7 +155,7 @@ internal readonly record struct CaptureRequest(
                 }
                 else
                 {
-                    error = "Se esperaba un estado visual (A o B) y una única ruta de salida.";
+                    error = "Se esperaba un estado visual (A, B o C) y una única ruta de salida.";
                     return false;
                 }
             }
@@ -170,6 +172,12 @@ internal readonly record struct CaptureRequest(
         {
             error = $"La superficie '{CaptureSurfaces.CanonicalName(surface)}' no corresponde a " +
                     $"{scenario}; se esperaba '{CaptureSurfaces.CanonicalName(expectedSurface)}'.";
+            return false;
+        }
+
+        if (state == CaptureState.Notice && expectedSurface != CaptureSurface.MainWindow)
+        {
+            error = "El estado C (aviso flotante visible) solo se admite para SC-001 (ventana-principal).";
             return false;
         }
 
@@ -285,6 +293,12 @@ internal static class CaptureStates
             case "dark":
                 state = CaptureState.Dark;
                 return true;
+            case "c":
+            case "aviso":
+            case "notice":
+            case "tooltip":
+                state = CaptureState.Notice;
+                return true;
             default:
                 state = CaptureState.Base;
                 return false;
@@ -335,6 +349,7 @@ internal static class CaptureStates
     {
         CaptureState.Base => "A",
         CaptureState.Dark => "B",
+        CaptureState.Notice => "C",
         _ => throw new ArgumentOutOfRangeException(
             nameof(state),
             state,
