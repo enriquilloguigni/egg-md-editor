@@ -7,7 +7,9 @@
         x:DataType="app:MainWindowViewModel"
         Title="Egg MD Editor"
         Width="1280"
-        Height="720">
+        Height="720"
+        MinWidth="1280"
+        MinHeight="720">
 
   <Window.Styles>
     <!-- TK-004/TK-005: los 6 rótulos de ENT-004 son botones visibles; el
@@ -174,7 +176,6 @@
                       Tag="{Binding Key}"
                       AutomationProperties.AutomationId="{Binding Key}"
                       AutomationProperties.Name="{Binding Name}"
-                      ToolTip.Tip="{Binding Name}"
                       PointerEntered="OnFormatControlPointerEntered"
                       PointerExited="OnFormatControlPointerExited">
                 <!-- VR-001: icono vectorial por control; nunca un glifo de texto. -->
@@ -193,6 +194,29 @@
       <!-- Área de documento vacía en F-001 (BR-F001-008). -->
       <Border x:Name="DocumentArea" Grid.Row="2" />
     </Grid>
+
+    <!-- VR-002/OP-004 (T-010): aviso flotante superpuesto al área de
+         documento, junto al control de la barra apuntado. Su visibilidad y
+         su texto siguen al ViewModel en el idioma activo; no sustituye el
+         nombre accesible del icono (NFR-009) ni captura el puntero. -->
+    <Canvas x:Name="NoticeLayer"
+            IsHitTestVisible="False"
+            ZIndex="5">
+      <Border x:Name="FormatNotice"
+              IsVisible="{Binding IsNoticeVisible}"
+              Canvas.Left="16"
+              Canvas.Top="88"
+              Padding="10,6"
+              CornerRadius="4"
+              BorderThickness="1"
+              BorderBrush="{DynamicResource NoticeBorderBrush}"
+              Background="{DynamicResource NoticeBackgroundBrush}"
+              BoxShadow="0 4 12 0 #33000000">
+        <TextBlock Text="{Binding VisibleNotice}"
+                   FontSize="12"
+                   Foreground="{DynamicResource NoticeForegroundBrush}" />
+      </Border>
+    </Canvas>
 
     <!-- Herramientas → Idioma y Tema, y las entradas de Ayuda (SC-003)
          conservan su superficie y sus comandos. El submenú se superpone a la
