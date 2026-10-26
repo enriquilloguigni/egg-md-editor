@@ -6,12 +6,10 @@ namespace EggMdEditor.App;
 
 /// <summary>
 /// Sesión de aplicación en memoria (ENT-001): idioma, tema, estado de menú y aviso.
-/// Singleton por proceso; se libera al cerrar.
+/// Una instancia por composición; se libera al cerrar.
 /// </summary>
-public class Session : INotifyPropertyChanged, ISession, IDisposable
+public class Session : INotifyPropertyChanged, IDisposable
 {
-    private static readonly Lazy<Session> _instance = new(() => new Session());
-
     private string _language;
     private Theme _theme;
     private ThemePreference _themePreference;
@@ -90,8 +88,6 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
         // Sync catalog best-effort without throwing on construction.
         try { _catalog.TrySetLanguage(_language); } catch { /* ignore */ }
     }
-
-    public static Session Instance => _instance.Value;
 
     public II18nCatalog Catalog
     {
@@ -442,19 +438,6 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
 
     public void RequestFocus() { /* no-op in memory */ }
 
-    public Session Clone()
-    {
-        return new Session(
-            _catalog,
-            _language,
-            _theme,
-            _menuState,
-            _noticeVisible,
-            _windowOpen,
-            _selectedMenuIndex,
-            _themePreference);
-    }
-
     protected void OnPropertyChanged(string propertyName)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
@@ -512,46 +495,4 @@ public class Session : INotifyPropertyChanged, ISession, IDisposable
             _preferences.PropertyChanged -= OnPreferencesPropertyChanged;
         }
     }
-}
-
-public interface ISession
-{
-    string Language { get; set; }
-    Theme Theme { get; set; }
-    ThemePreference ThemePreference { get; set; }
-    MenuState MenuState { get; set; }
-    bool IsMenuOpen { get; set; }
-    int SelectedMenuIndex { get; set; }
-    bool NoticeVisible { get; set; }
-    bool WindowOpen { get; set; }
-    UiPreferences Preferences { get; set; }
-    II18nCatalog Catalog { get; set; }
-
-    bool TrySetLanguage(string? language);
-    void SetLanguage(string language);
-
-    bool TrySetTheme(Theme theme);
-    bool TrySetTheme(string? theme);
-    bool TrySetThemePreference(ThemePreference preference);
-    bool TrySetThemePreference(ThemePreference preference, Theme systemTheme);
-    bool TrySetThemePreference(string? preference);
-    void SetTheme(Theme theme);
-    void SetTheme(string theme);
-    void ToggleTheme();
-
-    void OpenMenu();
-    void CloseMenu();
-    void ToggleMenu();
-    bool TryOpenMenu();
-    bool TryCloseMenu();
-    bool TrySelectMenu(int position);
-    bool TrySetMenuState(MenuState state);
-
-    void ShowNotice();
-    void HideNotice();
-    void ToggleNotice();
-
-    void CloseWindow();
-    void RequestFocus();
-    Session Clone();
 }
