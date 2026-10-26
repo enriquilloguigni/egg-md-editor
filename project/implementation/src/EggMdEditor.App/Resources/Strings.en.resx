@@ -33,6 +33,18 @@
   <data name="Language.English" xml:space="preserve">
     <value>English</value>
   </data>
+  <data name="Menu.Tools.Theme" xml:space="preserve">
+    <value>Interface theme</value>
+  </data>
+  <data name="Theme.Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Theme.Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Theme.System" xml:space="preserve">
+    <value>System</value>
+  </data>
   <data name="barra.enfasis" xml:space="preserve">
     <value>Emphasis</value>
   </data>
