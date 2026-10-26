@@ -22,6 +22,19 @@ public enum Theme
     Default = 0,
 }
 
+/// <summary>
+/// Preferencia de tema de ENT-003 (OP-002): el usuario elige Claro, Oscuro o
+/// Sistema. El tema efectivo de ENT-001/ST-009/ST-010 solo puede ser
+/// <see cref="Light"/> o <see cref="Dark"/>: Sistema se resuelve del SO al
+/// arrancar y cada vez que se selecciona.
+/// </summary>
+public enum ThemePreference
+{
+    Light = 0,
+    Dark = 1,
+    System = 2,
+}
+
 public enum MenuState
 {
     Closed = 0,
