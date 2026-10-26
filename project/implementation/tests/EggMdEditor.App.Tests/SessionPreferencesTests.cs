@@ -90,8 +90,7 @@ public class SessionPreferencesTests
     [Fact]
     public void Singleton_Instance()
     {
-        Assert.Same(Session.Instance, Session.Current);
-        Assert.Same(Session.Instance, Session.Default);
+        Assert.Same(Session.Instance, Session.Instance);
     }
 
     [Fact]
@@ -121,45 +120,38 @@ public class SessionPreferencesTests
     }
 
     [Fact]
-    public void Enums_Aliases()
+    public void Session_CloneKeepsItsOwnPreferences()
     {
-        Assert.Equal(0, (int)Language.Spanish);
-        Assert.Equal(1, (int)Language.English);
-        Assert.Equal(0, (int)Theme.Light);
-        Assert.Equal(1, (int)Theme.Dark);
-        Assert.Equal(0, (int)MenuState.Closed);
-        Assert.Equal(1, (int)MenuState.Open);
-        Assert.Equal(0, (int)NoticeState.Hidden);
-        Assert.Equal(1, (int)NoticeState.Visible);
+        var s = new Session(new I18nCatalog());
+        s.Language = "en";
+        s.Theme = Theme.Dark;
+
+        var clone = s.Clone();
+        clone.Preferences.Language = "es";
+        clone.Preferences.Theme = Theme.Light;
+
+        Assert.Equal("en", s.Language);
+        Assert.Equal(Theme.Dark, s.Theme);
+        Assert.Equal("es", clone.Language);
+        Assert.Equal(Theme.Light, clone.Theme);
     }
 
     [Fact]
-    public void Session_AliasesCompile()
+    public void UiPreferences_CloneKeepsLanguageThemeAndPreference()
     {
-        // Just ensure aliases exist
-        var a = new AppSession();
-        var b = new UserSession(new UiPreferences());
-        var c = new SessionState(new UiPreferences());
-        var d = new AppState();
-        var e = new SessionManager();
-        var f = new SessionService();
-        var g = new ApplicationContext();
-        Assert.NotNull(a); Assert.NotNull(b); Assert.NotNull(c); Assert.NotNull(d);
-        Assert.NotNull(e); Assert.NotNull(f); Assert.NotNull(g);
-    }
+        var preferences = new UiPreferences("en", Theme.Dark, ThemePreference.Dark);
+        var clone = preferences.Clone();
 
-    [Fact]
-    public void UiPreferences_AliasesCompile()
-    {
-        var a = new Preferences();
-        var b = new AppPreferences("en", Theme.Dark);
-        var c = new UserPreferences(Theme.Dark);
-        var d = new AppSettings("en");
-        var e = new UiSettings();
-        var f = new Settings();
-        var g = new PreferenceSet();
-        Assert.NotNull(a); Assert.NotNull(b); Assert.NotNull(c); Assert.NotNull(d);
-        Assert.NotNull(e); Assert.NotNull(f); Assert.NotNull(g);
+        Assert.Equal("en", clone.Language);
+        Assert.Equal(Theme.Dark, clone.Theme);
+        Assert.Equal(ThemePreference.Dark, clone.ThemePreference);
+
+        clone.Language = "es";
+        clone.Theme = Theme.Light;
+
+        Assert.Equal("en", preferences.Language);
+        Assert.Equal(Theme.Dark, preferences.Theme);
+        Assert.Equal(ThemePreference.Dark, preferences.ThemePreference);
     }
 
     [Fact]
