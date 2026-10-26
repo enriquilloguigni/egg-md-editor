@@ -309,4 +309,37 @@ public class MenuAndNoticeTests
             window.Close();
         }
     }
+
+    [AvaloniaFact]
+    public void Window_RendersTheFloatingNoticeOverTheDocumentWhenVisible()
+    {
+        var viewModel = new MainWindowViewModel(new I18nCatalog());
+        var window = new MainWindow(viewModel);
+
+        try
+        {
+            window.Show();
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+
+            var notice = window.FindControl<Border>("FormatNotice");
+            Assert.NotNull(notice);
+            Assert.False(notice.IsVisible);
+
+            // VR-002: la burbuja muestra el nombre i18n del control apuntado.
+            Assert.True(viewModel.ShowNotice("barra.enfasis"));
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+
+            Assert.True(notice.IsVisible);
+            var text = notice.GetVisualDescendants().OfType<TextBlock>().Single();
+            Assert.Equal("Énfasis", text.Text);
+
+            Assert.True(viewModel.HideNotice("barra.enfasis"));
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+            Assert.False(notice.IsVisible);
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
 }
