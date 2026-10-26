@@ -1075,21 +1075,15 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
             case "openmenu":
                 return OpenMenu(argument);
             case "closemenu":
-            case "escape":
-            case "esc":
                 return CloseMenu();
             case "togglemenu":
                 return argument is null
                     ? IsMenuOpen && CloseMenu()
                     : ToggleMenu(argument);
             case "close":
-            case "closewindow":
-            case "exit":
-            case "quit":
                 RequestClose();
                 return true;
             case "changelanguage":
-            case "switchlanguage":
                 return TryChangeLanguage(argument);
             case "changetheme":
                 return TryChangeTheme(argument);
@@ -1098,7 +1092,6 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
             case "shownotice":
                 return ShowNotice(argument);
             case "hidenotice":
-            case "hidetooltip":
                 return HideNotice(argument);
             case "togglenotice":
                 return NoticeVisible ? HideNotice() : ShowNotice(argument);
