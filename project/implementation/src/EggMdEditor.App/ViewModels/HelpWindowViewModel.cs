@@ -226,6 +226,15 @@ public sealed class HelpWindowViewModel : INotifyPropertyChanged, IDisposable
             .AppendLine(Version);
         builder.AppendLine();
         builder.AppendLine(_catalog.Get("Help.About.AttributionsTitle"));
+        // NFR-011: la librería de iconos de VR-001 se atribuye con nombre,
+        // versión y licencia en el Acerca de de SC-003.
+        builder.AppendLine(string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            _catalog.Get("Help.About.IconLibraryAttribution"),
+            IconLibrary.PackageName,
+            IconLibrary.Version,
+            IconLibrary.IconSetName,
+            IconLibrary.License));
         builder.AppendLine(_catalog.Get("Help.About.Attributions"));
         builder.AppendLine();
         builder.AppendLine(_catalog.Get("Help.About.LicenseTitle"));
