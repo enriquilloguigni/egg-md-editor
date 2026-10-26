@@ -126,6 +126,9 @@
   <data name="Help.About.Attributions" xml:space="preserve">
     <value>Avalonia UI — licencia MIT&#10;.NET — licencia MIT&#10;Microsoft.Extensions.Logging — licencia MIT&#10;Fuente Inter — SIL Open Font License 1.1&#10;&#10;Las licencias completas se distribuyen con el código fuente de la aplicación.</value>
   </data>
+  <data name="Help.About.IconLibraryAttribution" xml:space="preserve">
+    <value>Biblioteca de iconos: {0} {1} y {2} {1} — licencia {3}</value>
+  </data>
   <data name="Help.About.LicenseTitle" xml:space="preserve">
     <value>Licencia</value>
   </data>
