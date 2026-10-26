@@ -6,7 +6,7 @@ namespace EggMdEditor.App;
 /// <summary>
 /// Preferencias de UI en memoria (ENT-003): idioma y tema. Sin persistencia en F-001.
 /// </summary>
-public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
+public class UiPreferences : INotifyPropertyChanged, IDisposable
 {
     private string _language;
     private Theme _theme;
@@ -196,8 +196,6 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
         SetTheme(_theme == Theme.Light ? Theme.Dark : Theme.Light);
     }
 
-    public UiPreferences Clone() => new UiPreferences(_language, _theme, _themePreference);
-
     public void Dispose() { }
 
     protected void OnPropertyChanged(string propertyName)
@@ -338,21 +336,4 @@ public class UiPreferences : INotifyPropertyChanged, IUiPreferences, IDisposable
                 return false;
         }
     }
-}
-
-public interface IUiPreferences
-{
-    string Language { get; set; }
-    Theme Theme { get; set; }
-    ThemePreference ThemePreference { get; set; }
-    bool TrySetLanguage(string? language);
-    void SetLanguage(string language);
-    bool TrySetTheme(Theme theme);
-    bool TrySetTheme(string? theme);
-    bool TrySetThemePreference(ThemePreference preference);
-    bool TrySetThemePreference(ThemePreference preference, Theme systemTheme);
-    bool TrySetThemePreference(string? preference);
-    void SetTheme(Theme theme);
-    void SetTheme(string theme);
-    void ToggleTheme();
 }
