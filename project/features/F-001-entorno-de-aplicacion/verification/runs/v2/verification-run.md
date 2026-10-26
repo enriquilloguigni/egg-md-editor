@@ -60,7 +60,7 @@ Comando de prueba: dotnet test project/implementation/tests/EggMdEditor.App.Test
 
 ## Condiciones
 
-- Spec v2 y Plan v2 vigentes; la corrida se registra sobre el commit de la Execution E-003.
+- Spec v2 y Plan v2 vigentes; la corrida se registra sobre el commit de la Execution E-004.
 - Build local con .NET SDK 10.0.x; `dotnet test` sin `DOTNET_ROOT`; sin red ni servicios externos (BR-012, NFR-004).
 - Tareas T-001..T-019 en `done`; ADR-002 aplicado a Spec, Plan y mockups.
 - SC-001, SC-002 y SC-003 con mockup v2 aprobado en `plan/mockups.md`; captura headless vía el comando anclado en `design-system.md`, que no produce decoraciones del SO (marco y botones nativos), ausentes del mockup.
@@ -68,15 +68,16 @@ Comando de prueba: dotnet test project/implementation/tests/EggMdEditor.App.Test
 
 ## Evidencias a obtener
 
-- `executions/E-003/evidence/test-run.json`, producida por `sdd-test-run`, con `exit_code=0` y `sha256` íntegro.
-- `executions/E-003/evidence/visual-capture/` con la captura y el manifiesto de SC-001 en estado A (`SC-001.json`, `SC-001.png`), SC-001 en estado B (`SC-001-B.json`, `SC-001-B.png`), SC-002 en estado A (`SC-002.json`, `SC-002.png`) y SC-003 en estado A (`SC-003.json`, `SC-003.png`), producidos por `sdd-visual-capture` con `sha256` íntegro.
+- `executions/E-004/evidence/test-run.json`, producida por `sdd-test-run`, con `exit_code=0` y `sha256` íntegro.
+- `executions/E-004/evidence/visual-capture/` con la captura y el manifiesto de SC-001 en estado A (`SC-001.json`, `SC-001.png`), SC-001 en estado B (`SC-001-B.json`, `SC-001-B.png`), SC-001 en estado C con aviso flotante visible (`SC-001-C.json`, `SC-001-C.png`), SC-002 en estado A (`SC-002.json`, `SC-002.png`) y SC-003 en estado A (`SC-003.json`, `SC-003.png`), producidos por `sdd-visual-capture` con `sha256` íntegro.
 - Observaciones de las comprobaciones funcionales, de error y de seguridad consignadas por el reviewer en `results/v2/result.md`.
 
 ## Checks visuales
 
 Checks visuales: SC-001, SC-002, SC-003
-Estados visuales: SC-001: A, B; SC-002: A; SC-003: A
+Estados visuales: SC-001: A, B, C; SC-002: A; SC-003: A
+SC-001 estado C: aviso flotante visible.
 
 ## Criterio
 
-Binario — `Plan cubierto = T-001..T-019 verificadas + Spec v2 cumplida + AC-001..AC-009 cumplidos + DS-001 alcanzado + 0 incidencias pendientes`, con `test-run.json` en `exit_code=0` y las capturas de SC-001:A, SC-001:B, SC-002:A y SC-003:A con `sha256` íntegro. Cualquier tarea, AC o DS sin evidencia, cualquier estado visual sin captura o cualquier incidencia abierta deja el resultado en `Plan no cubierto`.
+Binario — `Plan cubierto = T-001..T-019 verificadas + Spec v2 cumplida + AC-001..AC-009 cumplidos + DS-001 alcanzado + 0 incidencias pendientes`, con `test-run.json` en `exit_code=0` y las capturas de SC-001:A, SC-001:B, SC-001:C (aviso flotante visible), SC-002:A y SC-003:A con `sha256` íntegro. Cualquier tarea, AC o DS sin evidencia, cualquier estado visual sin captura o cualquier incidencia abierta deja el resultado en `Plan no cubierto`.
