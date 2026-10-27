@@ -739,6 +739,15 @@ public class RecoveryCopy
         return new RecoveryCopy(content, originalPath, documentId == Guid.Empty ? Guid.NewGuid() : documentId, timestamp, status);
     }
 
+    public static implicit operator bool(RecoveryCopy? copy) => copy is not null && (copy.IsValid || copy.Status == RecoveryStatus.Valid || copy.Status == RecoveryStatus.Vigente);
+
+    public static RecoveryCopy Autosave(OpenDocument? document, RecoveryCopy? recovery = null, string? storagePath = null)
+        => AutoguardadoOperation.Execute(document, recovery, storagePath);
+    public static RecoveryCopy Autoguardar(OpenDocument? document, RecoveryCopy? recovery = null, string? storagePath = null)
+        => AutoguardadoOperation.Execute(document, recovery, storagePath);
+    public static RecoveryCopy SaveRecovery(OpenDocument? document, RecoveryCopy? recovery = null, string? storagePath = null)
+        => AutoguardadoOperation.Execute(document, recovery, storagePath);
+
     public override string ToString()
     {
         return $"RecoveryCopy({_content.Length} chars, {_timestamp:O}, {_status})";
