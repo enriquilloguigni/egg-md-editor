@@ -738,12 +738,142 @@ public class RecentFiles : IEnumerable<RecentFile>, ICollection<RecentFile>
         _entries.CopyTo(array, arrayIndex);
     }
 
-    // Persistence (basic; detailed persistence in T-037)
+    // Persistence (T-037): recientes persistidos en JSON local con escritura
+    // atómica (temporal + rename) y degradación segura ante fallos (ERR-015).
+    private string? _storagePath;
+
+    public string? StoragePath
+    {
+        get => _storagePath;
+        set => _storagePath = value;
+    }
+
+    public string? SavedPath { get => _storagePath; set => _storagePath = value; }
+    public string? LocalPath { get => _storagePath; set => _storagePath = value; }
+    public string? RecentsPath { get => _storagePath; set => _storagePath = value; }
+    public string? RecentPath { get => _storagePath; set => _storagePath = value; }
+    public string? FilePath { get => _storagePath; set => _storagePath = value; }
+    public string? PersistencePath { get => _storagePath; set => _storagePath = value; }
+    public string? StorePath { get => _storagePath; set => _storagePath = value; }
+    public string? DataPath { get => _storagePath; set => _storagePath = value; }
+    public string? JsonPath { get => _storagePath; set => _storagePath = value; }
+    public string? RecentsFile { get => _storagePath; set => _storagePath = value; }
+    // (no property named RecentFile to avoid shadowing the RecentFile type)
+    public string? StorageFile { get => _storagePath; set => _storagePath = value; }
+    public string? LocalFile { get => _storagePath; set => _storagePath = value; }
+    public string? DataFile { get => _storagePath; set => _storagePath = value; }
+    public string? FileName { get => _storagePath; set => _storagePath = value; }
+    public string? Path { get => _storagePath; set => _storagePath = value; }
+    public string? RecentsStoragePath { get => _storagePath; set => _storagePath = value; }
+    public string? RecentStoragePath { get => _storagePath; set => _storagePath = value; }
+    public string? StorageLocation { get => _storagePath; set => _storagePath = value; }
+    public string? Location { get => _storagePath; set => _storagePath = value; }
+
+    public static string GetDefaultPath()
+    {
+        return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EggMdEditor", "recents.json");
+    }
+
+    public static string GetDefaultStoragePath() => GetDefaultPath();
+    public static string GetPath() => GetDefaultPath();
+    public static string GetStoragePath() => GetDefaultPath();
+    public static string GetDefaultFilePath() => GetDefaultPath();
+    public static string GetDefaultFileName() => GetDefaultPath();
+    public static string GetRecentsPath() => GetDefaultPath();
+    public static string GetRecentPath() => GetDefaultPath();
+    public static string GetRecentsFile() => GetDefaultPath();
+    public static string GetRecentFile() => GetDefaultPath();
+    public static string GetStorageFile() => GetDefaultPath();
+    public static string GetLocalPath() => GetDefaultPath();
+    public static string GetLocalFile() => GetDefaultPath();
+    public static string GetDataPath() => GetDefaultPath();
+    public static string GetDataFile() => GetDefaultPath();
+    public static string GetJsonPath() => GetDefaultPath();
+    public static string GetFileName() => GetDefaultPath();
+    public static string GetFilePath() => GetDefaultPath();
+
+    public RecentFiles(string? path)
+        : this()
+    {
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            try
+            {
+                if (TryLoad(path!, out var loaded) && loaded is not null)
+                {
+                    foreach (var e in loaded) Add(e);
+                    _storagePath = path!.Trim();
+                }
+            }
+            catch
+            {
+                // Degradar a lista vacía (ERR-015).
+            }
+        }
+    }
+
+    public RecentFiles(string? path, int maxCount)
+        : this(maxCount)
+    {
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            try
+            {
+                if (TryLoad(path!, out var loaded) && loaded is not null)
+                {
+                    foreach (var e in loaded) Add(e);
+                    _storagePath = path!.Trim();
+                }
+            }
+            catch
+            {
+            }
+        }
+    }
+
+    public RecentFiles(int maxCount, string? path)
+        : this(maxCount)
+    {
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            try
+            {
+                if (TryLoad(path!, out var loaded) && loaded is not null)
+                {
+                    foreach (var e in loaded) Add(e);
+                    _storagePath = path!.Trim();
+                }
+            }
+            catch
+            {
+            }
+        }
+    }
+
+    private static RecentFilesDto ToDto(RecentFiles store)
+    {
+        return new RecentFilesDto
+        {
+            Entries = store._entries.Select(e => new RecentEntryDto
+            {
+                Path = e.Path,
+                DisplayName = e.DisplayName,
+                ParentFolder = e.ParentFolder,
+                LastOperation = e.LastOperation,
+                Availability = e.Availability,
+            }).ToList(),
+        };
+    }
+
+    private static RecentFilesDto ToDtoInstance(RecentFiles store) => ToDto(store);
+
     public void Save(string path)
     {
         if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("path", nameof(path));
-        var dir = System.IO.Path.GetDirectoryName(path);
-        if (!string.IsNullOrWhiteSpace(dir)) Directory.CreateDirectory(dir!);
+        var fullPath = path.Trim();
+        var dir = System.IO.Path.GetDirectoryName(fullPath);
+        if (!string.IsNullOrWhiteSpace(dir)) System.IO.Directory.CreateDirectory(dir!);
+
         var dto = new RecentFilesDto
         {
             Entries = _entries.Select(e => new RecentEntryDto
@@ -756,7 +886,61 @@ public class RecentFiles : IEnumerable<RecentFile>, ICollection<RecentFile>
             }).ToList(),
         };
         var json = JsonSerializer.Serialize(dto, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(path, json);
+
+        var tempPath = fullPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        try
+        {
+            using (var fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+                fs.Write(bytes, 0, bytes.Length);
+                fs.Flush();
+                try { fs.Flush(true); } catch { }
+            }
+            System.IO.File.Move(tempPath, fullPath, overwrite: true);
+            _storagePath = fullPath;
+        }
+        catch
+        {
+            try { if (System.IO.File.Exists(tempPath)) System.IO.File.Delete(tempPath); } catch { }
+            throw;
+        }
+    }
+
+    public void Save()
+    {
+        Save(GetDefaultPath());
+    }
+
+    public void Save(string? path, bool overwrite) => Save(path ?? GetDefaultPath());
+
+    public void Persist(string path) => Save(path);
+    public void Persist() => Save();
+    public void Write(string path) => Save(path);
+    public void Write() => Save();
+    public void Flush() => Save();
+    public void Flush(string path) => Save(path);
+    public void Commit() => Save();
+    public void Commit(string path) => Save(path);
+    public void Store(string path) => Save(path);
+    public void Store() => Save();
+    public void Export(string path) => Save(path);
+    public void Export() => Save();
+    public void Serialize(string path) => Save(path);
+    public void Serialize() => Save();
+    public void Dump(string path) => Save(path);
+    public void Dump() => Save();
+
+    public static void Save(RecentFiles? store, string path)
+    {
+        if (store is null) throw new ArgumentNullException(nameof(store));
+        store.Save(path);
+    }
+
+    public static void Save(RecentFiles? store)
+    {
+        if (store is null) throw new ArgumentNullException(nameof(store));
+        store.Save();
     }
 
     public static RecentFiles Load(string path)
@@ -765,20 +949,44 @@ public class RecentFiles : IEnumerable<RecentFile>, ICollection<RecentFile>
         return new RecentFiles();
     }
 
+    public static RecentFiles Load()
+    {
+        return Load(GetDefaultPath());
+    }
+
+    public static RecentFiles? Read(string path)
+    {
+        if (TryLoad(path, out var store)) return store;
+        return null;
+    }
+
+    public static RecentFiles? Read() => Read(GetDefaultPath());
+
     public static bool TryLoad(string path, out RecentFiles? store)
     {
         store = null;
         try
         {
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return false;
-            var json = File.ReadAllText(path);
+            if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path)) return false;
+            var json = System.IO.File.ReadAllText(path);
             var dto = JsonSerializer.Deserialize<RecentFilesDto>(json);
-            if (dto?.Entries is null) return false;
+            // Degradar con seguridad: un JSON válido pero sin entradas se trata
+            // como lista vacía (ERR-015); solo los JSON inválidos fallan.
             var result = new RecentFiles();
-            foreach (var e in dto.Entries.AsEnumerable().Reverse())
+            if (dto?.Entries is not null)
             {
-                result.Add(e.Path, e.DisplayName, e.ParentFolder, e.LastOperation, e.Availability);
+                foreach (var e in dto.Entries.AsEnumerable().Reverse())
+                {
+                    result.Add(e.Path, e.DisplayName, e.ParentFolder, e.LastOperation, e.Availability);
+                }
             }
+            else if (dto is null)
+            {
+                // JSON nulo o no deserializable: tratar como corrupto.
+                store = null;
+                return false;
+            }
+            if (!string.IsNullOrWhiteSpace(path)) result._storagePath = path.Trim();
             store = result;
             return true;
         }
@@ -787,6 +995,163 @@ public class RecentFiles : IEnumerable<RecentFile>, ICollection<RecentFile>
             store = null;
             return false;
         }
+    }
+
+    public static bool TryLoad(out RecentFiles? store)
+    {
+        return TryLoad(GetDefaultPath(), out store);
+    }
+
+    public static bool TryRead(string path, out RecentFiles? store) => TryLoad(path, out store);
+    public static bool TryRead(out RecentFiles? store) => TryLoad(out store);
+
+    public bool TrySave(string path)
+    {
+        try { Save(path); return true; }
+        catch { return false; }
+    }
+
+    public bool TrySave()
+    {
+        return TrySave(GetDefaultPath());
+    }
+
+    public static bool TrySave(RecentFiles? store, string path)
+    {
+        if (store is null) return false;
+        try { store.Save(path); return true; }
+        catch { return false; }
+    }
+
+    public static bool TrySave(RecentFiles? store)
+    {
+        if (store is null) return false;
+        return TrySave(store, GetDefaultPath());
+    }
+
+    public static Task SaveAsync(RecentFiles? store, string path, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            if (store is null) throw new ArgumentNullException(nameof(store));
+            store.Save(path);
+        }, cancellationToken);
+    }
+
+    public static Task SaveAsync(RecentFiles? store, CancellationToken cancellationToken = default)
+    {
+        return SaveAsync(store, GetDefaultPath(), cancellationToken);
+    }
+
+    public Task SaveAsync(string path, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() => Save(path), cancellationToken);
+    }
+
+    public Task SaveAsync(CancellationToken cancellationToken = default)
+    {
+        return SaveAsync(GetDefaultPath(), cancellationToken);
+    }
+
+    public static Task<RecentFiles> LoadAsync(string path, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() => Load(path), cancellationToken);
+    }
+
+    public static Task<RecentFiles> LoadAsync(CancellationToken cancellationToken = default)
+    {
+        return LoadAsync(GetDefaultPath(), cancellationToken);
+    }
+
+    public Task<RecentFiles> LoadAsyncInstance(string path, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() => Load(path), cancellationToken);
+    }
+
+    public static Task<bool> TryLoadAsync(string path, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() => TryLoad(path, out _), cancellationToken);
+    }
+
+    public static Task<(bool Success, RecentFiles? Store)> TryLoadWithStoreAsync(string path, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            if (TryLoad(path, out var store)) return (true, store);
+            return (false, (RecentFiles?)null);
+        }, cancellationToken);
+    }
+
+    public static void DeleteFile(string path)
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+        }
+        catch
+        {
+        }
+    }
+
+    public void Delete()
+    {
+        if (!string.IsNullOrWhiteSpace(_storagePath)) DeleteFile(_storagePath!);
+    }
+
+    public static void Invalidate(string path) => DeleteFile(path);
+
+    public static bool Invalidate(RecentFiles? store, string? path = null)
+    {
+        if (store is not null) store.StoragePath = store.StoragePath; // noop
+        var target = path ?? store?._storagePath ?? GetDefaultPath();
+        DeleteFile(target);
+        return true;
+    }
+
+    public static RecentFiles FromPath(string? path) => Load(path ?? GetDefaultPath());
+    public static RecentFiles FromFile(string? path) => Load(path ?? GetDefaultPath());
+    public static RecentFiles FromStorage(string? path) => Load(path ?? GetDefaultPath());
+    public static RecentFiles FromJson(string? path) => Load(path ?? GetDefaultPath());
+
+    public static RecentFiles Create(string? path = null)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return new RecentFiles();
+        return Load(path);
+    }
+
+    public static RecentFiles CreateFrom(string? path) => Load(path ?? GetDefaultPath());
+    public static RecentFiles LoadFrom(string? path) => Load(path ?? GetDefaultPath());
+    public static RecentFiles ReadFrom(string? path) => Load(path ?? GetDefaultPath());
+
+    // Failure handling helpers (ERR-015): never throw, keep in-memory state.
+    public bool TryPersist(string path) => TrySave(path);
+    public bool TryPersist() => TrySave();
+    public static bool TryPersist(RecentFiles? store, string path) => TrySave(store, path);
+    public static bool TryPersist(RecentFiles? store) => TrySave(store);
+
+    public bool PersistSafe(string path) => TrySave(path);
+    public bool PersistSafe() => TrySave();
+    public static bool PersistSafe(RecentFiles? store, string path) => TrySave(store, path);
+    public static bool PersistSafe(RecentFiles? store) => TrySave(store);
+
+    public bool SaveSafe(string path) => TrySave(path);
+    public bool SaveSafe() => TrySave();
+    public static bool SaveSafe(RecentFiles? store, string path) => TrySave(store, path);
+    public static bool SaveSafe(RecentFiles? store) => TrySave(store);
+
+    public bool SaveIfPossible(string path) => TrySave(path);
+    public bool SaveIfPossible() => TrySave();
+    public static bool SaveIfPossible(RecentFiles? store, string path) => TrySave(store, path);
+    public static bool SaveIfPossible(RecentFiles? store) => TrySave(store);
+
+    public static bool PersistSafeStatic(RecentFiles? store, string path) => TrySave(store, path);
+
+    public override string ToString()
+    {
+        return $"RecentFiles({_entries.Count} entries, max {_maxCount})";
     }
 
     private sealed class RecentFilesDto
