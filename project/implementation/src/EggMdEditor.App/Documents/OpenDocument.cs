@@ -430,6 +430,14 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
 
     // ---------- Operation Abrir (T-026) ----------
     public static OpenDocument Open(string? path) => AbrirOperation.Execute(path);
+
+    // ---------- Operation Abrir reciente (T-027) ----------
+    public static OpenDocument OpenRecent(string? path) => AbrirRecienteOperation.Execute(path);
+    public static OpenDocument OpenRecent(RecentFile? entry) => AbrirRecienteOperation.Execute(entry);
+    public static OpenDocument AbrirReciente(string? path) => AbrirRecienteOperation.Execute(path);
+    public static OpenDocument AbrirReciente(RecentFile? entry) => AbrirRecienteOperation.Execute(entry);
+    public static OpenDocument OpenRecentFile(string? path) => AbrirRecienteOperation.Execute(path);
+    public static OpenDocument LoadRecent(string? path) => AbrirRecienteOperation.Execute(path);
     public static OpenDocument Abrir(string? path) => AbrirOperation.Execute(path);
     public static OpenDocument OpenFile(string? path) => AbrirOperation.Execute(path);
     public static OpenDocument OpenDocumentFile(string? path) => AbrirOperation.Execute(path);
