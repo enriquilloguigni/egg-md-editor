@@ -420,6 +420,29 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
     public void MarkModified() => ChangeState = DocumentChangeState.Modified;
     public void MarkDirty() => ChangeState = DocumentChangeState.Modified;
 
+    public OpenDocument Save(string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+    {
+        GuardarOperation.Execute(this, path, recents, recovery);
+        return this;
+    }
+    public OpenDocument Save(RecentFiles? recents) { GuardarOperation.Execute(this, null, recents, null); return this; }
+    public OpenDocument Save(RecentFiles? recents, RecoveryCopy? recovery) { GuardarOperation.Execute(this, null, recents, recovery); return this; }
+    public OpenDocument Guardar(string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+    {
+        GuardarOperation.Execute(this, path, recents, recovery);
+        return this;
+    }
+    public OpenDocument SaveAs(string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+    {
+        GuardarComoOperation.Execute(this, path, recents, recovery);
+        return this;
+    }
+    public OpenDocument GuardarComo(string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+    {
+        GuardarComoOperation.Execute(this, path, recents, recovery);
+        return this;
+    }
+
     // ---------- Operation Nuevo (T-025) ----------
     public static OpenDocument New() => new OpenDocument();
     public static OpenDocument Nuevo() => new OpenDocument();
@@ -439,6 +462,33 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
     public static OpenDocument OpenRecentFile(string? path) => AbrirRecienteOperation.Execute(path);
     public static OpenDocument LoadRecent(string? path) => AbrirRecienteOperation.Execute(path);
     public static OpenDocument Abrir(string? path) => AbrirOperation.Execute(path);
+
+    // ---------- Operation Guardar (T-028) ----------
+    public static OpenDocument Save(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarOperation.Execute(document, path, recents, recovery);
+    public static OpenDocument Save(OpenDocument? document, RecentFiles? recents) => GuardarOperation.Execute(document, null, recents, null);
+    public static OpenDocument Save(OpenDocument? document, RecentFiles? recents, RecoveryCopy? recovery) => GuardarOperation.Execute(document, null, recents, recovery);
+    public static OpenDocument Save(OpenDocument? document, string? path, RecentFiles? recents) => GuardarOperation.Execute(document, path, recents, null);
+    public static OpenDocument Guardar(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarOperation.Execute(document, path, recents, recovery);
+    public static OpenDocument SaveDocument(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarOperation.Execute(document, path, recents, recovery);
+    public static OpenDocument SaveFile(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarOperation.Execute(document, path, recents, recovery);
+    public static OpenDocument SaveCurrent(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarOperation.Execute(document, path, recents, recovery);
+
+    // ---------- Operation Guardar como (T-028) ----------
+    public static OpenDocument SaveAs(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarComoOperation.Execute(document, path, recents, recovery);
+    public static OpenDocument GuardarComo(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarComoOperation.Execute(document, path, recents, recovery);
+    public static OpenDocument SaveAsCopy(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarComoOperation.Execute(document, path, recents, recovery);
+    public static OpenDocument SaveCopy(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarComoOperation.Execute(document, path, recents, recovery);
+    public static OpenDocument SaveTo(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
+        => GuardarComoOperation.Execute(document, path, recents, recovery);
     public static OpenDocument OpenFile(string? path) => AbrirOperation.Execute(path);
     public static OpenDocument OpenDocumentFile(string? path) => AbrirOperation.Execute(path);
     public static OpenDocument OpenMarkdown(string? path) => AbrirOperation.Execute(path);
