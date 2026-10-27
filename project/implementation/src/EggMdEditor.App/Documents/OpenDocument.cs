@@ -478,6 +478,21 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
     public static OpenDocument SaveCurrent(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
         => GuardarOperation.Execute(document, path, recents, recovery);
 
+    // ---------- Operation Autoguardado (T-030) ----------
+    public RecoveryCopy Autosave(RecoveryCopy? recovery = null, string? storagePath = null)
+        => AutoguardadoOperation.Execute(this, recovery, storagePath);
+    public RecoveryCopy Autoguardar(RecoveryCopy? recovery = null, string? storagePath = null)
+        => AutoguardadoOperation.Execute(this, recovery, storagePath);
+    public RecoveryCopy SaveRecovery(RecoveryCopy? recovery = null, string? storagePath = null)
+        => AutoguardadoOperation.Execute(this, recovery, storagePath);
+
+    public static RecoveryCopy Autosave(OpenDocument? document, RecoveryCopy? recovery = null, string? storagePath = null)
+        => AutoguardadoOperation.Execute(document, recovery, storagePath);
+    public static RecoveryCopy Autoguardar(OpenDocument? document, RecoveryCopy? recovery = null, string? storagePath = null)
+        => AutoguardadoOperation.Execute(document, recovery, storagePath);
+    public static RecoveryCopy SaveRecovery(OpenDocument? document, RecoveryCopy? recovery = null, string? storagePath = null)
+        => AutoguardadoOperation.Execute(document, recovery, storagePath);
+
     // ---------- Operation Guardar como (T-028) ----------
     public static OpenDocument SaveAs(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
         => GuardarComoOperation.Execute(document, path, recents, recovery);
