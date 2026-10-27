@@ -22,4 +22,4 @@ Brownfield 10% 1
 
 ## Estado
 
-En planeación — F-001 Spec v2 en curso (ADR-002); feature.md y Plan v1 pendientes de actualización; re-verificación pendiente.
+En planeación — F-002 Spec v1 propuesta (13 documentos); F-001 implementación v2 en re-verificación; Plan v1 de F-002 pendiente.
