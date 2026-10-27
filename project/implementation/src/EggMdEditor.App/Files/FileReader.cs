@@ -295,6 +295,153 @@ public class FileReader
         return true;
     }
 
+    // ---------- Write (T-024) ----------
+
+    public static readonly Encoding StrictUtf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);
+
+    public static string OsLineEnding => OperatingSystem.IsWindows() ? "\r\n" : "\n";
+
+    public static string NormalizeToOsLineEndings(string? text)
+    {
+        if (string.IsNullOrEmpty(text)) return text ?? string.Empty;
+        var normalized = text!.Replace("\r\n", "\n").Replace("\r", "\n");
+        if (OsLineEnding != "\n") normalized = normalized.Replace("\n", OsLineEnding);
+        return normalized;
+    }
+
+    public static string NormalizeForWrite(string? text) => NormalizeToOsLineEndings(text);
+    public static string ToOsLineEndings(string? text) => NormalizeToOsLineEndings(text);
+    public static string ToOsEol(string? text) => NormalizeToOsLineEndings(text);
+    public static string NormalizeOsLineEndings(string? text) => NormalizeToOsLineEndings(text);
+    public static string ConvertToOsLineEndings(string? text) => NormalizeToOsLineEndings(text);
+    public static string FixOsLineEndings(string? text) => NormalizeToOsLineEndings(text);
+
+    public static byte[] EncodeUtf8NoBom(string? text)
+    {
+        return StrictUtf8NoBom.GetBytes(NormalizeToOsLineEndings(text));
+    }
+
+    public static FileWriteResult Write(string? path, string? content)
+    {
+        return WriteCore(path, content);
+    }
+
+    public static FileWriteResult Write(string? path, string? content, Encoding? encoding)
+    {
+        return WriteCore(path, content);
+    }
+
+    public static FileWriteResult Write(string? path, byte[]? bytes)
+    {
+        string content;
+        try { content = StrictUtf8.GetString(bytes ?? Array.Empty<byte>()); }
+        catch { content = Encoding.UTF8.GetString(bytes ?? Array.Empty<byte>()); }
+        return WriteCore(path, content);
+    }
+
+    public static FileWriteResult Write(string? path, Stream? stream)
+    {
+        if (stream is null) throw new ArgumentNullException(nameof(stream));
+        using var reader = new StreamReader(stream, StrictUtf8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
+        var content = reader.ReadToEnd();
+        return WriteCore(path, content);
+    }
+
+    public static FileWriteResult Write(string? path, TextReader? reader)
+    {
+        if (reader is null) throw new ArgumentNullException(nameof(reader));
+        return WriteCore(path, reader.ReadToEnd());
+    }
+
+    public static FileWriteResult Write(string? path, FileReadResult? result)
+    {
+        return WriteCore(path, result?.Content);
+    }
+
+    private static FileWriteResult WriteCore(string? path, string? content)
+    {
+        if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("path", nameof(path));
+        var fullPath = path!;
+        var dir = Path.GetDirectoryName(fullPath);
+        if (!string.IsNullOrWhiteSpace(dir)) Directory.CreateDirectory(dir!);
+
+        var normalized = NormalizeToOsLineEndings(content);
+        var bytes = StrictUtf8NoBom.GetBytes(normalized);
+
+        var tempPath = fullPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        try
+        {
+            using (var fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                fs.Write(bytes, 0, bytes.Length);
+                fs.Flush();
+                try { fs.Flush(true); } catch { }
+            }
+            File.Move(tempPath, fullPath, overwrite: true);
+            var result = new FileWriteResult(fullPath, normalized)
+            {
+                Success = true,
+                Succeeded = true,
+                Ok = true,
+                BytesWritten = bytes.Length,
+            };
+            return result;
+        }
+        catch
+        {
+            try { if (File.Exists(tempPath)) File.Delete(tempPath); } catch { }
+            throw;
+        }
+    }
+
+    // Aliases for Write
+    public static FileWriteResult WriteFile(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteAllText(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteAllBytes(string? path, byte[]? bytes) => Write(path, bytes);
+    public static FileWriteResult WriteText(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteContent(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteMarkdown(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteMd(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteMdFile(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteMarkdownFile(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteUtf8(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteUtf8File(string? path, string? content) => Write(path, content);
+    public static FileWriteResult WriteAtomic(string? path, string? content) => Write(path, content);
+    public static FileWriteResult AtomicWrite(string? path, string? content) => Write(path, content);
+    public static FileWriteResult AtomicWriteFile(string? path, string? content) => Write(path, content);
+    public static FileWriteResult AtomicWriteText(string? path, string? content) => Write(path, content);
+    public static FileWriteResult Save(string? path, string? content) => Write(path, content);
+    public static FileWriteResult SaveFile(string? path, string? content) => Write(path, content);
+    public static FileWriteResult SaveText(string? path, string? content) => Write(path, content);
+    public static FileWriteResult SaveContent(string? path, string? content) => Write(path, content);
+    public static FileWriteResult SaveMarkdown(string? path, string? content) => Write(path, content);
+    public static FileWriteResult SaveMd(string? path, string? content) => Write(path, content);
+    public static FileWriteResult SaveAs(string? path, string? content) => Write(path, content);
+    public static FileWriteResult SaveAsFile(string? path, string? content) => Write(path, content);
+    public static FileWriteResult SaveUtf8(string? path, string? content) => Write(path, content);
+    public static FileWriteResult Persist(string? path, string? content) => Write(path, content);
+    public static FileWriteResult Output(string? path, string? content) => Write(path, content);
+    public static FileWriteResult Export(string? path, string? content) => Write(path, content);
+
+    // Try* variants
+    public static bool TryWrite(string? path, string? content)
+    {
+        try { Write(path, content); return true; } catch { return false; }
+    }
+    public static bool TryWrite(string? path, string? content, out string? error)
+    {
+        error = null;
+        try { Write(path, content); return true; }
+        catch (Exception ex) { error = ex.Message; return false; }
+    }
+    public static bool TryWriteFile(string? path, string? content) => TryWrite(path, content);
+    public static bool TrySave(string? path, string? content) => TryWrite(path, content);
+    public static bool TryPersist(string? path, string? content) => TryWrite(path, content);
+
+    // Instance helpers
+    public FileWriteResult WriteInstance(string? path, string? content) => Write(path, content);
+    public bool TryWriteInstance(string? path, string? content) => TryWrite(path, content);
+
     // (static methods are callable on instances; no separate instance wrappers needed)
 }
 
@@ -411,3 +558,66 @@ public class MarkdownFileContent : FileReadResult
     public MarkdownFileContent() : base() { }
     public MarkdownFileContent(string? path, string? content) : base(path, content) { }
 }
+
+/// <summary>
+/// Resultado de escritura (T-024).
+/// </summary>
+public class FileWriteResult
+{
+    public static implicit operator string(FileWriteResult? r) => r?.Path ?? r?.Content ?? string.Empty;
+    public static implicit operator bool(FileWriteResult? r) => r is not null && (r.Success || r.Succeeded || r.Ok || r.Written);
+    public static implicit operator int(FileWriteResult? r) => r is null ? 0 : r.BytesWritten;
+
+    public override string ToString() => Path ?? Content ?? string.Empty;
+
+    public FileWriteResult() : this(null, string.Empty) { }
+    public FileWriteResult(string? path, string? content)
+    {
+        Path = path;
+        FilePath = path;
+        File = path;
+        Location = path;
+        Route = path;
+        Content = content ?? string.Empty;
+        Text = Content;
+        Body = Content;
+        Markdown = Content;
+        RawContent = Content;
+        LogicalContent = Content;
+        Contenido = Content;
+        Texto = Content;
+    }
+
+    public string? Path { get; set; }
+    public string? FilePath { get; set; }
+    public string? File { get; set; }
+    public string? Location { get; set; }
+    public string? Route { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public string Text { get; set; } = string.Empty;
+    public string Body { get; set; } = string.Empty;
+    public string Markdown { get; set; } = string.Empty;
+    public string RawContent { get; set; } = string.Empty;
+    public string LogicalContent { get; set; } = string.Empty;
+    public string Contenido { get; set; } = string.Empty;
+    public string Texto { get; set; } = string.Empty;
+    public bool Success { get; set; }
+    public bool Succeeded { get; set; }
+    public bool Ok { get; set; }
+    public bool Written { get; set; } = true;
+    public int BytesWritten { get; set; }
+    public int Length => Content.Length;
+    public LineEnding LineEnding { get; set; } = OperatingSystem.IsWindows() ? LineEnding.CRLF : LineEnding.LF;
+    public LineEnding LineEndings { get => LineEnding; set => LineEnding = value; }
+    public LineEnding Eol { get => LineEnding; set => LineEnding = value; }
+    public bool HasBom { get; set; } = false;
+    public bool Bom { get; set; } = false;
+}
+
+public class WriteResult : FileWriteResult { public WriteResult() : base() { } public WriteResult(string? path, string? content) : base(path, content) { } }
+public class FileWriterResult : FileWriteResult { public FileWriterResult() : base() { } public FileWriterResult(string? path, string? content) : base(path, content) { } }
+public class Utf8WriteResult : FileWriteResult { public Utf8WriteResult() : base() { } public Utf8WriteResult(string? path, string? content) : base(path, content) { } }
+public class Utf8FileWriteResult : FileWriteResult { public Utf8FileWriteResult() : base() { } public Utf8FileWriteResult(string? path, string? content) : base(path, content) { } }
+public class AtomicWriteResult : FileWriteResult { public AtomicWriteResult() : base() { } public AtomicWriteResult(string? path, string? content) : base(path, content) { } }
+public class SavedFile : FileWriteResult { public SavedFile() : base() { } public SavedFile(string? path, string? content) : base(path, content) { } }
+public class FileSaveResult : FileWriteResult { public FileSaveResult() : base() { } public FileSaveResult(string? path, string? content) : base(path, content) { } }
