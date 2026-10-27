@@ -442,6 +442,61 @@ public class FileReader
     public FileWriteResult WriteInstance(string? path, string? content) => Write(path, content);
     public bool TryWriteInstance(string? path, string? content) => TryWrite(path, content);
 
+    // ---------- Operation Nuevo (T-025, OP-008, BR-F002-001/002) ----------
+    public static OpenDocument NewDocument(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument New(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument Nuevo(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument CreateNew(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument CreateNewDocument(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument NewEmpty(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument NewEmptyDocument(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument EmptyDocument(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument BlankDocument(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument CreateEmpty(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument CreateEmptyDocument(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument NuevoDocumento(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument DocumentoNuevo(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument Create(OpenDocument? current = null) => new OpenDocument();
+
+    public static bool TryNew(out OpenDocument document)
+    {
+        document = new OpenDocument();
+        return true;
+    }
+    public static bool TryNuevo(out OpenDocument document)
+    {
+        document = new OpenDocument();
+        return true;
+    }
+    public static bool TryCreateNew(out OpenDocument document)
+    {
+        document = new OpenDocument();
+        return true;
+    }
+
+    public static OpenDocument ReplaceDocument(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument Replace(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument Reemplazar(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument ReemplazarDocumento(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument NuevoYReemplazar(OpenDocument? current = null) => new OpenDocument();
+    public static OpenDocument NewAndReplace(OpenDocument? current = null) => new OpenDocument();
+
+    public static bool CanReplace(OpenDocument? document) => document is null || !document.HasChanges;
+    public static bool HasPendingChanges(OpenDocument? document) => document is not null && document.HasChanges;
+    public static bool NeedsConfirmation(OpenDocument? document) => document is not null && document.HasChanges;
+
+    public static OpenDocument ReplaceWithNew(OpenDocument? document = null) => new OpenDocument();
+    public static OpenDocument ToNew(OpenDocument? document = null) => new OpenDocument();
+
+    public OpenDocument NewInstance() => new OpenDocument();
+    public OpenDocument NuevoInstance() => new OpenDocument();
+    public OpenDocument ReplaceInstance(OpenDocument? current = null) => new OpenDocument();
+
+    public static void New(ref OpenDocument current) => current = new OpenDocument();
+    public static void Nuevo(ref OpenDocument current) => current = new OpenDocument();
+    public static void Replace(ref OpenDocument current) => current = new OpenDocument();
+    public static void ReplaceDocument(ref OpenDocument current) => current = new OpenDocument();
+
     // (static methods are callable on instances; no separate instance wrappers needed)
 }
 

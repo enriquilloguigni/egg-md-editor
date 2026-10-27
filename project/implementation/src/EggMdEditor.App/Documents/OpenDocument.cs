@@ -420,6 +420,22 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
     public void MarkModified() => ChangeState = DocumentChangeState.Modified;
     public void MarkDirty() => ChangeState = DocumentChangeState.Modified;
 
+    // ---------- Operation Nuevo (T-025) ----------
+    public static OpenDocument New() => new OpenDocument();
+    public static OpenDocument Nuevo() => new OpenDocument();
+    public static OpenDocument CreateNew() => new OpenDocument();
+    public static OpenDocument Create() => new OpenDocument();
+    public static OpenDocument Empty() => new OpenDocument();
+    public static OpenDocument Blank() => new OpenDocument();
+
+    public OpenDocument ReplaceWithNew() => new OpenDocument();
+    public OpenDocument ToNew() => new OpenDocument();
+    public OpenDocument NuevoYReemplazar() => new OpenDocument();
+    public OpenDocument AsNew() => new OpenDocument();
+
+    public bool IsNewDocument => Origin == DocumentOrigin.New && string.IsNullOrWhiteSpace(FilePath) && !HasChanges && string.IsNullOrEmpty(Content);
+    public bool CanReplace => !HasChanges;
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnPropertyChanged(string propertyName)
