@@ -60,6 +60,25 @@
         "result": "v3",
         "outcome": "cubierto"
       }
+    },
+    "F-002-gestion-de-archivo": {
+      "status": "spec_in_progress",
+      "docs": {
+        "process": "proposed",
+        "screens": "proposed",
+        "data-structures": "proposed",
+        "inapp-communication": "proposed",
+        "security-permissions": "proposed",
+        "logs": "proposed",
+        "audit": "proposed",
+        "visual-resources": "proposed",
+        "external-services": "proposed",
+        "business-rules": "proposed",
+        "error-handling": "proposed",
+        "states-transitions": "proposed",
+        "acceptance-criteria": "proposed"
+      },
+      "spec_version": "v1"
     }
   },
   "current": {
@@ -191,7 +210,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-27T04:52:37.627Z",
+  "updated_at": "2026-10-27T05:18:44.685Z",
   "owner": "EG",
   "sources": [
     {
