@@ -37,6 +37,7 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
     private bool _registeringShortcuts;
     private DialogViewModel? _dialog;
     private OpenDocument? _document;
+    private PropertyChangedEventHandler? _documentTitleChangedHandler;
     private readonly RecentFiles _recentFiles = new();
     private RecoveryCopy? _recoveryCopy = null!;
     private ICommand? _newCommand;
@@ -192,13 +193,100 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
         set
         {
             if (ReferenceEquals(_document, value)) return;
+
+            if (_document is not null && _documentTitleChangedHandler is not null)
+            {
+                _document.PropertyChanged -= _documentTitleChangedHandler;
+            }
+
             _document = value;
+
+            if (_document is not null)
+            {
+                _documentTitleChangedHandler ??= (_, e) =>
+                {
+                    if (e.PropertyName is null
+                        || e.PropertyName == nameof(OpenDocument.DisplayName)
+                        || e.PropertyName == nameof(OpenDocument.Title)
+                        || e.PropertyName == nameof(OpenDocument.ChangeState)
+                        || e.PropertyName == nameof(OpenDocument.HasChanges)
+                        || e.PropertyName == nameof(OpenDocument.IsDirty)
+                        || e.PropertyName == nameof(OpenDocument.IsModified)
+                        || e.PropertyName == nameof(OpenDocument.Modified))
+                    {
+                        RaiseWindowTitleChanged();
+                    }
+                };
+                _document.PropertyChanged += _documentTitleChangedHandler;
+            }
+
             OnPropertyChanged(nameof(Document));
             OnPropertyChanged(nameof(CurrentDocument));
             OnPropertyChanged(nameof(OpenDocument));
             OnPropertyChanged(nameof(Doc));
+            RaiseWindowTitleChanged();
         }
     }
+
+    /// <summary>
+    /// Título de la barra de título de SC-001 (COM-015, BR-F002-016, VR-006):
+    /// nombre del documento («Sin título» si no hay ruta) precedido del nombre de
+    /// la aplicación y, cuando hay cambios sin guardar, un indicador textual
+    /// accesible (glifo) junto al nombre. Se actualiza al cambiar el documento
+    /// o su estado de cambios.
+    /// </summary>
+    public string WindowTitle
+    {
+        get
+        {
+            var name = _document?.DisplayName;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = "Sin título";
+            }
+
+            var title = "Egg MD Editor — " + name;
+            if (_document?.HasChanges == true)
+            {
+                title += " •";
+            }
+
+            return title;
+        }
+    }
+
+    /// <summary>Alias de <see cref="WindowTitle"/> para pruebas y enlaces.</summary>
+    public string Title => WindowTitle;
+    public string TitleText => WindowTitle;
+    public string WindowText => WindowTitle;
+    public string MainWindowTitle => WindowTitle;
+    public string DocumentTitle => WindowTitle;
+    public string TitleBar => WindowTitle;
+    public string TitleBarText => WindowTitle;
+    public string WindowTitleText => WindowTitle;
+    public string AppTitle => WindowTitle;
+
+    /// <summary>
+    /// Indicador de cambios sin guardar (VR-006): glifo textual junto al
+    /// nombre, visible solo con cambios. Accesible a lectores de pantalla al
+    /// formar parte del título.
+    /// </summary>
+    public string ChangeIndicator => _document?.HasChanges == true ? "•" : string.Empty;
+    public string UnsavedChangesIndicator => ChangeIndicator;
+    public string DirtyIndicator => ChangeIndicator;
+    public string ModifiedIndicator => ChangeIndicator;
+    public string ChangeStateIndicator => ChangeIndicator;
+    public string StateIndicator => ChangeIndicator;
+    public string PersistenceIndicator => ChangeIndicator;
+    public string UnsavedIndicator => ChangeIndicator;
+    public string ModificationIndicator => ChangeIndicator;
+
+    public bool HasChangeIndicator => _document?.HasChanges == true;
+    public bool IsChangeIndicatorVisible => HasChangeIndicator;
+    public bool ShowChangeIndicator => HasChangeIndicator;
+    public bool ChangeIndicatorVisible => HasChangeIndicator;
+    public bool IsDirtyIndicatorVisible => HasChangeIndicator;
+    public bool IsModifiedIndicatorVisible => HasChangeIndicator;
 
     public OpenDocument? CurrentDocument
     {
@@ -1163,6 +1251,7 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
         // en caliente junto con el resto de la superficie.
         OnPropertyChanged(nameof(VisibleNotice));
         OnPropertyChanged(nameof(NoticeText));
+        RaiseWindowTitleChanged();
     }
 
     private void RaiseMenuChanged()
@@ -1215,6 +1304,35 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
         return 1;
     }
 
+    private void RaiseWindowTitleChanged()
+    {
+        OnPropertyChanged(nameof(WindowTitle));
+        OnPropertyChanged(nameof(Title));
+        OnPropertyChanged(nameof(TitleText));
+        OnPropertyChanged(nameof(WindowText));
+        OnPropertyChanged(nameof(MainWindowTitle));
+        OnPropertyChanged(nameof(DocumentTitle));
+        OnPropertyChanged(nameof(TitleBar));
+        OnPropertyChanged(nameof(TitleBarText));
+        OnPropertyChanged(nameof(WindowTitleText));
+        OnPropertyChanged(nameof(AppTitle));
+        OnPropertyChanged(nameof(ChangeIndicator));
+        OnPropertyChanged(nameof(UnsavedChangesIndicator));
+        OnPropertyChanged(nameof(DirtyIndicator));
+        OnPropertyChanged(nameof(ModifiedIndicator));
+        OnPropertyChanged(nameof(ChangeStateIndicator));
+        OnPropertyChanged(nameof(StateIndicator));
+        OnPropertyChanged(nameof(PersistenceIndicator));
+        OnPropertyChanged(nameof(UnsavedIndicator));
+        OnPropertyChanged(nameof(ModificationIndicator));
+        OnPropertyChanged(nameof(HasChangeIndicator));
+        OnPropertyChanged(nameof(IsChangeIndicatorVisible));
+        OnPropertyChanged(nameof(ShowChangeIndicator));
+        OnPropertyChanged(nameof(ChangeIndicatorVisible));
+        OnPropertyChanged(nameof(IsDirtyIndicatorVisible));
+        OnPropertyChanged(nameof(IsModifiedIndicatorVisible));
+    }
+
     private void RaiseNoticeChanged()
     {
         OnPropertyChanged(nameof(NoticeVisible));
@@ -1222,6 +1340,7 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
         OnPropertyChanged(nameof(ActiveNoticeKey));
         OnPropertyChanged(nameof(VisibleNotice));
         OnPropertyChanged(nameof(NoticeText));
+        RaiseWindowTitleChanged();
     }
 
     private static string? NormalizeMenuKey(string? menuEntry)
