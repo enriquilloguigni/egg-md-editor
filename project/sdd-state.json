@@ -79,7 +79,10 @@
         "acceptance-criteria": "approved"
       },
       "spec_version": "v1",
-      "plan_version": "v1"
+      "plan_version": "v1",
+      "tasks": {
+        "T-020": "done"
+      }
     }
   },
   "current": {
@@ -211,7 +214,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-27T21:04:12.055Z",
+  "updated_at": "2026-10-27T21:08:49.743Z",
   "owner": "EG",
   "sources": [
     {
