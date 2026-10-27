@@ -653,6 +653,11 @@ public class RecentFiles : IEnumerable<RecentFile>, ICollection<RecentFile>
 
     public void Prune() => RemoveUnavailable();
 
+    public OpenDocument OpenRecent(string? path) => AbrirRecienteOperation.Execute(path, this);
+    public OpenDocument OpenRecent(RecentFile? entry) => AbrirRecienteOperation.Execute(entry, this);
+    public OpenDocument AbrirReciente(string? path) => AbrirRecienteOperation.Execute(path, this);
+    public OpenDocument AbrirReciente(RecentFile? entry) => AbrirRecienteOperation.Execute(entry, this);
+
     public void Clear()
     {
         lock (_sync) { _entries.Clear(); }
