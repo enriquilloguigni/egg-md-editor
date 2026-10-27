@@ -171,4 +171,67 @@
   <data name="Common.Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+
+  <data name="Menu.File.New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="Menu.File.Open" xml:space="preserve">
+    <value>Open…</value>
+  </data>
+  <data name="Menu.File.Recent" xml:space="preserve">
+    <value>Recent files</value>
+  </data>
+  <data name="Menu.File.Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Menu.File.SaveAs" xml:space="preserve">
+    <value>Save as…</value>
+  </data>
+  <data name="Menu.File.NoRecent" xml:space="preserve">
+    <value>No recent files</value>
+  </data>
+
+  <data name="File.New" xml:space="preserve">
+    <value>New</value>
+  </data>
+
+  <data name="File.Open" xml:space="preserve">
+    <value>Open…</value>
+  </data>
+
+  <data name="File.Recent" xml:space="preserve">
+    <value>Recent files</value>
+  </data>
+
+  <data name="File.Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+
+  <data name="File.SaveAs" xml:space="preserve">
+    <value>Save as…</value>
+  </data>
+
+  <data name="File.NoRecent" xml:space="preserve">
+    <value>No recent files</value>
+  </data>
+
+  <data name="Menu.File.Nuevo" xml:space="preserve">
+    <value>New</value>
+  </data>
+
+  <data name="Menu.File.Abrir" xml:space="preserve">
+    <value>Open…</value>
+  </data>
+
+  <data name="Menu.File.Recientes" xml:space="preserve">
+    <value>Recent files</value>
+  </data>
+
+  <data name="Menu.File.Guardar" xml:space="preserve">
+    <value>Save</value>
+  </data>
+
+  <data name="Menu.File.GuardarComo" xml:space="preserve">
+    <value>Save as…</value>
+  </data>
 </root>
