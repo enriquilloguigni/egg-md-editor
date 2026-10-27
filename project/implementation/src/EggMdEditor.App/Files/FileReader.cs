@@ -501,6 +501,11 @@ public class FileReader
 
     // ---------- Operation Abrir (T-026) ----------
     public static OpenDocument OpenDocument(string? path) => AbrirOperation.Execute(path);
+
+    // ---------- Operation Abrir reciente (T-027) ----------
+    public static OpenDocument OpenRecent(string? path) => AbrirRecienteOperation.Execute(path);
+    public static OpenDocument OpenRecent(RecentFile? entry) => AbrirRecienteOperation.Execute(entry);
+    public static OpenDocument AbrirReciente(string? path) => AbrirRecienteOperation.Execute(path);
     public static OpenDocument AbrirDocument(string? path) => AbrirOperation.Execute(path);
     public static OpenDocument OpenMarkdownDocument(string? path) => AbrirOperation.Execute(path);
     public static OpenDocument OpenMdDocument(string? path) => AbrirOperation.Execute(path);
