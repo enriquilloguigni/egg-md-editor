@@ -1,3 +1,4 @@
+Feature Spec: v2
 Spec verificada: v2
 Plan: v2
 Run: v2
@@ -47,4 +48,4 @@ Ninguna. Las correcciones 1–4 del Result v2 están aplicadas y la corrección 
 
 **Resultado: cubierto**
 
-Las 19 tareas y los 9 AC tienen evidencia directa, DS-001 se alcanza, la suite pasa 141/141 con `exit_code=0` y no quedan incidencias pendientes: HV-001 se cierra con renuncia explícita a la reproducibilidad literal del `command` por limitación determinista de la tool de captura, HV-002/HV-009/HV-011 quedan corregidos y el resto de hallazgos permanece cerrado. El Plan queda cubierto.
+Las 19 tareas y los 9 AC tienen evidencia directa, DS-001 se alcanza, la suite pasa 141/141 con `exit_code=0` y no quedan incidencias pendientes: HV-001 se cierra con renuncia explícita a la reproducibilidad literal del `command` por limitación determinista de la tool de captura, HV-002/HV-009/HV-011 quedan corregidos y el resto de hallazgos permanece cerrado. Plan cubierto.
