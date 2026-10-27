@@ -147,6 +147,24 @@ public partial class MainWindow : Window
     /// sección correspondiente. El contenido estático no altera el documento
     /// ni el resto del estado de la sesión (ADR-001).
     /// </summary>
+    /// <summary>
+    /// Entrada del menú Archivo (T-032): cierra el menú desplegado. La
+    /// acción concreta la ejecuta el comando enlazado a cada entrada.
+    /// </summary>
+    private void OnFileEntryClick(object? sender, RoutedEventArgs e)
+    {
+        _viewModel.CloseMenu();
+        if (sender is Button button)
+        {
+            // Ejecuta el comando enlazado si no se disparó automáticamente.
+            if (button.Command is not null && button.Command.CanExecute(button.CommandParameter))
+            {
+                button.Command.Execute(button.CommandParameter);
+            }
+        }
+        e.Handled = true;
+    }
+
     private void OnHelpEntryClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button)
@@ -241,7 +259,7 @@ public partial class MainWindow : Window
         }
 
         if (e.Source is Visual source
-            && (IsWithinMenuBar(source) || IsWithinMenuDropdown(source)))
+            && IsWithinMenuBar(source))
         {
             return;
         }
