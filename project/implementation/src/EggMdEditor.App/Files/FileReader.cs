@@ -498,6 +498,32 @@ public class FileReader
     public static void ReplaceDocument(ref OpenDocument current) => current = new OpenDocument();
 
     // (static methods are callable on instances; no separate instance wrappers needed)
+
+    // ---------- Operation Abrir (T-026) ----------
+    public static OpenDocument OpenDocument(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument AbrirDocument(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument OpenMarkdownDocument(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument OpenMdDocument(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument LoadDocumentFile(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument OpenFileDocument(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument ReadDocumentFile(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument FromDocumentFile(string? path) => AbrirOperation.Execute(path);
+
+    public static OpenDocument Abrir(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument Abrir(string? path, OpenDocument? current) => AbrirOperation.Execute(path, current);
+    // Open(string) already returns string; keep OpenDocument() variants only.
+    public static OpenDocument LoadMarkdownFile(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument LoadMdFile(string? path) => AbrirOperation.Execute(path);
+
+    public static OpenDocument OpenDroppedFile(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument OpenDraggedFile(string? path) => AbrirOperation.Execute(path);
+
+    public static bool TryOpenDocument(string? path, out OpenDocument? document) => AbrirOperation.TryExecute(path, out document);
+    public static bool TryAbrirDocument(string? path, out OpenDocument? document) => AbrirOperation.TryExecute(path, out document);
+    public static bool TryLoadDocument(string? path, out OpenDocument? document) => AbrirOperation.TryExecute(path, out document);
+
+    public static bool ValidateDropPaths(IEnumerable<string>? paths) => AbrirOperation.ValidateDrop(paths);
+    public static bool IsValidDropPaths(IEnumerable<string>? paths) => AbrirOperation.ValidateDrop(paths);
 }
 
 /// <summary>
