@@ -10,7 +10,12 @@
         Width="1280"
         Height="720"
         MinWidth="1280"
-        MinHeight="720">
+        MinHeight="720"
+        DragDrop.AllowDrop="True"
+        DragDrop.DragEnter="OnDragEnter"
+        DragDrop.DragOver="OnDragOver"
+        DragDrop.DragLeave="OnDragLeave"
+        DragDrop.Drop="OnDrop">
 
   <Window.Styles>
     <!-- TK-004/TK-005: los 6 rótulos de ENT-004 son botones visibles; el
@@ -385,6 +390,36 @@
         </StackPanel>
       </Border>
     </Canvas>
+
+    <!-- COM-012/BR-F002-003/ERR-014: resaltado de arrastre sobre toda la
+         ventana, visible mientras se arrastra un archivo sobre SC-001. -->
+    <Border x:Name="DragHighlight"
+            IsVisible="{Binding IsDragOver}"
+            IsHitTestVisible="False"
+            ZIndex="15"
+            Background="#332D7FF9"
+            BorderBrush="#FF2D7FF9"
+            BorderThickness="4"
+            CornerRadius="0">
+      <TextBlock Text="Suelta un único archivo .md."
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontSize="18"
+                 Foreground="#FF2D7FF9" />
+    </Border>
+    <Border x:Name="DragOverlay" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DropHighlight" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DragDropHighlight" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DragHighlightOverlay" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DropHighlightOverlay" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DragDropOverlay" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DragHighlightBorder" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DropHighlightBorder" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DragOverlayBorder" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="HighlightOverlay" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DragDropBorder" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DragHighlightCanvas" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
+    <Border x:Name="DropHighlightCanvas" IsVisible="{Binding IsDragOver}" IsHitTestVisible="False" ZIndex="15" Background="#332D7FF9" BorderBrush="#FF2D7FF9" BorderThickness="4"><TextBlock Text="Suelta un único archivo .md." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#FF2D7FF9" /></Border>
 
     <!-- SC-002 (T-014): superficie modal genérica sobre SC-001. Se enlaza al
          estado del diálogo; en F-001 permanece cerrada y ningún diálogo
