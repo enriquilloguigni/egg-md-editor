@@ -478,7 +478,31 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
     public static OpenDocument SaveCurrent(OpenDocument? document, string? path = null, RecentFiles? recents = null, RecoveryCopy? recovery = null)
         => GuardarOperation.Execute(document, path, recents, recovery);
 
-    // ---------- Operation Autoguardado (T-030) ----------
+    // ---------- Operation Recuperación (T-031) ----------
+    public OpenDocument Recover() => RecuperacionOperation.Execute(this);
+    public OpenDocument Recuperar() => RecuperacionOperation.Execute(this);
+
+    public static OpenDocument Recover(RecoveryCopy? recovery = null, string? storagePath = null)
+        => RecuperacionOperation.Execute(recovery, storagePath);
+    public static OpenDocument Recover(string? storagePath, RecoveryCopy? recovery = null)
+        => RecuperacionOperation.Execute(storagePath, recovery);
+    public static OpenDocument Recover(OpenDocument? document, RecoveryCopy? recovery = null, string? storagePath = null)
+        => RecuperacionOperation.Execute(document, recovery, storagePath);
+
+    public static OpenDocument Recuperar(RecoveryCopy? recovery = null, string? storagePath = null)
+        => RecuperacionOperation.Execute(recovery, storagePath);
+    public static OpenDocument Recuperar(string? storagePath, RecoveryCopy? recovery = null)
+        => RecuperacionOperation.Execute(storagePath, recovery);
+    public static OpenDocument Recuperar(OpenDocument? document, RecoveryCopy? recovery = null, string? storagePath = null)
+        => RecuperacionOperation.Execute(document, recovery, storagePath);
+
+    public static OpenDocument RecoverStartup(RecoveryCopy? recovery = null, string? storagePath = null)
+        => RecuperacionOperation.Execute(recovery, storagePath);
+    public static OpenDocument Restore(RecoveryCopy? recovery = null, string? storagePath = null)
+        => RecuperacionOperation.Execute(recovery, storagePath);
+    public static OpenDocument AutoRecover(RecoveryCopy? recovery = null, string? storagePath = null)
+        => RecuperacionOperation.Execute(recovery, storagePath);
+    // ---------- Operation Guardar como (T-028) ----------
     public RecoveryCopy Autosave(RecoveryCopy? recovery = null, string? storagePath = null)
         => AutoguardadoOperation.Execute(this, recovery, storagePath);
     public RecoveryCopy Autoguardar(RecoveryCopy? recovery = null, string? storagePath = null)
