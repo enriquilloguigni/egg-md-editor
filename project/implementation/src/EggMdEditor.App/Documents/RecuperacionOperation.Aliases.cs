@@ -1,0 +1,28 @@
+namespace EggMdEditor.App;
+
+public class RecoveryOperation : RecuperacionOperation { public RecoveryOperation() : base() { } public RecoveryOperation(OpenDocument? c) : base(c) { } public RecoveryOperation(RecoveryCopy? r) : base(r) { } public RecoveryOperation(string? p) : base(p) { } }
+public class RecuperacionOp : RecuperacionOperation { public RecuperacionOp() : base() { } public RecuperacionOp(OpenDocument? c) : base(c) { } public RecuperacionOp(RecoveryCopy? r) : base(r) { } public RecuperacionOp(string? p) : base(p) { } }
+public class RecuperacionAutomatica : RecuperacionOperation { public RecuperacionAutomatica() : base() { } public RecuperacionAutomatica(OpenDocument? c) : base(c) { } public RecuperacionAutomatica(RecoveryCopy? r) : base(r) { } public RecuperacionAutomatica(string? p) : base(p) { } }
+public class RecuperacionAutomaticaOperation : RecuperacionOperation { public RecuperacionAutomaticaOperation() : base() { } public RecuperacionAutomaticaOperation(OpenDocument? c) : base(c) { } public RecuperacionAutomaticaOperation(RecoveryCopy? r) : base(r) { } public RecuperacionAutomaticaOperation(string? p) : base(p) { } }
+public class Recuperar : RecuperacionOperation { public Recuperar() : base() { } public Recuperar(OpenDocument? c) : base(c) { } public Recuperar(RecoveryCopy? r) : base(r) { } public Recuperar(string? p) : base(p) { } }
+public class RecuperarOperation : RecuperacionOperation { public RecuperarOperation() : base() { } public RecuperarOperation(OpenDocument? c) : base(c) { } public RecuperarOperation(RecoveryCopy? r) : base(r) { } public RecuperarOperation(string? p) : base(p) { } }
+public class RecuperarStartupOperation : RecuperacionOperation { public RecuperarStartupOperation() : base() { } public RecuperarStartupOperation(OpenDocument? c) : base(c) { } public RecuperarStartupOperation(RecoveryCopy? r) : base(r) { } public RecuperarStartupOperation(string? p) : base(p) { } }
+
+public class RecoveryStartupOperation : RecuperacionOperation { public RecoveryStartupOperation() : base() { } public RecoveryStartupOperation(OpenDocument? c) : base(c) { } public RecoveryStartupOperation(RecoveryCopy? r) : base(r) { } public RecoveryStartupOperation(string? p) : base(p) { } }
+public class StartupRecoveryOperation : RecuperacionOperation { public StartupRecoveryOperation() : base() { } public StartupRecoveryOperation(OpenDocument? c) : base(c) { } public StartupRecoveryOperation(RecoveryCopy? r) : base(r) { } public StartupRecoveryOperation(string? p) : base(p) { } }
+public class AutoRecoveryOperation : RecuperacionOperation { public AutoRecoveryOperation() : base() { } public AutoRecoveryOperation(OpenDocument? c) : base(c) { } public AutoRecoveryOperation(RecoveryCopy? r) : base(r) { } public AutoRecoveryOperation(string? p) : base(p) { } }
+public class AutomaticRecoveryOperation : RecuperacionOperation { public AutomaticRecoveryOperation() : base() { } public AutomaticRecoveryOperation(OpenDocument? c) : base(c) { } public AutomaticRecoveryOperation(RecoveryCopy? r) : base(r) { } public AutomaticRecoveryOperation(string? p) : base(p) { } }
+public class StartupRecoverOperation : RecuperacionOperation { public StartupRecoverOperation() : base() { } public StartupRecoverOperation(OpenDocument? c) : base(c) { } public StartupRecoverOperation(RecoveryCopy? r) : base(r) { } public StartupRecoverOperation(string? p) : base(p) { } }
+public class RecoverStartup : RecuperacionOperation { public RecoverStartup() : base() { } public RecoverStartup(OpenDocument? c) : base(c) { } public RecoverStartup(RecoveryCopy? r) : base(r) { } public RecoverStartup(string? p) : base(p) { } }
+public class RecoverOnStartup : RecuperacionOperation { public RecoverOnStartup() : base() { } public RecoverOnStartup(OpenDocument? c) : base(c) { } public RecoverOnStartup(RecoveryCopy? r) : base(r) { } public RecoverOnStartup(string? p) : base(p) { } }
+public class RecoverOnStartupOperation : RecuperacionOperation { public RecoverOnStartupOperation() : base() { } public RecoverOnStartupOperation(OpenDocument? c) : base(c) { } public RecoverOnStartupOperation(RecoveryCopy? r) : base(r) { } public RecoverOnStartupOperation(string? p) : base(p) { } }
+public class RecoveryOnStartupOperation : RecuperacionOperation { public RecoveryOnStartupOperation() : base() { } public RecoveryOnStartupOperation(OpenDocument? c) : base(c) { } public RecoveryOnStartupOperation(RecoveryCopy? r) : base(r) { } public RecoveryOnStartupOperation(string? p) : base(p) { } }
+public class RecuperacionService : RecuperacionOperation { public RecuperacionService() : base() { } public RecuperacionService(OpenDocument? c) : base(c) { } public RecuperacionService(RecoveryCopy? r) : base(r) { } public RecuperacionService(string? p) : base(p) { } }
+
+public class RecuperacionManager : RecuperacionOperation { public RecuperacionManager() : base() { } public RecuperacionManager(OpenDocument? c) : base(c) { } public RecuperacionManager(RecoveryCopy? r) : base(r) { } public RecuperacionManager(string? p) : base(p) { } }
+
+public class RecuperacionHelper : RecuperacionOperation { public RecuperacionHelper() : base() { } public RecuperacionHelper(OpenDocument? c) : base(c) { } public RecuperacionHelper(RecoveryCopy? r) : base(r) { } public RecuperacionHelper(string? p) : base(p) { } }
+
+
+public static class RecuperacionHelper2 { public static OpenDocument Recover() => RecuperacionOperation.Execute(); }
+public static class RecoveryHelper2 { public static OpenDocument Recover() => RecuperacionOperation.Execute(); }
