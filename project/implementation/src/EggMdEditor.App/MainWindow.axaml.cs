@@ -312,6 +312,50 @@ public partial class MainWindow : Window
         e.Handled = true;
     }
 
+    /// <summary>
+    /// COM-012/BR-F002-003/ERR-014: resaltado de arrastre y apertura por
+    /// soltar un único .md sobre toda la ventana.
+    /// </summary>
+    private void OnDragEnter(object? sender, DragEventArgs e)
+    {
+        _viewModel.SetDragOver(true);
+        var paths = e.DataTransfer.TryGetFiles()?.Select(f => f.Path.LocalPath) ?? Array.Empty<string>();
+        e.DragEffects = AbrirOperation.ValidateDrop(paths) ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    private void OnDragOver(object? sender, DragEventArgs e)
+    {
+        _viewModel.SetDragOver(true);
+        var paths = e.DataTransfer.TryGetFiles()?.Select(f => f.Path.LocalPath) ?? Array.Empty<string>();
+        e.DragEffects = AbrirOperation.ValidateDrop(paths) ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    private void OnDragLeave(object? sender, DragEventArgs e)
+    {
+        _viewModel.SetDragOver(false);
+        e.Handled = true;
+    }
+
+    private void OnDrop(object? sender, DragEventArgs e)
+    {
+        _viewModel.SetDragOver(false);
+        var paths = e.DataTransfer.TryGetFiles()?.Select(f => f.Path.LocalPath) ?? Array.Empty<string>();
+        if (AbrirOperation.ValidateDrop(paths))
+        {
+            _viewModel.OpenDropped(paths);
+            e.DragEffects = DragDropEffects.Copy;
+        }
+        else
+        {
+            _viewModel.DropError = AbrirOperation.DropValidationMessage;
+            e.DragEffects = DragDropEffects.None;
+        }
+
+        e.Handled = true;
+    }
+
     private void OnCloseRequested(object? sender, EventArgs e) => Close();
 
     /// <summary>
