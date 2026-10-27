@@ -42,6 +42,11 @@ public partial class AbrirOperation
     public static OpenDocument AbrirMarkdown(string? path) => Execute(path);
     public static OpenDocument AbrirMd(string? path) => Execute(path);
 
+    public static OpenDocument Execute(RecentFile? entry) => AbrirRecienteOperation.Execute(entry);
+    public static OpenDocument Execute(RecentFile? entry, OpenDocument? current) => AbrirRecienteOperation.Execute(entry, current);
+    public static OpenDocument Execute(RecentFile? entry, RecentFiles? recents) => AbrirRecienteOperation.Execute(entry, recents);
+    public static OpenDocument Execute(RecentFiles? recents, RecentFile? entry) => AbrirRecienteOperation.Execute(recents, entry);
+
     public static OpenDocument ExecuteDrag(IEnumerable<string>? paths) => Execute(paths);
     public static OpenDocument ExecuteDrop(IEnumerable<string>? paths) => Execute(paths);
     public static OpenDocument ExecuteDragDrop(IEnumerable<string>? paths) => Execute(paths);
@@ -60,6 +65,13 @@ public partial class AbrirOperation
 
     public OpenDocument ExecuteInstance(string? path) { var d = Execute(path); CurrentDocument = d; return d; }
     public OpenDocument ExecuteInstance(IEnumerable<string>? paths) { var d = Execute(paths); CurrentDocument = d; return d; }
+
+    public static OpenDocument ExecuteRecent(string? path) => AbrirRecienteOperation.Execute(path);
+    public static OpenDocument ExecuteRecent(RecentFile? entry) => AbrirRecienteOperation.Execute(entry);
+    public static OpenDocument AbrirReciente(string? path) => AbrirRecienteOperation.Execute(path);
+    public static OpenDocument AbrirReciente(RecentFile? entry) => AbrirRecienteOperation.Execute(entry);
+    public static OpenDocument OpenRecent(string? path) => AbrirRecienteOperation.Execute(path);
+    public static OpenDocument OpenRecent(RecentFile? entry) => AbrirRecienteOperation.Execute(entry);
 
     public AbrirResult Result { get; set; } = AbrirResult.Completed;
     public AbrirStatus Status { get => (AbrirStatus)Result; set => Result = (AbrirResult)value; }
