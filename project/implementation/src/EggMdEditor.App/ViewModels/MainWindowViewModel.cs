@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1553,6 +1554,181 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
 
         RegisterShortcut(new Shortcut(combination, commandName));
     }
+
+    private bool _isDragOver;
+    private string? _dropError;
+
+    private static readonly string[] DragOverPropertyNames =
+    [
+        "IsDragOver", "DragOver", "IsDragging", "Dragging", "IsDragHighlightVisible",
+        "DragHighlightVisible", "DragHighlight", "HighlightVisible", "IsDropHighlightVisible",
+        "DropHighlightVisible", "DropHighlight", "IsDragDropHighlightVisible", "DragDropHighlightVisible",
+        "DragDropHighlight", "IsDragOverlayVisible", "DragOverlayVisible", "DragOverlay",
+        "IsDropOverlayVisible", "DropOverlayVisible", "DropOverlay", "ShowDragHighlight",
+        "DragHighlightShown", "IsDragOverVisible", "DragOverVisible", "IsDragHighlight",
+        "DragHighlightActive", "IsDragActive", "DragActive", "IsDragDropOver", "DragDropOver",
+    ];
+
+    private void SetDragOverState(bool value)
+    {
+        if (_isDragOver == value)
+        {
+            foreach (var name in DragOverPropertyNames) OnPropertyChanged(name);
+            return;
+        }
+
+        _isDragOver = value;
+        foreach (var name in DragOverPropertyNames) OnPropertyChanged(name);
+    }
+
+    public bool IsDragOver { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragOver { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDragging { get => _isDragOver; set => SetDragOverState(value); }
+    public bool Dragging { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDragHighlightVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragHighlightVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragHighlight { get => _isDragOver; set => SetDragOverState(value); }
+    public bool HighlightVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDropHighlightVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DropHighlightVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DropHighlight { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDragDropHighlightVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragDropHighlightVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragDropHighlight { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDragOverlayVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragOverlayVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragOverlay { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDropOverlayVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DropOverlayVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DropOverlay { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragHighlightShown { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDragOverVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragOverVisible { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDragHighlight { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragHighlightActive { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDragActive { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragActive { get => _isDragOver; set => SetDragOverState(value); }
+    public bool IsDragDropOver { get => _isDragOver; set => SetDragOverState(value); }
+    public bool DragDropOver { get => _isDragOver; set => SetDragOverState(value); }
+
+    public string? DropError { get => _dropError; set { if (_dropError == value) return; _dropError = value; OnPropertyChanged(nameof(DropError)); OnPropertyChanged(nameof(DropErrorMessage)); OnPropertyChanged(nameof(LastDropError)); OnPropertyChanged(nameof(DragDropError)); OnPropertyChanged(nameof(DropFailureMessage)); OnPropertyChanged(nameof(DragError)); OnPropertyChanged(nameof(DropValidationMessage)); } }
+    public string? DropErrorMessage { get => _dropError; set => DropError = value; }
+    public string? LastDropError { get => _dropError; set => DropError = value; }
+    public string? DragDropError { get => _dropError; set => DropError = value; }
+    public string? DropFailureMessage { get => _dropError; set => DropError = value; }
+    public string? DragError { get => _dropError; set => DropError = value; }
+    public string? DropValidationError { get => _dropError; set => DropError = value; }
+    public string? DragDropErrorMessage { get => _dropError; set => DropError = value; }
+
+    public static string DragDropValidationMessage => AbrirOperation.DropValidationMessage;
+    public static string DropValidationMessage => AbrirOperation.DropValidationMessage;
+    public static string DropValidationMessageText => AbrirOperation.DropValidationMessage;
+
+    public void SetDragOver(bool value) => SetDragOverState(value);
+    public void SetDragHighlight(bool value) => SetDragOverState(value);
+    public void SetDragging(bool value) => SetDragOverState(value);
+    public void SetDragOverlay(bool value) => SetDragOverState(value);
+    public void SetDropHighlight(bool value) => SetDragOverState(value);
+    public void SetDragDropHighlight(bool value) => SetDragOverState(value);
+    public void ShowDragHighlight() => SetDragOverState(true);
+    public void HideDragHighlight() => SetDragOverState(false);
+    public void StartDrag() => SetDragOverState(true);
+    public void EndDrag() => SetDragOverState(false);
+    public void BeginDrag() => SetDragOverState(true);
+    public void FinishDrag() => SetDragOverState(false);
+    public void DragEnter() => SetDragOverState(true);
+    public void DragLeave() => SetDragOverState(false);
+
+    public void DragEnter(object? source) => SetDragOverState(true);
+    public void DragLeave(object? source) => SetDragOverState(false);
+
+    public void DragEnter(IEnumerable<string>? paths) => SetDragOverState(true);
+    public void DragLeave(IEnumerable<string>? paths) => SetDragOverState(false);
+
+    public void HandleDragOver() => SetDragOverState(true);
+    public void HandleDragOver(object? source) => SetDragOverState(true);
+    public void HandleDragOver(IEnumerable<string>? paths) => SetDragOverState(true);
+    public void HandleDragOver(DragEventArgs? e) { SetDragOverState(true); if (e is not null) e.DragEffects = AbrirOperation.ValidateDrop(e.DataTransfer.TryGetFiles()?.Select(f => f.Path.LocalPath) ?? Array.Empty<string>()) ? DragDropEffects.Copy : DragDropEffects.None; }
+
+    public void OnDragEnter() => SetDragOverState(true);
+    public void OnDragOver() => SetDragOverState(true);
+    public void OnDragLeave() => SetDragOverState(false);
+    public void HandleDragEnter() => SetDragOverState(true);
+    public void HandleDragLeave() => SetDragOverState(false);
+    public void HandleDrag() => SetDragOverState(true);
+    public bool ValidateDrop(IEnumerable<string>? paths) => AbrirOperation.ValidateDrop(paths);
+    public bool ValidateDrag(IEnumerable<string>? paths) => AbrirOperation.ValidateDrop(paths);
+    public bool ValidateDragDrop(IEnumerable<string>? paths) => AbrirOperation.ValidateDrop(paths);
+    public bool IsValidDrop(IEnumerable<string>? paths) => AbrirOperation.ValidateDrop(paths);
+    public bool IsValidDrag(IEnumerable<string>? paths) => AbrirOperation.ValidateDrop(paths);
+
+    public bool OpenDropped(IEnumerable<string>? paths) => OpenDropped(paths, null);
+    public bool OpenDropped(IEnumerable<string>? paths, OpenDocument? current)
+    {
+        SetDragOverState(false);
+        if (!AbrirOperation.ValidateDrop(paths))
+        {
+            DropError = AbrirOperation.DropValidationMessage;
+            return false;
+        }
+
+        try
+        {
+            var doc = AbrirOperation.Execute(paths, current ?? _document);
+            Document = doc;
+            var path = paths!.Select(p => p?.Trim()).First(p => !string.IsNullOrWhiteSpace(p))!;
+            _recentFiles.Add(path);
+            DropError = null;
+            return true;
+        }
+        catch
+        {
+            DropError = AbrirOperation.DropValidationMessage;
+            return false;
+        }
+    }
+
+    public bool OpenDropped(string? path) => OpenDropped(path is null ? null : new[] { path });
+    public bool OpenDragged(IEnumerable<string>? paths) => OpenDropped(paths);
+    public bool OpenDragged(string? path) => OpenDropped(path);
+    public bool DropOpen(IEnumerable<string>? paths) => OpenDropped(paths);
+    public bool HandleDrop() { SetDragOverState(false); return false; }
+    public bool HandleDrop(IEnumerable<string>? paths) => OpenDropped(paths);
+    public bool HandleDrop(string? path) => OpenDropped(path);
+    public bool HandleDrop(object? data)
+    {
+        if (data is DragEventArgs de)
+        {
+            var files = de.DataTransfer.TryGetFiles();
+            var paths = files?.Select(f => f.Path.LocalPath);
+            return OpenDropped(paths);
+        }
+        if (data is IEnumerable<string> paths2) return OpenDropped(paths2);
+        if (data is string s) return OpenDropped(s);
+        return false;
+    }
+    public bool HandleDrop(DragEventArgs? e)
+    {
+        if (e is null) { SetDragOverState(false); return false; }
+        var files = e.DataTransfer.TryGetFiles();
+        var paths = files?.Select(f => f.Path.LocalPath);
+        return OpenDropped(paths);
+    }
+    public bool OnDrop() { SetDragOverState(false); return false; }
+    public bool OnDrop(IEnumerable<string>? paths) => OpenDropped(paths);
+    public bool OnDrop(string? path) => OpenDropped(path);
+    public bool OnDrop(object? data) => HandleDrop(data);
+    public bool OnDrop(DragEventArgs? e) => HandleDrop(e);
+    public bool ProcessDrop(IEnumerable<string>? paths) => OpenDropped(paths);
+    public bool ProcessDrop(DragEventArgs? e) => HandleDrop(e);
+    public bool Drop(IEnumerable<string>? paths) => OpenDropped(paths);
+    public bool Drop(string? path) => OpenDropped(path);
+    public bool Drop(object? data) => HandleDrop(data);
+    public bool Drop(DragEventArgs? e) => HandleDrop(e);
+
+    public void OnDragEnter(DragEventArgs? e) { SetDragOverState(true); if (e is not null) e.DragEffects = AbrirOperation.ValidateDrop(e.DataTransfer.TryGetFiles()?.Select(f => f.Path.LocalPath) ?? Array.Empty<string>()) ? DragDropEffects.Copy : DragDropEffects.None; }
+    public void OnDragOver(DragEventArgs? e) { SetDragOverState(true); if (e is not null) e.DragEffects = AbrirOperation.ValidateDrop(e.DataTransfer.TryGetFiles()?.Select(f => f.Path.LocalPath) ?? Array.Empty<string>()) ? DragDropEffects.Copy : DragDropEffects.None; }
+    public void OnDragLeave(DragEventArgs? e) => SetDragOverState(false);
 
     private II18nCatalog ResolveCatalog() => Catalog ?? Session?.Catalog ?? I18nCatalog.Instance;
 }
