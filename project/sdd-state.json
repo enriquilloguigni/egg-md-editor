@@ -9,7 +9,7 @@
   },
   "features": {
     "F-001-entorno-de-aplicacion": {
-      "status": "verifying",
+      "status": "completed",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -191,7 +191,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-26T21:40:49.130Z",
+  "updated_at": "2026-10-27T04:52:37.627Z",
   "owner": "EG",
   "sources": [
     {
@@ -325,6 +325,19 @@
       "result": "pass",
       "decided_by": "agente",
       "decided_at": "2026-10-26",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "PLAN_COVERED",
+      "artifact": "F-001 verification/ (Run v2, E-004, Result v3, commit 0ac4689)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-27",
       "approver": "EG",
       "norm": {
         "metodologia": "1.10",
