@@ -428,6 +428,22 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
     public static OpenDocument Empty() => new OpenDocument();
     public static OpenDocument Blank() => new OpenDocument();
 
+    // ---------- Operation Abrir (T-026) ----------
+    public static OpenDocument Open(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument Abrir(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument OpenFile(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument OpenDocumentFile(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument OpenMarkdown(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument OpenMd(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument Load(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument LoadFile(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument LoadDocument(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument LoadMarkdown(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument LoadMd(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument FromFile(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument FromPath(string? path) => AbrirOperation.Execute(path);
+    public static OpenDocument ReadFile(string? path) => AbrirOperation.Execute(path);
+
     public OpenDocument ReplaceWithNew() => new OpenDocument();
     public OpenDocument ToNew() => new OpenDocument();
     public OpenDocument NuevoYReemplazar() => new OpenDocument();
