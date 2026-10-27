@@ -78,7 +78,10 @@ public class Shortcut
             or "shownotice" or "hidenotice" or "togglenotice"
             or "changelanguage"
             or "changetheme" or "toggletheme"
-            or "requestfocus";
+            or "requestfocus"
+            or "new" or "nuevo" or "open" or "abrir" or "save" or "guardar"
+            or "saveas" or "guardarcomo" or "guardarcom" or "recent" or "reciente"
+            or "openrecent" or "abrirreciente";
     }
 
     private static string ResolveCommandName(SharedCommand? command)
@@ -107,6 +110,17 @@ public static class CommandNames
     public const string ChangeTheme = "ChangeTheme";
     public const string ToggleTheme = "ToggleTheme";
     public const string RequestFocus = "RequestFocus";
+    public const string New = "New";
+    public const string Open = "Open";
+    public const string Save = "Save";
+    public const string SaveAs = "SaveAs";
+    public const string Recent = "Recent";
+    public const string Nuevo = "Nuevo";
+    public const string Abrir = "Abrir";
+    public const string Guardar = "Guardar";
+    public const string GuardarComo = "GuardarComo";
+    public const string AbrirReciente = "AbrirReciente";
+    public const string OpenRecent = "OpenRecent";
 }
 
 public static class ShortcutNames
