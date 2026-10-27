@@ -64,19 +64,19 @@
     "F-002-gestion-de-archivo": {
       "status": "spec_in_progress",
       "docs": {
-        "process": "proposed",
-        "screens": "proposed",
-        "data-structures": "proposed",
-        "inapp-communication": "proposed",
-        "security-permissions": "proposed",
-        "logs": "proposed",
-        "audit": "proposed",
-        "visual-resources": "proposed",
-        "external-services": "proposed",
-        "business-rules": "proposed",
-        "error-handling": "proposed",
-        "states-transitions": "proposed",
-        "acceptance-criteria": "proposed"
+        "process": "approved",
+        "screens": "approved",
+        "data-structures": "approved",
+        "inapp-communication": "approved",
+        "security-permissions": "approved",
+        "logs": "approved",
+        "audit": "approved",
+        "visual-resources": "approved",
+        "external-services": "approved",
+        "business-rules": "approved",
+        "error-handling": "approved",
+        "states-transitions": "approved",
+        "acceptance-criteria": "approved"
       },
       "spec_version": "v1"
     }
@@ -210,7 +210,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-27T05:18:44.685Z",
+  "updated_at": "2026-10-27T20:55:46.455Z",
   "owner": "EG",
   "sources": [
     {
@@ -362,6 +362,36 @@
         "metodologia": "1.10",
         "tooling": "1.4.0"
       }
+    },
+    {
+      "name": "SPEC_REVIEW",
+      "artifact": "F-002 spec/ (13 documentos, v1)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-27",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "UI_REVIEW",
+      "artifact": "F-002 spec/screens.md + spec/visual-resources.md (SC-001, SC-002, v1)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-27",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
     }
-  ]
+  ],
+  "norm": {
+    "metodologia": "1.10",
+    "tooling": "1.4.0"
+  }
 }
