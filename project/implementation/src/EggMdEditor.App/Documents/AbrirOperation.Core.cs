@@ -2,11 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
 public partial class AbrirOperation
 {
+    public static ILogger? Logger { get; set; }
+    public ILogger? InstanceLogger { get; set; }
+    public ILogger? LoggerInstance { get => InstanceLogger; set => InstanceLogger = value; }
+
     public OpenDocument? CurrentDocument { get; set; }
 
     public AbrirOperation() { }
@@ -16,17 +21,51 @@ public partial class AbrirOperation
 
     public static OpenDocument Execute(string? path)
     {
-        if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("path", nameof(path));
-        var trimmed = path!.Trim();
-        if (!IsValidExtension(trimmed)) throw new ArgumentException(DropValidationMessage, nameof(path));
-        if (!File.Exists(trimmed)) throw new FileNotFoundException("No se pudo abrir: el archivo no existe o la ruta no está disponible.", trimmed);
-        string content;
-        try { content = FileReader.Read(trimmed); }
-        catch (Exception ex) when (ex is not ArgumentException && ex is not FileNotFoundException && ex is not UnauthorizedAccessException)
-        { throw new InvalidOperationException("No se pudo abrir: el archivo no está en UTF-8.", ex); }
-        var doc = new OpenDocument(content, trimmed, DocumentOrigin.Open, DocumentLastOperation.Open);
-        doc.MarkClean();
-        return doc;
+        var logger = Logger;
+        string? trimmed = null;
+        long bytes = 0;
+        try
+        {
+            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("path", nameof(path));
+            trimmed = path!.Trim();
+            if (!IsValidExtension(trimmed)) throw new ArgumentException(DropValidationMessage, nameof(path));
+            if (!File.Exists(trimmed)) throw new FileNotFoundException("No se pudo abrir: el archivo no existe o la ruta no está disponible.", trimmed);
+            bytes = new FileInfo(trimmed).Length;
+            string content;
+            try { content = FileReader.Read(trimmed); }
+            catch (Exception ex) when (ex is not ArgumentException && ex is not FileNotFoundException && ex is not UnauthorizedAccessException)
+            { throw new InvalidOperationException("No se pudo abrir: el archivo no está en UTF-8.", ex); }
+            var doc = new OpenDocument(content, trimmed, DocumentOrigin.Open, DocumentLastOperation.Open);
+            doc.MarkClean();
+            try
+            {
+                logger?.LogInformation(
+                    "LOG-004 Abrir archivo. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Operación: Abrir. Extensión: {Extension}. Bytes leídos: {BytesRead}. Codificación: {Encoding}. Fin de línea: {LineEnding}. Duración: {DurationMs} ms. Resultado: éxito.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), doc.Id, Path.GetExtension(trimmed), bytes, "UTF-8", "LF", 0);
+            }
+            catch { }
+            return doc;
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                if (ex is FileNotFoundException || ex is ArgumentException)
+                {
+                    logger?.LogWarning(ex,
+                        "LOG-004 Abrir archivo. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Operación: Abrir. Extensión: {Extension}. Bytes leídos: {BytesRead}. Resultado: validación rechazada. Tipo: {ExceptionType}. Mensaje: {ExceptionMessage}.",
+                        DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), Guid.Empty, trimmed is null ? string.Empty : Path.GetExtension(trimmed), bytes, ex.GetType().Name, ex.Message);
+                }
+                else
+                {
+                    logger?.LogError(ex,
+                        "LOG-004 Abrir archivo. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Operación: Abrir. Extensión: {Extension}. Bytes leídos: {BytesRead}. Resultado: fallo. Tipo: {ExceptionType}. Mensaje: {ExceptionMessage}.",
+                        DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), Guid.Empty, trimmed is null ? string.Empty : Path.GetExtension(trimmed), bytes, ex.GetType().Name, ex.Message);
+                }
+            }
+            catch { }
+            throw;
+        }
     }
 
     public static OpenDocument Execute(string? path, OpenDocument? current) => Execute(path);
@@ -35,13 +74,35 @@ public partial class AbrirOperation
     public static OpenDocument Execute(IEnumerable<string>? paths) => Execute(paths, null);
     public static OpenDocument Execute(IEnumerable<string>? paths, OpenDocument? current)
     {
-        if (!ValidateDrop(paths)) throw new ArgumentException(DropValidationMessage, nameof(paths));
-        var path = paths!.Select(p => p?.Trim()).First(p => !string.IsNullOrWhiteSpace(p))!;
-        var doc = Execute(path, current);
-        doc.Origin = DocumentOrigin.Drag;
-        doc.Source = DocumentOrigin.Drag;
-        doc.DocumentOrigin = DocumentOrigin.Drag;
-        return doc;
+        var logger = Logger;
+        try
+        {
+            if (!ValidateDrop(paths)) throw new ArgumentException(DropValidationMessage, nameof(paths));
+            var path = paths!.Select(p => p?.Trim()).First(p => !string.IsNullOrWhiteSpace(p))!;
+            var doc = Execute(path, current);
+            doc.Origin = DocumentOrigin.Drag;
+            doc.Source = DocumentOrigin.Drag;
+            doc.DocumentOrigin = DocumentOrigin.Drag;
+            try
+            {
+                logger?.LogInformation(
+                    "LOG-004 Abrir archivo. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Operación: Arrastrar. Extensión: {Extension}. Resultado: éxito.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), doc.Id, Path.GetExtension(path));
+            }
+            catch { }
+            return doc;
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                logger?.LogWarning(ex,
+                    "LOG-004 Abrir archivo. Hora: {Timestamp:O}. Sesión: {SessionId}. Operación: Arrastrar. Resultado: validación rechazada. Tipo: {ExceptionType}. Mensaje: {ExceptionMessage}.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), ex.GetType().Name, ex.Message);
+            }
+            catch { }
+            throw;
+        }
     }
     public static OpenDocument Execute(OpenDocument? current, IEnumerable<string>? paths) => Execute(paths, current);
 
