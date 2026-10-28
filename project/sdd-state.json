@@ -87,7 +87,19 @@
         "T-023": "done",
         "T-024": "done",
         "T-025": "done",
-        "T-035": "done"
+        "T-035": "done",
+        "T-026": "done",
+        "T-027": "done",
+        "T-028": "done",
+        "T-029": "done",
+        "T-030": "done",
+        "T-031": "done",
+        "T-032": "done",
+        "T-033": "done",
+        "T-034": "done",
+        "T-036": "done",
+        "T-037": "done",
+        "T-038": "done"
       }
     }
   },
@@ -102,7 +114,7 @@
     {
       "id": "PD-DISC-001",
       "status": "resolved",
-      "question": "Stack: Avalonia UI, multiplataforma; las pruebas en diferentes plataformas quedan cubiertas por el framework y no son requeridas para la soluci\u00f3n actual.",
+      "question": "Stack: Avalonia UI, multiplataforma; las pruebas en diferentes plataformas quedan cubiertas por el framework y no son requeridas para la solución actual.",
       "artifact": "project/discovery/discovery-context.md (PD-DISC-001)",
       "blocks": [
         "Architecture",
@@ -114,7 +126,7 @@
     {
       "id": "PD-DISC-002",
       "status": "resolved",
-      "question": "Re-puntuar criterios y recalcular categor\u00eda.",
+      "question": "Re-puntuar criterios y recalcular categoría.",
       "artifact": "project/discovery/discovery-context.md (PD-DISC-002)",
       "blocks": [
         "Roadmap",
@@ -149,7 +161,7 @@
     {
       "id": "PD-DISC-005",
       "status": "resolved",
-      "question": "Sin telemetr\u00eda ni nube; actualizaciones manuales.",
+      "question": "Sin telemetría ni nube; actualizaciones manuales.",
       "artifact": "project/discovery/discovery-context.md (PD-DISC-005)",
       "blocks": [
         "Scope",
@@ -161,8 +173,8 @@
     {
       "id": "PD-ROAD-001",
       "status": "resolved",
-      "question": "Re-puntuar C1 (Alcance) de 10 a 8 (ponderado 6.10 \u2192 5.50, categor\u00eda S).",
-      "artifact": "project/roadmap/roadmap.md (v1) + project/project.md (Dimensi\u00f3n)",
+      "question": "Re-puntuar C1 (Alcance) de 10 a 8 (ponderado 6.10 → 5.50, categoría S).",
+      "artifact": "project/roadmap/roadmap.md (v1) + project/project.md (Dimensión)",
       "blocks": [
         "ROADMAP_APPROVED"
       ],
@@ -172,7 +184,7 @@
     {
       "id": "PD-RES-001",
       "status": "resolved",
-      "question": "SC-001: \u00bfrige la Spec (BR-F001-008: solo men\u00fa y barra, \u00e1rea vac\u00eda) o el mockup (3 columnas, 5 controles)? \u00bfY cu\u00e1l es el inventario normativo de FR-012? \u2014 RESUELTO: rige la Spec; inventario = 12 controles de requerimiento.txt en orden de escritura; actualizar mockup y Spec/Plan v2.",
+      "question": "SC-001: ¿rige la Spec (BR-F001-008: solo menú y barra, área vacía) o el mockup (3 columnas, 5 controles)? ¿Y cuál es el inventario normativo de FR-012? — RESUELTO: rige la Spec; inventario = 12 controles de requerimiento.txt en orden de escritura; actualizar mockup y Spec/Plan v2.",
       "artifact": "project/features/F-001-entorno-de-aplicacion/spec/business-rules.md + plan/mockups.md",
       "blocks": [
         "Spec",
@@ -185,7 +197,7 @@
     {
       "id": "PD-RES-002",
       "status": "resolved",
-      "question": "\u00bfLa conmutaci\u00f3n de tema (OP-002, TR-008/TR-009) debe tener entrada visible en SC-001 o se retira de F-001? \u2014 RESUELTO: a\u00f1adir entrada visible Tema (Claro/Oscuro/Sistema) en Herramientas y capturar estado oscuro.",
+      "question": "¿La conmutación de tema (OP-002, TR-008/TR-009) debe tener entrada visible en SC-001 o se retira de F-001? — RESUELTO: añadir entrada visible Tema (Claro/Oscuro/Sistema) en Herramientas y capturar estado oscuro.",
       "artifact": "project/features/F-001-entorno-de-aplicacion/spec/data-structures.md + states-transitions.md",
       "blocks": [
         "Implementation",
@@ -197,7 +209,7 @@
     {
       "id": "PD-RES-003",
       "status": "resolved",
-      "question": "\u00bfF-001 muestra solo los 6 r\u00f3tulos de men\u00fa o tambi\u00e9n entradas internas visibles? \u2014 RESUELTO: 6 r\u00f3tulos como botones y dos botones de navegaci\u00f3n secuencial: uno para aumentar el r\u00f3tulo y otro para disminuirlo.",
+      "question": "¿F-001 muestra solo los 6 rótulos de menú o también entradas internas visibles? — RESUELTO: 6 rótulos como botones y dos botones de navegación secuencial: uno para aumentar el rótulo y otro para disminuirlo.",
       "artifact": "project/features/F-001-entorno-de-aplicacion/feature.md + spec/process.md",
       "blocks": [
         "Spec",
@@ -210,7 +222,7 @@
     {
       "id": "PD-RES-004",
       "status": "resolved",
-      "question": "\u00bfSe corrigen todos los hallazgos restantes (E2E de AC-005/006/007, iconos MIT, alias especulativos) antes de re-verificar o se aceptan como deuda? \u2014 RESUELTO: corregir todos.",
+      "question": "¿Se corrigen todos los hallazgos restantes (E2E de AC-005/006/007, iconos MIT, alias especulativos) antes de re-verificar o se aceptan como deuda? — RESUELTO: corregir todos.",
       "artifact": "project/features/F-001-entorno-de-aplicacion/verification/results/v1/result.md",
       "blocks": [
         "Implementation",
@@ -220,7 +232,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-27T21:39:40.624Z",
+  "updated_at": "2026-10-28T00:05:48.813Z",
   "owner": "EG",
   "sources": [
     {
