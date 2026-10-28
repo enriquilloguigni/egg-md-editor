@@ -62,7 +62,7 @@
       }
     },
     "F-002-gestion-de-archivo": {
-      "status": "verifying",
+      "status": "completed",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -110,7 +110,9 @@
         "commit": "01b945790b1b02f2f54c246a452e57cdef78eede",
         "stale": false,
         "evidence_sha256": "2fbd98cdc7e22179839699d808d8eccb2f551001bb09a0a500ee58811e029002",
-        "visual_sha256": "c4954a8eb477f643f39333e25253a1803f7b7a8c3d94e509f61def767a526282"
+        "visual_sha256": "c4954a8eb477f643f39333e25253a1803f7b7a8c3d94e509f61def767a526282",
+        "result": "v1",
+        "outcome": "cubierto"
       }
     }
   },
@@ -243,7 +245,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-28T00:16:40.928Z",
+  "updated_at": "2026-10-28T00:22:23.671Z",
   "owner": "EG",
   "sources": [
     {
@@ -429,6 +431,19 @@
       "result": "pass",
       "decided_by": "humano",
       "decided_at": "2026-10-27",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "PLAN_COVERED",
+      "artifact": "F-002 verification/ (Run v1, E-006, Result v1, commit 01b94579)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-28",
       "approver": "EG",
       "norm": {
         "metodologia": "1.10",
