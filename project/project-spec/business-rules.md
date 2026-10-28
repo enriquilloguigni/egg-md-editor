@@ -16,4 +16,10 @@
 | BR-012 | La aplicación es 100% local y offline: ningún dato del usuario sale del equipo; sin telemetría, actualizaciones automáticas ni servicios en la nube; las actualizaciones son manuales. | C-013, A-010, A-011 |
 | BR-013 | La interfaz se presenta en español o inglés según la preferencia del usuario (default español). | A-005 |
 | BR-014 | El resaltado de correspondencia entre paneles es pasajero y no modifica el contenido. | C-002 |
-| BR-015 | La aplicación no imprime directamente ni importa formatos distintos de .md; en v1 no ofrece colaboración multi-usuario, sincronización en la nube, plugins ni móvil/web. | Out of scope |
+| BR-015 | La aplicación no imprime directamente ni importa formatos distintos de .md; no ofrece colaboración multi-usuario, sincronización en la nube, plugins ni móvil/web. | Out of scope |
+| BR-016 | La barra de formato actúa sobre el fragmento seleccionado o prepara la estructura si no hay selección; su efecto depende del panel activo (efecto visual en el izquierdo, sintaxis equivalente en el derecho); cada control muestra icono y aviso flotante. | C-001 |
+| BR-017 | Deshacer, rehacer, cortar, copiar y pegar operan sobre el documento único, independientemente del panel activo; el portapapeles entrega texto formateado o Markdown según el destino. | requerimiento.txt |
+| BR-018 | Los enlaces a secciones del mismo documento se resuelven por el encabezado de destino, componiendo la aplicación la ancla correspondiente; el salto funciona en el panel WYSIWYG y en el PDF exportado. | requerimiento.txt |
+| BR-019 | Las preferencias de presentación (tema claro/oscuro, zoom y restablecimiento, visibilidad de paneles y barra de formato, fuente del Markdown, idioma de interfaz) persisten entre sesiones. | requerimiento.txt |
+| BR-020 | Los modos de visualización (pantalla completa, modo foco, plegado de secciones, ajuste de línea, zoom) cambian solo la presentación y no modifican el contenido del documento. | requerimiento.txt |
+| BR-021 | La exportación a PDF se configura antes de generar: el usuario elige carpeta, nombre y opciones (márgenes, orientación, encabezados y pies). | A-007 |
