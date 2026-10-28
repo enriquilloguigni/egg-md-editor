@@ -32,15 +32,6 @@ Out of scope:
 - Pruebas en múltiples plataformas (cubiertas por Avalonia).
 Criterio de cierre: el proyecto termina cuando no existen nuevas features y la verificación es exitosa (project.md).
 
-## Dimensionado (confirmado, categoría M):
-- Alcance (30%): 8 — 9-10 features / 3 módulos.
-- Integraciones (20%): 2 — 1 integración simple.
-- Riesgo regulatorio (10%): 3 — datos de usuario básico.
-- Superficie (20%): 8 — 16-20 pantallas/dialogos, 1 actor.
-- Novedad técnica (10%): 7 — varias tecnologías nuevas combinadas.
-- Brownfield (10%): 1 — greenfield, sin código previo.
-- Ponderado: 5.50 → categoría M.
-
 ## Constraints
 C-001 — Interfaz de escritorio con menús clásicos y barra de formato de doble naturaleza (izquierda: efecto visual; derecha: sintaxis) (source: requerimiento.txt; status: confirmed).
 C-002 — Sincronización en tiempo real bidireccional entre ambos paneles sin botón de actualizar (source: requerimiento.txt; status: confirmed).
