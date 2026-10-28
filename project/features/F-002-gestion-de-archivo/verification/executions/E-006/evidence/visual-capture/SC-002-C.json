@@ -1,0 +1,13 @@
+{
+  "feature": "F-002-gestion-de-archivo",
+  "execution": "E-006",
+  "sc": "SC-002",
+  "scenario": "C",
+  "surface": "diálogo",
+  "command": "dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- diálogo SC-002 project/features/F-002-gestion-de-archivo/verification/executions/E-006/evidence/visual-capture/SC-002-C.txt",
+  "exit_code": 0,
+  "capture_file": "project/features/F-002-gestion-de-archivo/verification/executions/E-006/evidence/visual-capture/SC-002-C.png",
+  "capture_sha256": "6de368c4fa69210b1164578a1d43713bef85e9d6c1b80b2b87adadbeb5bd2b5a",
+  "duration_ms": 5562,
+  "captured_at": "2026-10-28 00:16:01"
+}
