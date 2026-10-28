@@ -2,27 +2,27 @@
 
 FR-001 — Doble vista sincronizada
 
-El sistema debe presentar el mismo documento en una vista WYSIWYG y una vista Markdown estándar, ambas editables y sincronizadas en tiempo real, con correspondencia de posición y resaltado pasajero de la sección equivalente al navegar entre vistas.
+El sistema debe presentar el mismo documento en una vista WYSIWYG y una vista Markdown estándar, ambas editables y sincronizadas en tiempo real, con correspondencia de posición y resaltado pasajero de la sección equivalente al navegar entre vistas; debe permitir mostrar u ocultar cada panel y la barra de formato.
 
 FR-002 — Formato Markdown completo
 
-El sistema debe soportar énfasis, encabezados 1–6 con promover/degradar, listas de viñetas, numeradas y de tareas, citas anidadas, código en línea y bloque, enlaces e imágenes, tablas editables, notas al pie, fórmulas en línea y en bloque, diagramas y escape de sintaxis con barra invertida, conforme a CommonMark y GFM.
+El sistema debe soportar énfasis (negrita, cursiva, tachado), encabezados 1–6 con promover/degradar, listas de viñetas, numeradas y de tareas con anidado, citas anidadas, código en línea y bloque, enlaces internos y externos, imágenes, tablas editables con filas, columnas y alineación, notas al pie, fórmulas en línea y en bloque, diagramas y escape de sintaxis con barra invertida, conforme a CommonMark y GFM.
 
 FR-003 — Índice e inserción rápida
 
-El sistema debe generar un índice automático a partir de encabezados H1–H6 y permitir inserción rápida de bloques frecuentes basada en plantillas.
+El sistema debe generar un índice automático a partir de encabezados H1–H6 que se actualice al cambiarlos y permitir inserción rápida de bloques frecuentes basada en plantillas.
 
 FR-004 — Gestión de archivo
 
-El sistema debe crear, abrir, guardar y guardar como documentos Markdown, aceptar archivos por arrastre, mantener una lista de archivos recientes, autoguardar de forma silenciosa y avisar de cambios sin guardar; la persistencia será UTF-8 con finales de línea consistentes por sistema.
+El sistema debe crear, abrir, guardar y guardar como documentos Markdown, aceptar archivos por arrastre, mantener una lista de hasta 10 archivos recientes, autoguardar de forma silenciosa y avisar de cambios sin guardar; la persistencia será UTF-8 con finales de línea consistentes por sistema, con recuperación automática del último estado.
 
 FR-005 — Exportación a PDF
 
-El sistema debe exportar el documento a PDF fiel a la vista WYSIWYG, permitiendo elegir carpeta, nombre y opciones de exportación.
+El sistema debe exportar el documento a PDF fiel a la vista WYSIWYG, permitiendo elegir carpeta, nombre y opciones de exportación (márgenes, orientación, encabezados y pies).
 
 FR-006 — Metadatos del documento
 
-El sistema debe mantener un bloque de metadatos delimitado al inicio del documento, visible como ficha y editable como Markdown, con edición guiada de propiedades; el idioma declarado regirá la corrección ortográfica.
+El sistema debe mantener un bloque de metadatos delimitado al inicio del documento, visible como ficha y editable como Markdown, con edición guiada de propiedades (título, autor, fecha, idioma y campos personalizados); el idioma declarado regirá la corrección ortográfica.
 
 FR-007 — Edición
 
@@ -30,7 +30,7 @@ El sistema debe ofrecer deshacer/rehacer, cortar/copiar/pegar, selección avanza
 
 FR-008 — Revisión ortográfica
 
-El sistema debe realizar revisión ortográfica en ambas vistas según el idioma del documento, con sugerencias y diccionario personal ampliable.
+El sistema debe realizar revisión ortográfica en ambas vistas según el idioma del documento, con subrayado, sugerencias y diccionario personal ampliable.
 
 FR-009 — Presentación y navegación
 
@@ -46,11 +46,11 @@ El sistema debe ofrecer un menú principal persistente con Archivo, Edición, Ve
 
 FR-012 — Barra de formato
 
-El sistema debe ofrecer una barra de formato con icono y aviso flotante por control, de doble naturaleza según la vista activa, actuando sobre la selección o preparando la estructura, en el flujo de escritura declarado.
+El sistema debe ofrecer una barra de formato con icono y aviso flotante por control, de doble naturaleza según la vista activa, actuando sobre la selección o preparando la estructura, con el inventario de doce controles en orden de escritura (énfasis, encabezados, listas, cita, código, enlace, imagen, tabla, nota al pie, fórmula, diagrama e índice).
 
 FR-013 — Persistencia de preferencias
 
-El sistema debe persistir entre sesiones las preferencias del usuario: tema, zoom, visibilidad de paneles y barra de formato y demás opciones configurables.
+El sistema debe persistir entre sesiones las preferencias del usuario: tema, zoom, visibilidad de paneles y barra de formato y demás opciones configurables, incluida la lista de recientes y la recuperación automática.
 
 ## Fidelidad fuente
 
