@@ -6,7 +6,7 @@ Proveer un editor de escritorio multiplataforma que unifique la redacción WYSIW
 
 ## Objetivo general
 
-Construir la v1 del editor cubriendo el alcance completo del requerimiento sin recortes: una única ventana de procesador con dos vistas del mismo documento (WYSIWYG ↔ Markdown estándar) con correspondencia bidireccional de contenido y posición, formato completo CommonMark + GFM, gestión de archivo y exportación a PDF, metadatos, edición y búsqueda, visualización, herramientas y ayuda, en interfaz español/inglés. El Roadmap solo ordena la entrega.
+Construir el editor Markdown completo cubriendo el alcance íntegro del requerimiento (FUENTE-001) sin recortes: una única ventana de procesador con dos vistas del mismo documento (WYSIWYG ↔ Markdown estándar) con correspondencia bidireccional de contenido y posición, formato completo CommonMark + GFM, gestión de archivo y exportación a PDF, metadatos, edición y búsqueda, visualización, herramientas y ayuda, en interfaz español/inglés. El Roadmap solo ordena la entrega.
 
 ## Problema/oportunidad
 
@@ -14,14 +14,14 @@ Los editores actuales obligan a elegir entre WYSIWYG sin control de sintaxis o M
 
 ## Usuarios/beneficiarios
 
-- Autores de Markdown en general: usuarios finales de v1.
+- Autores de Markdown en general: usuarios finales del producto.
 - Comunidad open source: contribuye bajo la licencia MIT del proyecto, compila desde fuente y valora la transparencia de licencias y atribuciones.
 - Mantenedor del proyecto: decisor humano de la dirección de producto.
 - Administrador de TI en despliegues corporativos (asumido): instalación y mantenimiento local.
 
 ## Resultado esperado
 
-Aplicación de escritorio multiplataforma (Windows, macOS y Linux, versiones soportadas por .NET 10 / Avalonia) bajo licencia MIT. Cierre de v1 = el requerimiento completo entregado sin recortes, con la doble vista sincronizada fiel como corazón del producto y sin interesados regulatorios externos (producto puramente local). Criterio de cierre heredado de Discovery: el proyecto termina cuando no existen nuevas features y la verificación es exitosa.
+Aplicación de escritorio multiplataforma (Windows, macOS y Linux, versiones soportadas por .NET 10 / Avalonia) bajo licencia MIT, conforme al requerimiento completo FUENTE-001. Cierre = el requerimiento completo entregado sin recortes, con la doble vista sincronizada fiel como corazón del producto y sin interesados regulatorios externos (producto puramente local). Criterio de cierre heredado de Discovery: el proyecto termina cuando no existen nuevas features y la verificación es exitosa.
 
 ## Alcance conceptual
 
