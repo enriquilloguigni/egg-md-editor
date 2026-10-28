@@ -42,9 +42,9 @@ public class ShortcutHandlerTests
 
         // Solo los atajos de acciones disponibles en F-001 están registrados.
         Assert.True(viewModel.ResolveShortcut("Alt+A")!.IsAvailable);
-        Assert.Equal(6 + 2, viewModel.ShortcutCount);
+        Assert.Equal(6 + 2 + 4, viewModel.ShortcutCount);
         Assert.Null(viewModel.ResolveShortcut("Ctrl+B"));
-        Assert.Null(viewModel.ResolveShortcut("Ctrl+S"));
+        Assert.NotNull(viewModel.ResolveShortcut("Ctrl+S"));
     }
 
     [Fact]
@@ -91,9 +91,9 @@ public class ShortcutHandlerTests
         Assert.False(viewModel.IsMenuOpen);
         Assert.False(viewModel.NoticeVisible);
 
-        // Atajo registrado cuya acción no existe en F-001: inerte.
-        Assert.True(viewModel.RegisterShortcut("Ctrl+S", "Save"));
-        Assert.False(viewModel.DispatchShortcut("Ctrl+S"));
+        // Atajo registrado cuya acción no existe: inerte.
+        Assert.True(viewModel.RegisterShortcut("Ctrl+Q", "CommandThatDoesNotExist"));
+        Assert.False(viewModel.DispatchShortcut("Ctrl+Q"));
         Assert.False(viewModel.IsMenuOpen);
     }
 
