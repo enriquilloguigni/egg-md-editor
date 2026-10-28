@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
@@ -10,6 +11,8 @@ namespace EggMdEditor.App;
 /// </summary>
 public partial class AutoguardadoOperation
 {
+    public static ILogger? Logger { get; set; }
+
     public const int IntervalSeconds = 30;
     public static readonly TimeSpan Interval = TimeSpan.FromSeconds(30);
     public static readonly TimeSpan Period = TimeSpan.FromSeconds(30);
@@ -45,6 +48,7 @@ public partial class AutoguardadoOperation
     // ---------- Core ----------
     protected static RecoveryCopy Core(OpenDocument? document, RecoveryCopy? recovery, string? storagePath)
     {
+        var logger = Logger;
         if (document is null) throw new ArgumentNullException(nameof(document));
 
         // Si no hay cambios, el autoguardado se omite (BR-F002-012).
@@ -62,6 +66,13 @@ public partial class AutoguardadoOperation
         if (!document.HasChanges)
         {
             // No se escribe la copia; se conserva el estado vigente previo.
+            try
+            {
+                logger?.LogDebug(
+                    "LOG-006 Autoguardado. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Duración: {DurationMs} ms. Tamaño de la copia: {Size}. Estado: Vigente. Resultado: omitido por no haber cambios.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), document.Id, 0, 0);
+            }
+            catch { }
             return copy;
         }
 
@@ -79,9 +90,32 @@ public partial class AutoguardadoOperation
             path = RecoveryCopy.GetDefaultPath();
         }
 
-        copy.Save(path!);
-        try { copy.StoragePath = path; } catch { }
-        return copy;
+        try
+        {
+            copy.Save(path!);
+            try { copy.StoragePath = path; } catch { }
+            try
+            {
+                long size = 0;
+                try { size = new FileInfo(path!).Length; } catch { }
+                logger?.LogDebug(
+                    "LOG-006 Autoguardado. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Duración: {DurationMs} ms. Tamaño de la copia: {Size}. Estado: Vigente. Resultado: copia escrita.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), document.Id, 0, size);
+            }
+            catch { }
+            return copy;
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                logger?.LogWarning(ex,
+                    "LOG-006 Autoguardado. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Duración: {DurationMs} ms. Estado: Vigente. Resultado: fallo. Tipo: {ExceptionType}. Mensaje: {ExceptionMessage}.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), document.Id, 0, ex.GetType().Name, ex.Message);
+            }
+            catch { }
+            throw;
+        }
     }
 
     protected static bool TryCore(OpenDocument? document, RecoveryCopy? recovery, string? storagePath, out RecoveryCopy? saved)
