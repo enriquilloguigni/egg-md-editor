@@ -62,7 +62,7 @@
       }
     },
     "F-002-gestion-de-archivo": {
-      "status": "plan_in_progress",
+      "status": "implementing",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -99,7 +99,8 @@
         "T-034": "done",
         "T-036": "done",
         "T-037": "done",
-        "T-038": "done"
+        "T-038": "done",
+        "T-039": "done"
       }
     }
   },
@@ -232,7 +233,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-28T00:05:48.813Z",
+  "updated_at": "2026-10-28T00:13:12.618Z",
   "owner": "EG",
   "sources": [
     {
