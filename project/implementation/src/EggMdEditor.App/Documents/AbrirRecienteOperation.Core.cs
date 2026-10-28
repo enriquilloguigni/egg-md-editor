@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
@@ -10,6 +11,8 @@ namespace EggMdEditor.App;
 /// </summary>
 public partial class AbrirRecienteOperation
 {
+    public static ILogger? Logger { get; set; }
+
     public OpenDocument? CurrentDocument { get; set; }
     public RecentFiles? RecentFiles { get; set; }
     public RecentFiles? Recents { get => RecentFiles; set => RecentFiles = value; }
@@ -27,6 +30,7 @@ public partial class AbrirRecienteOperation
 
     private static OpenDocument Core(string? path, OpenDocument? current, RecentFiles? recents)
     {
+        var logger = Logger;
         if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("path", nameof(path));
         var trimmed = path!.Trim();
         try
@@ -49,14 +53,28 @@ public partial class AbrirRecienteOperation
                     recents.Add(trimmed, lastOperation: DateTime.UtcNow, availability: RecentAvailability.Available);
                 }
             }
+            try
+            {
+                logger?.LogInformation(
+                    "LOG-004 Abrir archivo. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Operación: Reciente. Extensión: {Extension}. Resultado: éxito.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), doc.Id, Path.GetExtension(trimmed));
+            }
+            catch { }
             return doc;
         }
-        catch
+        catch (Exception ex)
         {
             if (recents is not null)
             {
                 try { recents.Remove(trimmed); } catch { }
             }
+            try
+            {
+                logger?.LogWarning(ex,
+                    "LOG-004 Abrir archivo. Hora: {Timestamp:O}. Sesión: {SessionId}. Operación: Reciente. Extensión: {Extension}. Resultado: fallo. Tipo: {ExceptionType}. Mensaje: {ExceptionMessage}.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), Path.GetExtension(trimmed), ex.GetType().Name, ex.Message);
+            }
+            catch { }
             throw;
         }
     }
