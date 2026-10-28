@@ -62,7 +62,7 @@
       }
     },
     "F-002-gestion-de-archivo": {
-      "status": "implementing",
+      "status": "verifying",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -101,6 +101,16 @@
         "T-037": "done",
         "T-038": "done",
         "T-039": "done"
+      },
+      "verification": {
+        "run": "v1",
+        "execution": "E-006",
+        "spec": "v1",
+        "plan": "v1",
+        "commit": "01b945790b1b02f2f54c246a452e57cdef78eede",
+        "stale": false,
+        "evidence_sha256": "2fbd98cdc7e22179839699d808d8eccb2f551001bb09a0a500ee58811e029002",
+        "visual_sha256": "c4954a8eb477f643f39333e25253a1803f7b7a8c3d94e509f61def767a526282"
       }
     }
   },
@@ -233,7 +243,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-28T00:13:12.618Z",
+  "updated_at": "2026-10-28T00:16:40.928Z",
   "owner": "EG",
   "sources": [
     {
