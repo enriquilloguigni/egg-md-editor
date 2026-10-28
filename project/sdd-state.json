@@ -2,7 +2,7 @@
   "schema": "sdd-state/v1",
   "project": "egg-md-editor",
   "phases": {
-    "discovery": "done",
+    "discovery": "in_progress",
     "project_spec": "done",
     "architecture": "done",
     "roadmap": "done"
@@ -245,7 +245,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-28T00:22:23.671Z",
+  "updated_at": "2026-10-28T01:00:18.935Z",
   "owner": "EG",
   "sources": [
     {
