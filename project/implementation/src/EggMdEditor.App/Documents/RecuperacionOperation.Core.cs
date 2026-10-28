@@ -1,10 +1,13 @@
 using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
 public class RecuperacionOperation
 {
+    public static ILogger? Logger { get; set; }
+
     public OpenDocument? CurrentDocument { get; set; }
     public RecoveryCopy? RecoveryCopy { get; set; }
     public RecoveryCopy? Recovery { get => RecoveryCopy; set => RecoveryCopy = value; }
@@ -24,6 +27,7 @@ public class RecuperacionOperation
 
     protected static OpenDocument Core(RecoveryCopy? recovery, string? storagePath, OpenDocument? currentDocument)
     {
+        var logger = Logger;
         RecoveryCopy? copy = recovery;
         string? path = storagePath;
 
@@ -36,6 +40,14 @@ public class RecuperacionOperation
             else
             {
                 try { if (File.Exists(path!)) RecoveryCopy.Invalidate(path!); } catch { }
+                if (File.Exists(path!))
+                {
+                    try { logger?.LogWarning("LOG-007 Recuperación al iniciar. Hora: {Timestamp:O}. Sesión: {SessionId}. Marca de tiempo: {TimestampCopy:O}. Duración: {DurationMs} ms. Resultado: copia obsoleta o fallo.", DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), DateTimeOffset.UtcNow, 0); } catch { }
+                }
+                else
+                {
+                    try { logger?.LogDebug("LOG-007 Recuperación al iniciar. Hora: {Timestamp:O}. Sesión: {SessionId}. Duración: {DurationMs} ms. Resultado: no había copia.", DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), 0); } catch { }
+                }
                 return new OpenDocument();
             }
         }
@@ -54,12 +66,14 @@ public class RecuperacionOperation
                 {
                     try { RecoveryCopy.Invalidate(defaultPath); } catch { }
                 }
+                try { logger?.LogDebug("LOG-007 Recuperación al iniciar. Hora: {Timestamp:O}. Sesión: {SessionId}. Duración: {DurationMs} ms. Resultado: no había copia.", DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), 0); } catch { }
                 return new OpenDocument();
             }
         }
 
         if (copy is null)
         {
+            try { logger?.LogDebug("LOG-007 Recuperación al iniciar. Hora: {Timestamp:O}. Sesión: {SessionId}. Duración: {DurationMs} ms. Resultado: no había copia.", DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), 0); } catch { }
             return new OpenDocument();
         }
 
@@ -71,6 +85,7 @@ public class RecuperacionOperation
             {
                 try { RecoveryCopy.Invalidate(sp!); } catch { }
             }
+            try { logger?.LogWarning("LOG-007 Recuperación al iniciar. Hora: {Timestamp:O}. Sesión: {SessionId}. Marca de tiempo: {TimestampCopy:O}. Duración: {DurationMs} ms. Resultado: copia obsoleta.", DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), copy.Timestamp, 0); } catch { }
             return new OpenDocument();
         }
 
@@ -78,6 +93,7 @@ public class RecuperacionOperation
         {
             var doc = new OpenDocument(copy.Content, copy.OriginalPath, DocumentOrigin.Recovered, DocumentLastOperation.Recover);
             doc.MarkChanged();
+            try { logger?.LogInformation("LOG-007 Recuperación al iniciar. Hora: {Timestamp:O}. Sesión: {SessionId}. Marca de tiempo: {TimestampCopy:O}. Duración: {DurationMs} ms. Resultado: restaurada.", DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), copy.Timestamp, 0); } catch { }
             return doc;
         }
         catch
@@ -88,6 +104,7 @@ public class RecuperacionOperation
                 try { RecoveryCopy.Invalidate(sp!); } catch { }
             }
             try { copy.MarkObsolete(); } catch { try { copy.MarkObsoleta(); } catch { } }
+            try { logger?.LogWarning("LOG-007 Recuperación al iniciar. Hora: {Timestamp:O}. Sesión: {SessionId}. Marca de tiempo: {TimestampCopy:O}. Duración: {DurationMs} ms. Resultado: fallo.", DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), copy.Timestamp, 0); } catch { }
             return new OpenDocument();
         }
     }
