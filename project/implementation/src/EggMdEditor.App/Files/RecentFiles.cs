@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
@@ -370,6 +371,8 @@ public class RecentFile : IEquatable<RecentFile>, IComparable<RecentFile>
 /// </summary>
 public class RecentFiles : IEnumerable<RecentFile>, ICollection<RecentFile>
 {
+    public static ILogger? Logger { get; set; }
+
     private readonly List<RecentFile> _entries = new();
     private int _maxCount;
     private readonly object _sync = new();
@@ -900,9 +903,10 @@ public class RecentFiles : IEnumerable<RecentFile>, ICollection<RecentFile>
             System.IO.File.Move(tempPath, fullPath, overwrite: true);
             _storagePath = fullPath;
         }
-        catch
+        catch (Exception ex)
         {
             try { if (System.IO.File.Exists(tempPath)) System.IO.File.Delete(tempPath); } catch { }
+            try { Logger?.LogWarning(ex, "LOG-004/LOG-005/LOG-008 Persistencia de recientes. Hora: {Timestamp:O}. Resultado: fallo. Tipo: {ExceptionType}. Mensaje: {ExceptionMessage}.", DateTimeOffset.UtcNow, ex.GetType().Name, ex.Message); } catch { }
             throw;
         }
     }
@@ -990,9 +994,10 @@ public class RecentFiles : IEnumerable<RecentFile>, ICollection<RecentFile>
             store = result;
             return true;
         }
-        catch
+        catch (Exception ex)
         {
             store = null;
+            try { Logger?.LogWarning(ex, "LOG-004/LOG-005/LOG-008 Persistencia de recientes. Hora: {Timestamp:O}. Resultado: fallo de lectura. Tipo: {ExceptionType}. Mensaje: {ExceptionMessage}.", DateTimeOffset.UtcNow, ex.GetType().Name, ex.Message); } catch { }
             return false;
         }
     }
