@@ -1,9 +1,12 @@
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
 public partial class ConfirmDiscardOperation
 {
+    public static ILogger? Logger { get; set; }
+
     public OpenDocument? CurrentDocument { get; set; }
     public RecentFiles? RecentFiles { get; set; }
     public RecentFiles? Recents { get => RecentFiles; set => RecentFiles = value; }
@@ -46,6 +49,13 @@ public partial class ConfirmDiscardOperation
                 try { recovery.Invalidate(); }
                 catch { try { recovery.MarkObsolete(); } catch { } }
             }
+            try
+            {
+                Logger?.LogInformation(
+                    "LOG-008 Descarte de cambios. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Acción pendiente: {PendingAction}. Resultado: descarte confirmado y copia invalidada.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), document?.Id ?? Guid.Empty, "Cerrar");
+            }
+            catch { }
             return opt;
         }
         return opt;
