@@ -2,7 +2,7 @@
   "schema": "sdd-state/v1",
   "project": "egg-md-editor",
   "phases": {
-    "discovery": "in_progress",
+    "discovery": "done",
     "project_spec": "done",
     "architecture": "done",
     "roadmap": "done"
@@ -120,7 +120,7 @@
     "level": "project"
   },
   "tier": {
-    "category": "S",
+    "category": "M",
     "budget_waived": []
   },
   "pending_decisions": [
@@ -245,7 +245,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-28T01:00:18.935Z",
+  "updated_at": "2026-10-28T01:03:46.614Z",
   "owner": "EG",
   "sources": [
     {
@@ -440,6 +440,19 @@
     {
       "name": "PLAN_COVERED",
       "artifact": "F-002 verification/ (Run v1, E-006, Result v1, commit 01b94579)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-28",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "DISCOVERY_COMPLETE",
+      "artifact": "project/discovery/discovery-context.md (v2)",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "humano",
