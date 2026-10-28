@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
@@ -10,6 +11,8 @@ namespace EggMdEditor.App;
 /// </summary>
 public partial class GuardarOperation
 {
+    public static ILogger? Logger { get; set; }
+
     public OpenDocument? CurrentDocument { get; set; }
     public RecentFiles? RecentFiles { get; set; }
     public RecentFiles? Recents { get => RecentFiles; set => RecentFiles = value; }
@@ -54,41 +57,84 @@ public partial class GuardarOperation
     // ---------- Core ----------
     protected static OpenDocument Core(OpenDocument? document, string? path, RecentFiles? recents, RecoveryCopy? recovery, bool saveAs)
     {
-        if (document is null) throw new ArgumentNullException(nameof(document));
-
-        var target = string.IsNullOrWhiteSpace(path) ? document.FilePath : path!.Trim();
-        if (string.IsNullOrWhiteSpace(target))
+        var logger = Logger;
+        string? target = null;
+        var mode = saveAs ? "Guardar como" : "Guardar";
+        try
         {
-            throw new ArgumentException("path", nameof(path));
-        }
+            if (document is null) throw new ArgumentNullException(nameof(document));
 
-        // Ensure .md extension (BR-F002-006 / AC-013)
-        if (!string.Equals(Path.GetExtension(target), ".md", StringComparison.OrdinalIgnoreCase))
+            target = string.IsNullOrWhiteSpace(path) ? document.FilePath : path!.Trim();
+            if (string.IsNullOrWhiteSpace(target))
+            {
+                throw new ArgumentException("path", nameof(path));
+            }
+
+            // Ensure .md extension (BR-F002-006 / AC-013)
+            if (!string.Equals(Path.GetExtension(target), ".md", StringComparison.OrdinalIgnoreCase))
+            {
+                target = target + ".md";
+            }
+
+            // Write atomically (T-024)
+            var bytesWritten = 0;
+            try
+            {
+                var result = FileWriter.Write(target, document.Content);
+                bytesWritten = result.BytesWritten;
+            }
+            catch
+            {
+                throw;
+            }
+
+            // Update document
+            var changedPath = !string.Equals(document.FilePath, target, StringComparison.Ordinal);
+            document.FilePath = target;
+            document.MarkClean();
+            document.LastOperation = saveAs ? DocumentLastOperation.SaveAs : DocumentLastOperation.Save;
+
+            // Recents to front (BR-F002-010)
+            if (recents is not null)
+            {
+                try { recents.Add(target); } catch { }
+            }
+
+            // Invalidate recovery copy (BR-F002-012/015)
+            if (recovery is not null)
+            {
+                try { recovery.Invalidate(); } catch { try { recovery.MarkObsolete(); } catch { } }
+            }
+
+            try
+            {
+                logger?.LogInformation(
+                    "LOG-005 Guardar / Guardar como. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Modo: {Mode}. Extensión: {Extension}. Bytes escritos: {BytesWritten}. Fin de línea: {LineEnding}. Duración: {DurationMs} ms. ¿Cambió la ruta?: {ChangedPath}. Resultado: éxito.",
+                    DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), document.Id, mode, Path.GetExtension(target), bytesWritten, "OS", 0, changedPath ? "sí" : "no");
+            }
+            catch { }
+            return document;
+        }
+        catch (Exception ex)
         {
-            target = target + ".md";
+            try
+            {
+                if (ex is UnauthorizedAccessException)
+                {
+                    logger?.LogError(ex,
+                        "LOG-005 Guardar / Guardar como. Hora: {Timestamp:O}. Sesión: {SessionId}. Modo: {Mode}. Extensión: {Extension}. Resultado: permiso denegado. Tipo: {ExceptionType}. Mensaje: {ExceptionMessage}.",
+                        DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), mode, target is null ? string.Empty : Path.GetExtension(target), ex.GetType().Name, ex.Message);
+                }
+                else
+                {
+                    logger?.LogError(ex,
+                        "LOG-005 Guardar / Guardar como. Hora: {Timestamp:O}. Sesión: {SessionId}. Modo: {Mode}. Extensión: {Extension}. Resultado: fallo. Tipo: {ExceptionType}. Mensaje: {ExceptionMessage}.",
+                        DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), mode, target is null ? string.Empty : Path.GetExtension(target), ex.GetType().Name, ex.Message);
+                }
+            }
+            catch { }
+            throw;
         }
-
-        // Write atomically (T-024)
-        FileWriter.Write(target, document.Content);
-
-        // Update document
-        document.FilePath = target;
-        document.MarkClean();
-        document.LastOperation = saveAs ? DocumentLastOperation.SaveAs : DocumentLastOperation.Save;
-
-        // Recents to front (BR-F002-010)
-        if (recents is not null)
-        {
-            try { recents.Add(target); } catch { }
-        }
-
-        // Invalidate recovery copy (BR-F002-012/015)
-        if (recovery is not null)
-        {
-            try { recovery.Invalidate(); } catch { try { recovery.MarkObsolete(); } catch { } }
-        }
-
-        return document;
     }
 
     // ---------- Execute overloads (Save) ----------
