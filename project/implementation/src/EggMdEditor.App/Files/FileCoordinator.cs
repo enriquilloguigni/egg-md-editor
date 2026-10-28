@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
@@ -19,7 +20,28 @@ public class FileCoordinator : IDisposable
     private RecentFiles? _recentFiles;
     private RecoveryCopy? _recoveryCopy;
     private bool _disposed;
+    private ILogger? _logger;
 
+    public ILogger? Logger
+    {
+        get => _logger;
+        set
+        {
+            _logger = value;
+            PropagateLogger(value);
+        }
+    }
+
+    private void PropagateLogger(ILogger? logger)
+    {
+        try { if (logger is not null) AbrirOperation.Logger = logger; } catch { }
+        try { if (logger is not null) AbrirRecienteOperation.Logger = logger; } catch { }
+        try { if (logger is not null) GuardarOperation.Logger = logger; } catch { }
+        try { if (logger is not null) AutoguardadoOperation.Logger = logger; } catch { }
+        try { if (logger is not null) RecuperacionOperation.Logger = logger; } catch { }
+        try { if (logger is not null) ConfirmDiscardOperation.Logger = logger; } catch { }
+        try { if (logger is not null) RecentFiles.Logger = logger; } catch { }
+    }
     public FileCoordinator()
         : this(new OpenDocument(), new RecentFiles(), null)
     {
