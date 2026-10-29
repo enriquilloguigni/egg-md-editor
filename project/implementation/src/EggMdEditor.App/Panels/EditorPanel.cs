@@ -34,7 +34,7 @@ namespace EggMdEditor.App;
 /// Vista de panel de edición (ENT-015): representa un panel (izquierdo
 /// WYSIWYG o derecho Markdown) sobre el documento único compartido.
 /// </summary>
-public class EditorPanel
+public partial class EditorPanel
 {
     private Guid _id = Guid.NewGuid();
     private PanelSide _side = PanelSide.Left;
