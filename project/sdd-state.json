@@ -136,7 +136,7 @@
       "plan_version": "v1",
       "tasks": {
         "T-040": "done",
-        "T-041": "todo",
+        "T-041": "done",
         "T-042": "todo",
         "T-043": "todo",
         "T-044": "todo",
@@ -288,7 +288,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-29T16:22:25.999Z",
+  "updated_at": "2026-10-29T16:38:32.635Z",
   "owner": "EG",
   "sources": [
     {
