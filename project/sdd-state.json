@@ -137,7 +137,7 @@
       "tasks": {
         "T-040": "done",
         "T-041": "done",
-        "T-042": "todo",
+        "T-042": "done",
         "T-043": "todo",
         "T-044": "todo",
         "T-045": "todo",
@@ -288,7 +288,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-29T16:38:32.635Z",
+  "updated_at": "2026-10-29T19:55:59.260Z",
   "owner": "EG",
   "sources": [
     {
