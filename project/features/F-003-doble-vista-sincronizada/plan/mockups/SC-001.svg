@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" id="SC-001" role="img" data-surface="ventana-principal" data-state="A">
+  <title>SC-001 Ventana principal — Egg MD Editor</title>
+  <!-- Title bar -->
+  <rect x="0" y="0" width="1280" height="32" fill="#e8e8e8"/>
+  <text x="16" y="21" font-family="sans-serif" font-size="14" fill="#222">Egg MD Editor — Sin título</text>
+  <text x="1200" y="21" font-family="sans-serif" font-size="14" fill="#222">[_][□][X]</text>
+  <!-- Menu bar -->
+  <rect x="0" y="32" width="1280" height="28" fill="#f0f0f0"/>
+  <text x="16" y="51" font-family="sans-serif" font-size="13" fill="#222">Archivo  Edición  Ver  Formato  Herramientas  Ayuda</text>
+  <!-- Format bar -->
+  <rect x="0" y="60" width="1280" height="40" fill="#f5f5f5"/>
+  <text x="16" y="85" font-family="sans-serif" font-size="13" fill="#222">[B][I][U]  [H1][H2][H3]  [•][1.][❝][&lt;/&gt;]  [🔗][🖼] ...</text>
+  <!-- Left panel WYSIWYG -->
+  <rect x="0" y="100" width="638" height="592" fill="#ffffff"/>
+  <text x="16" y="124" font-family="sans-serif" font-size="13" fill="#555">Panel WYSIWYG (izq.)</text>
+  <text x="16" y="144" font-family="sans-serif" font-size="12" fill="#888">renderizado puro</text>
+  <!-- Highlight pasajero -->
+  <rect x="16" y="170" width="220" height="52" fill="#fff3cd" stroke="#e0c060" rx="4"/>
+  <text x="24" y="192" font-family="sans-serif" font-size="12" fill="#222">sección equivalente</text>
+  <!-- Separator 4px -->
+  <rect x="638" y="100" width="4" height="592" fill="#c0c0c0"/>
+  <!-- Right panel Markdown -->
+  <rect x="642" y="100" width="638" height="592" fill="#ffffff"/>
+  <text x="658" y="124" font-family="sans-serif" font-size="13" fill="#555">Panel Markdown (der.)</text>
+  <text x="658" y="144" font-family="sans-serif" font-size="12" fill="#888">sintaxis visible y editable</text>
+  <!-- Status bar -->
+  <rect x="0" y="692" width="1280" height="28" fill="#e8e8e8"/>
+  <text x="16" y="711" font-family="sans-serif" font-size="12" fill="#222">Estado: panel activo = Izquierdo   | separador 4px (TK-008)</text>
+</svg>
