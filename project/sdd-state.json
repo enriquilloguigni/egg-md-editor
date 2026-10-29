@@ -114,10 +114,15 @@
         "result": "v1",
         "outcome": "cubierto"
       }
+    },
+    "F-003-doble-vista-sincronizada": {
+      "status": "planned"
     }
   },
   "current": {
-    "level": "project"
+    "level": "feature",
+    "id": "F-003-doble-vista-sincronizada",
+    "phase": "feature"
   },
   "tier": {
     "category": "M",
@@ -245,7 +250,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-28T01:03:46.614Z",
+  "updated_at": "2026-10-29T13:45:58.378Z",
   "owner": "EG",
   "sources": [
     {
