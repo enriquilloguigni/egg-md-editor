@@ -116,13 +116,29 @@
       }
     },
     "F-003-doble-vista-sincronizada": {
-      "status": "planned"
+      "status": "spec_in_progress",
+      "spec_version": "v1",
+      "docs": {
+        "process": "approved",
+        "screens": "approved",
+        "data-structures": "approved",
+        "inapp-communication": "approved",
+        "security-permissions": "approved",
+        "logs": "approved",
+        "audit": "approved",
+        "visual-resources": "approved",
+        "external-services": "approved",
+        "business-rules": "approved",
+        "error-handling": "approved",
+        "states-transitions": "approved",
+        "acceptance-criteria": "approved"
+      }
     }
   },
   "current": {
     "level": "feature",
     "id": "F-003-doble-vista-sincronizada",
-    "phase": "feature"
+    "phase": "spec"
   },
   "tier": {
     "category": "M",
@@ -250,7 +266,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-29T13:45:58.378Z",
+  "updated_at": "2026-10-29T13:55:18.828Z",
   "owner": "EG",
   "sources": [
     {
@@ -462,6 +478,32 @@
       "result": "pass",
       "decided_by": "humano",
       "decided_at": "2026-10-28",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "SPEC_REVIEW",
+      "artifact": "F-003 spec/ (13 documentos, v1)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-29",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "UI_REVIEW",
+      "artifact": "F-003 spec/screens.md + spec/visual-resources.md (SC-001, v1)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-29",
       "approver": "EG",
       "norm": {
         "metodologia": "1.10",
