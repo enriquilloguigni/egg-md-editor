@@ -21,4 +21,8 @@
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.0.6" />
   </ItemGroup>
 
+  <ItemGroup Label="Markdown parser">
+    <PackageVersion Include="Markdig" Version="1.5.1" />
+  </ItemGroup>
+
 </Project>
