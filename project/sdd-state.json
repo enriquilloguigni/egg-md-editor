@@ -288,7 +288,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-29T14:02:27.064Z",
+  "updated_at": "2026-10-29T14:27:07.146Z",
   "owner": "EG",
   "sources": [
     {
@@ -522,6 +522,19 @@
     {
       "name": "UI_REVIEW",
       "artifact": "F-003 spec/screens.md + spec/visual-resources.md (SC-001, v1)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-10-29",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "PLAN_REVIEW",
+      "artifact": "F-003 plan/ (plan.md v1 + mockups.md v1 + plan/mockups/SC-001, SC-001)",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "humano",
