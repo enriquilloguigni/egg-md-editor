@@ -20,7 +20,7 @@ namespace EggMdEditor.App;
 /// tema (OP-002) y las superficies de ayuda (SC-003) y diálogo genérico
 /// (SC-002) son las únicas acciones disponibles y ninguna altera el documento.
 /// </summary>
-public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
+public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
 {
     private ICommand? _changeLanguageCommand;
     private ICommand? _changeThemeCommand;
