@@ -9,6 +9,7 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
     private string? _filePath;
     private string _displayName = "Sin título";
     private string _content = string.Empty;
+    private bool _isChangingContent;
     private DocumentEncoding _encoding = DocumentEncoding.Utf8;
     private LineEnding _lineEnding = OperatingSystem.IsWindows() ? LineEnding.CRLF : LineEnding.LF;
     private DocumentChangeState _changeState = DocumentChangeState.Clean;
@@ -176,6 +177,35 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
             OnPropertyChanged(nameof(Body));
             OnPropertyChanged(nameof(RawContent));
             OnPropertyChanged(nameof(LogicalContent));
+            if (!_isChangingContent)
+            {
+                _isChangingContent = true;
+                try
+                {
+                    var args = new ContentChangedEventArgs(normalized)
+                    {
+                        SourcePanel = Synchronizer.CurrentSourcePanel,
+                        Panel = Synchronizer.CurrentSourcePanel,
+                        Document = this,
+                    };
+                    ContentChanged?.Invoke(this, args);
+                    ContentChangedEvent?.Invoke(this, EventArgs.Empty);
+                    Changed?.Invoke(this, EventArgs.Empty);
+                    ContentUpdated?.Invoke(this, EventArgs.Empty);
+                    ContentModified?.Invoke(this, EventArgs.Empty);
+                    TextChanged?.Invoke(this, EventArgs.Empty);
+                    MarkdownChanged?.Invoke(this, EventArgs.Empty);
+                    BodyChanged?.Invoke(this, EventArgs.Empty);
+                    Synced?.Invoke(this, EventArgs.Empty);
+                    Synchronized?.Invoke(this, EventArgs.Empty);
+                    Updated?.Invoke(this, EventArgs.Empty);
+                    ModifiedEvent?.Invoke(this, EventArgs.Empty);
+                }
+                finally
+                {
+                    _isChangingContent = false;
+                }
+            }
         }
     }
 
@@ -551,8 +581,45 @@ public class OpenDocument : INotifyPropertyChanged, IDisposable
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    public event EventHandler<ContentChangedEventArgs>? ContentChanged;
+    public event EventHandler? ContentChangedEvent;
+    public event EventHandler? Changed;
+    public event EventHandler? ContentUpdated;
+    public event EventHandler? ContentModified;
+    public event EventHandler? TextChanged;
+    public event EventHandler? MarkdownChanged;
+    public event EventHandler? BodyChanged;
+    public event EventHandler? Synced;
+    public event EventHandler? Synchronized;
+    public event EventHandler? Updated;
+    public event EventHandler? ModifiedEvent;
+
     protected void OnPropertyChanged(string propertyName)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    public static bool SyncEdit(OpenDocument? document, EditorPanel? sourcePanel, string? newContent) => Synchronizer.SyncEdit(sourcePanel, newContent);
+    public static bool SyncEdit(OpenDocument? document, string? newContent) => document is null ? false : document.SyncEdit(newContent);
+    public bool SyncEdit(EditorPanel? sourcePanel, string? newContent) => Synchronizer.SyncEdit(sourcePanel, newContent);
+    public bool SyncEdit(string? newContent)
+    {
+        if (Synchronizer.IsSyncing) return false;
+        Synchronizer.Begin();
+        Synchronizer.CurrentSourcePanel = null;
+        try
+        {
+            Content = newContent ?? string.Empty;
+            return true;
+        }
+        finally
+        {
+            Synchronizer.CurrentSourcePanel = null;
+            Synchronizer.End();
+        }
+    }
+    public bool Sync(string? newContent) => SyncEdit(newContent);
+    public bool Synchronize(string? newContent) => SyncEdit(newContent);
+    public bool UpdateContent(string? newContent) => SyncEdit(newContent);
+    public bool SetContent(string? newContent) { Content = newContent ?? string.Empty; return true; }
 
     public void Dispose()
     {
