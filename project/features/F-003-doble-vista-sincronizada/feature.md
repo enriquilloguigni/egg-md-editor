@@ -31,4 +31,4 @@ Sí — la sincronización entre dos paneles sobre un mismo documento se verific
 
 ## Estado
 
-Delimitada — pendiente de Feature Spec v1 y Plan v1.
+Planificada — Plan v1 propuesto (pendiente de PLAN_REVIEW).
