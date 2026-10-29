@@ -158,6 +158,12 @@ public class MarkdownAst
 
     public string Render() => ToMarkdown();
     public string RenderMarkdown() => ToMarkdown();
+    public string RenderWysiwyg() => Renderer.RenderWysiwyg(this);
+    public string RenderWYSIWYG() => Renderer.RenderWysiwyg(this);
+    public string RenderWysiwygView() => Renderer.RenderWysiwyg(this);
+    public static string RenderWysiwyg(MarkdownAst? ast) => Renderer.RenderWysiwyg(ast);
+    public static string RenderWYSIWYG(MarkdownAst? ast) => Renderer.RenderWysiwyg(ast);
+    public static string RenderMarkdown(MarkdownAst? ast) => Renderer.RenderMarkdown(ast);
     public string ToText() => ToMarkdown();
     public string ToStringMarkdown() => ToMarkdown();
     public override string ToString() => ToMarkdown();
