@@ -38,6 +38,8 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
     private bool _registeringShortcuts;
     private DialogViewModel? _dialog;
     private OpenDocument? _document;
+    private EditorPanel? _leftPanel;
+    private EditorPanel? _rightPanel;
     private PropertyChangedEventHandler? _documentTitleChangedHandler;
     private readonly RecentFiles _recentFiles = new();
     private RecoveryCopy? _recoveryCopy = null!;
@@ -202,6 +204,24 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
 
             _document = value;
 
+            if (_leftPanel is null)
+            {
+                _leftPanel = EditorPanel.CreateLeft(_document);
+            }
+            else
+            {
+                _leftPanel.Document = _document;
+            }
+
+            if (_rightPanel is null)
+            {
+                _rightPanel = EditorPanel.CreateRight(_document);
+            }
+            else
+            {
+                _rightPanel.Document = _document;
+            }
+
             if (_document is not null)
             {
                 _documentTitleChangedHandler ??= (_, e) =>
@@ -305,6 +325,68 @@ public class MainWindowViewModel : CommandDispatcher, INotifyPropertyChanged
     {
         get => _document;
         set => Document = value;
+    }
+
+    /// <summary>Panels de doble vista (ENT-015, F-003): izquierdo WYSIWYG, derecho Markdown, sobre el mismo modelo.</summary>
+    public EditorPanel LeftPanel
+    {
+        get
+        {
+            if (_leftPanel is null)
+            {
+                _leftPanel = EditorPanel.CreateLeft(_document);
+            }
+            return _leftPanel;
+        }
+        set => _leftPanel = value;
+    }
+
+    public EditorPanel RightPanel
+    {
+        get
+        {
+            if (_rightPanel is null)
+            {
+                _rightPanel = EditorPanel.CreateRight(_document);
+            }
+            return _rightPanel;
+        }
+        set => _rightPanel = value;
+    }
+
+    // Aliases
+    public EditorPanel LeftEditorPanel { get => LeftPanel; set => LeftPanel = value; }
+    public EditorPanel RightEditorPanel { get => RightPanel; set => RightPanel = value; }
+    public EditorPanel EditorLeftPanel { get => LeftPanel; set => LeftPanel = value; }
+    public EditorPanel EditorRightPanel { get => RightPanel; set => RightPanel = value; }
+    public EditorPanel LeftView { get => LeftPanel; set => LeftPanel = value; }
+    public EditorPanel RightView { get => RightPanel; set => RightPanel = value; }
+    public EditorPanel WysiwygPanel { get => LeftPanel; set => LeftPanel = value; }
+    public EditorPanel MarkdownPanel { get => RightPanel; set => RightPanel = value; }
+
+    public IReadOnlyList<EditorPanel> Panels
+    {
+        get
+        {
+            var left = LeftPanel;
+            var right = RightPanel;
+            // keep shared model in sync
+            left.Document = _document;
+            right.Document = _document;
+            return new List<EditorPanel> { left, right }.AsReadOnly();
+        }
+    }
+
+    public IReadOnlyList<EditorPanel> EditorPanels => Panels;
+    public IReadOnlyList<EditorPanel> Views => Panels;
+    public IReadOnlyList<EditorPanel> PanelList => Panels;
+
+    public (EditorPanel Left, EditorPanel Right) PanelPair => (LeftPanel, RightPanel);
+
+    public void EnsurePanels()
+    {
+        _ = LeftPanel;
+        _ = RightPanel;
     }
 
     /// <summary>Almacén de archivos recientes de F-002 (ENT-010).</summary>
