@@ -55,6 +55,8 @@ public partial class EditorPanel
         _side = side;
         _mode = mode;
         _document = document;
+        Synchronizer.AllPanels.Add(this);
+        AttachDocument(_document);
         if (side == PanelSide.Right && _mode == EditorMode.WYSIWYG)
         {
             // sin cambio forzado: el caller decide
@@ -357,7 +359,13 @@ public partial class EditorPanel
     public OpenDocument? Document
     {
         get => _document;
-        set => _document = value;
+        set
+        {
+            if (ReferenceEquals(_document, value)) return;
+            DetachDocument(_document);
+            _document = value;
+            AttachDocument(_document);
+        }
     }
 
     public OpenDocument? Model
@@ -471,21 +479,11 @@ public enum HighlightState
 }
 
 // ---------- Highlight ----------
-public class PassengerHighlight
-{
-    public EditorPanel? Panel { get; set; }
-    public string Range { get; set; } = string.Empty;
-    public DateTime Start { get; set; } = DateTime.UtcNow;
-    public int DurationMs { get; set; } = 1200;
-    public int DuracionMs { get => DurationMs; set => DurationMs = value; }
-    public int Duration { get => DurationMs; set => DurationMs = value; }
-    public HighlightState State { get; set; } = HighlightState.Active;
-    public HighlightState Estado { get => State; set => State = value; }
-}
+public partial class PassengerHighlight { }
 
-public class ResaltadoPasajero : PassengerHighlight { }
-public class Highlight : PassengerHighlight { }
-public class PassengerMark : PassengerHighlight { }
+public class ResaltadoPasajero : PassengerHighlight { public ResaltadoPasajero() : base() { } public ResaltadoPasajero(EditorPanel? p, object? r = null, int d = 1500) : base(p, r, d) { } public ResaltadoPasajero(EditorPanel? p, object? r, int d, bool red) : base(p, r, d, red) { } }
+public class Highlight : PassengerHighlight { public Highlight() : base() { } public Highlight(EditorPanel? p, object? r = null, int d = 1500) : base(p, r, d) { } public Highlight(EditorPanel? p, object? r, int d, bool red) : base(p, r, d, red) { } }
+public class PassengerMark : PassengerHighlight { public PassengerMark() : base() { } public PassengerMark(EditorPanel? p, object? r = null, int d = 1500) : base(p, r, d) { } public PassengerMark(EditorPanel? p, object? r, int d, bool red) : base(p, r, d, red) { } }
 
 // ---------- Aliases (classes) ----------
 public class PanelView : EditorPanel
@@ -538,7 +536,7 @@ public class EditorPanelView : EditorPanel
 }
 
 // ---------- Container for the two panels over the same model ----------
-public class EditorPanels
+public partial class EditorPanels
 {
     public OpenDocument Document { get; }
     public EditorPanel Left { get; }
