@@ -9,8 +9,15 @@ using Markdig.Syntax;
 
 namespace EggMdEditor.App;
 
+using Microsoft.Extensions.Logging;
+
 public partial class PositionMap
 {
+    // ---------- Shared logger (LOG-011) ----------
+    public static ILogger? Logger { get => Synchronizer.Logger; set => Synchronizer.Logger = value; }
+    public static ILogger? InstanceLogger { get => Logger; set => Logger = value; }
+    public ILogger? LoggerInstance { get => Logger; set => Logger = value; }
+
     private MarkdownAst? _ast;
 
     public PositionMap() { }
