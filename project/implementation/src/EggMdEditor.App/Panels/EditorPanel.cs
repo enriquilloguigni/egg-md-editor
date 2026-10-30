@@ -672,6 +672,21 @@ public partial class EditorPanels
     public bool SetVisible(string? side, bool v) => Visibility.SetVisible(side, v);
     public bool RestoreVisibility() => Visibility.RestoreVisibility();
     public PanelVisibilityState VisibilityState => Visibility.State;
+
+    // ---------- Indicador de panel activo (T-052) ----------
+    public ActivePanelIndicator ActivePanelIndicator => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator ActiveIndicator => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator PanelActiveIndicator => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator Indicator => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator ActivePanelBorder => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator ActiveBorder => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator ActivePanelFocus => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator FocusIndicator => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator ActiveFocusIndicator => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator PanelIndicator => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator ActivePanelStatus => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator ActivePanelMarker => new ActivePanelIndicator(Left, Right);
+    public ActivePanelIndicator ActivePanelHighlight => new ActivePanelIndicator(Left, Right);
 }
 
 public class PanelSet : EditorPanels { public PanelSet(OpenDocument? d = null) : base(d) { } public PanelSet() : base() { } }
