@@ -229,20 +229,6 @@ public partial class EditorPanel
     public string? Markdown { get => Content; set => Content = value; }
     public string? Body { get => Content; set => Content = value; }
 
-    public EditorPanel? Opposite
-    {
-        get
-        {
-            foreach (var p in Synchronizer.AllPanels)
-            {
-                if (!ReferenceEquals(p, this) && ReferenceEquals(p.Document, _document)) return p;
-            }
-            return null;
-        }
-    }
-    public EditorPanel? Other => Opposite;
-    public EditorPanel? OppositePanel => Opposite;
-    public EditorPanel? Partner => Opposite;
 
     // events
     public event EventHandler<ContentChangedEventArgs>? ContentChanged;
