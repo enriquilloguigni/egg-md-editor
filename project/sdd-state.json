@@ -151,7 +151,7 @@
         "T-053": "done",
         "T-054": "done",
         "T-055": "done",
-        "T-056": "todo",
+        "T-056": "done",
         "T-057": "todo",
         "T-058": "todo"
       }
@@ -288,7 +288,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-30T14:57:46.784Z",
+  "updated_at": "2026-10-30T15:04:11.244Z",
   "owner": "EG",
   "sources": [
     {
