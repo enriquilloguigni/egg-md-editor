@@ -11,10 +11,10 @@ public class T038LoggingErrorsLocalTests
 {
     private sealed class RecordingLogger : ILogger
     {
-        public System.Collections.Generic.List<(LogLevel Level, string Message)> Entries { get; } = new();
+        public System.Collections.Generic.List<(Microsoft.Extensions.Logging.LogLevel Level, string Message)> Entries { get; } = new();
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
-        public bool IsEnabled(LogLevel logLevel) => true;
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
+        public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
             => Entries.Add((logLevel, formatter(state, exception)));
     }
 
@@ -28,7 +28,7 @@ public class T038LoggingErrorsLocalTests
         try
         {
             AbrirOperation.Execute(path);
-            Assert.Contains(logger.Entries, e => e.Level == LogLevel.Information && e.Message.Contains("LOG-004"));
+            Assert.Contains(logger.Entries, e => e.Level == Microsoft.Extensions.Logging.LogLevel.Information && e.Message.Contains("LOG-004"));
         }
         finally
         {
@@ -49,7 +49,7 @@ public class T038LoggingErrorsLocalTests
             try
             {
                 GuardarOperation.Execute(doc, path);
-                Assert.Contains(logger.Entries, e => e.Level == LogLevel.Information && e.Message.Contains("LOG-005"));
+                Assert.Contains(logger.Entries, e => e.Level == Microsoft.Extensions.Logging.LogLevel.Information && e.Message.Contains("LOG-005"));
             }
             finally { GuardarOperation.Logger = null; }
         }
@@ -69,7 +69,7 @@ public class T038LoggingErrorsLocalTests
             try
             {
                 AutoguardadoOperation.Execute(doc, path);
-                Assert.Contains(logger.Entries, e => e.Level == LogLevel.Debug && e.Message.Contains("LOG-006"));
+                Assert.Contains(logger.Entries, e => e.Level == Microsoft.Extensions.Logging.LogLevel.Debug && e.Message.Contains("LOG-006"));
             }
             finally { AutoguardadoOperation.Logger = null; }
         }
@@ -86,7 +86,7 @@ public class T038LoggingErrorsLocalTests
         try
         {
             RecuperacionOperation.Execute(path);
-            Assert.Contains(logger.Entries, e => e.Level == LogLevel.Debug && e.Message.Contains("LOG-007"));
+            Assert.Contains(logger.Entries, e => e.Level == Microsoft.Extensions.Logging.LogLevel.Debug && e.Message.Contains("LOG-007"));
         }
         finally { RecuperacionOperation.Logger = null; }
     }
@@ -100,7 +100,7 @@ public class T038LoggingErrorsLocalTests
         try
         {
             ConfirmDiscardOperation.Execute(new OpenDocument("x"), ConfirmDiscardOption.DoNotSave, recovery);
-            Assert.Contains(logger.Entries, e => e.Level == LogLevel.Information && e.Message.Contains("LOG-008"));
+            Assert.Contains(logger.Entries, e => e.Level == Microsoft.Extensions.Logging.LogLevel.Information && e.Message.Contains("LOG-008"));
         }
         finally { ConfirmDiscardOperation.Logger = null; }
     }
@@ -115,7 +115,7 @@ public class T038LoggingErrorsLocalTests
         try
         {
             RecentFiles.Load(path);
-            Assert.Contains(logger.Entries, e => e.Level == LogLevel.Warning);
+            Assert.Contains(logger.Entries, e => e.Level == Microsoft.Extensions.Logging.LogLevel.Warning);
         }
         finally
         {
