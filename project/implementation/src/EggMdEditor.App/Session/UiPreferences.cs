@@ -6,7 +6,7 @@ namespace EggMdEditor.App;
 /// <summary>
 /// Preferencias de UI en memoria (ENT-003): idioma y tema. Sin persistencia en F-001.
 /// </summary>
-public class UiPreferences : INotifyPropertyChanged, IDisposable
+public partial class UiPreferences : INotifyPropertyChanged, IDisposable
 {
     private string _language;
     private Theme _theme;
