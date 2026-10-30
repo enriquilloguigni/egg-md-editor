@@ -160,7 +160,10 @@
         "execution": "E-007",
         "spec": "v1",
         "plan": "v1",
-        "evidence_sha256": "2a2c5b2d639d8d6959ef8cf8619fed1f67fab478d796a880995e5e676cebc433"
+        "evidence_sha256": "2a2c5b2d639d8d6959ef8cf8619fed1f67fab478d796a880995e5e676cebc433",
+        "result": "v1",
+        "outcome": "cubierto",
+        "commit": "266acb9ab07495fd60c63245b09763127b2c42dc"
       }
     }
   },
@@ -295,7 +298,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-30T19:25:16.733Z",
+  "updated_at": "2026-10-30T19:29:28.409Z",
   "owner": "EG",
   "sources": [
     {
