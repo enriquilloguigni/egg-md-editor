@@ -514,4 +514,3 @@ public class SeparadorRedimensionable : SplitterLayout { public SeparadorRedimen
 public class PanelDoble : SplitterLayout { public PanelDoble() : base() { } public PanelDoble(OpenDocument? d) : base(d) { } public PanelDoble(EditorPanel? l, EditorPanel? r) : base(l, r) { } }
 public class DoblePanel : SplitterLayout { public DoblePanel() : base() { } public DoblePanel(OpenDocument? d) : base(d) { } public DoblePanel(EditorPanel? l, EditorPanel? r) : base(l, r) { } }
 
-<|end|><|start|>write to=assistant<|channel|>analysis<|message|>Build to verify.<|end|><|start|>start to=shell<|channel|>analysis <|constrain|>xml<|message|><rfl:parameter name="command">
