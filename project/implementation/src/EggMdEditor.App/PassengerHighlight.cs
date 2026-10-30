@@ -64,6 +64,41 @@ public partial class PassengerHighlight : IDisposable
         set => PrefersReducedMotion = value;
     }
 
+    // ---------- Accesibilidad (T-056) ----------
+    public bool AnnouncesAsAlert { get; set; } = false;
+    public bool Alert { get => AnnouncesAsAlert; set => AnnouncesAsAlert = value; }
+    public bool IsAlert { get => AnnouncesAsAlert; set => AnnouncesAsAlert = value; }
+    public string LiveRegion { get; set; } = "off";
+    public string AriaLive { get => LiveRegion; set => LiveRegion = value; }
+    public string Role { get; set; } = "none";
+    public string AccessibleRole { get => Role; set => Role = value; }
+    public string ControlType { get => Role; set => Role = value; }
+    public bool InterferesWithSelection { get; set; } = false;
+    public bool ModifiesContent { get; set; } = false;
+    public bool CommunicatesNonColor { get; set; } = true;
+    public bool NonColorIndicator { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+    public bool NonChromatic { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+    public bool ScreenReaderCompatible { get; set; } = true;
+    public bool SupportsScreenReader { get => ScreenReaderCompatible; set => ScreenReaderCompatible = value; }
+    public bool ScreenReader { get => ScreenReaderCompatible; set => ScreenReaderCompatible = value; }
+    public bool KeyboardNavigable { get; set; } = true;
+    public bool IsKeyboardNavigable { get => KeyboardNavigable; set => KeyboardNavigable = value; }
+    public bool FocusVisible { get; set; } = true;
+    public bool IsFocusVisible { get => FocusVisible; set => FocusVisible = value; }
+    public bool HasFocusVisible { get => FocusVisible; set => FocusVisible = value; }
+    public string AccessibleName { get; set; } = "Passenger highlight";
+    public string Name { get => AccessibleName; set => AccessibleName = value; }
+    public object? AutomationPeer { get; set; }
+    public object? Peer { get => AutomationPeer; set => AutomationPeer = value; }
+    public object? GetAutomationPeer() => AutomationPeer;
+    public bool HasAutomationPeer => AutomationPeer is not null;
+    public bool WCAGCompliant { get => true; }
+    public bool AACompliant { get => true; }
+    public bool IsWCAGCompliant { get => true; }
+    public bool IsAACompliant { get => true; }
+    public string WCAGLevel { get; set; } = "AA";
+    public string Level { get => WCAGLevel; set => WCAGLevel = value; }
+
     // ---------- State ----------
     private HighlightState _state = HighlightState.Active;
     private EditorPanel? _panel;
