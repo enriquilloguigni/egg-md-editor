@@ -8,7 +8,7 @@ namespace EggMdEditor.App;
 /// alterar el contenido ni el estado de edición. El estado se conserva.
 /// La barra actúa sobre el panel activo (BR-016).
 /// </summary>
-public class FormatBarVisibility
+public partial class FormatBarVisibility
 {
     private bool _visible = true;
     private EditorPanel? _activePanel;
