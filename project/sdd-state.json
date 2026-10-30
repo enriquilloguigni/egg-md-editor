@@ -116,7 +116,7 @@
       }
     },
     "F-003-doble-vista-sincronizada": {
-      "status": "implementing",
+      "status": "verifying",
       "spec_version": "v1",
       "docs": {
         "process": "approved",
@@ -153,14 +153,14 @@
         "T-055": "done",
         "T-056": "done",
         "T-057": "done",
-        "T-058": "doing"
+        "T-058": "done"
       }
     }
   },
   "current": {
     "level": "feature",
     "id": "F-003-doble-vista-sincronizada",
-    "phase": "implementation"
+    "phase": "verification"
   },
   "tier": {
     "category": "M",
@@ -288,7 +288,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-30T15:15:56.675Z",
+  "updated_at": "2026-10-30T15:28:12.421Z",
   "owner": "EG",
   "sources": [
     {
