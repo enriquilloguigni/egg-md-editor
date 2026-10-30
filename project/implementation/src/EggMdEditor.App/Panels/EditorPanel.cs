@@ -45,6 +45,7 @@ public partial class EditorPanel
     private FocusState _focus = FocusState.Inactive;
     private PassengerHighlight? _highlight;
     private OpenDocument? _document;
+    private EditorPanel? _sibling;
 
     public EditorPanel()
     {
@@ -216,6 +217,75 @@ public partial class EditorPanel
         get => _visible;
         set => _visible = value;
     }
+
+    // ---------- Hermano / par (T-048) ----------
+    public EditorPanel? Sibling
+    {
+        get => _sibling;
+        set => _sibling = value;
+    }
+
+    public EditorPanel? OtherPanel
+    {
+        get => _sibling;
+        set => _sibling = value;
+    }
+
+    public EditorPanel? Partner
+    {
+        get => _sibling;
+        set => _sibling = value;
+    }
+
+    public EditorPanel? PartnerPanel
+    {
+        get => _sibling;
+        set => _sibling = value;
+    }
+
+    public EditorPanel? Other
+    {
+        get => _sibling;
+        set => _sibling = value;
+    }
+
+    public EditorPanel? Opposite
+    {
+        get => _sibling;
+        set => _sibling = value;
+    }
+
+    public EditorPanel? PairPanel
+    {
+        get => _sibling;
+        set => _sibling = value;
+    }
+
+    // ---------- Conmutadores individuales (T-048) ----------
+    public bool Hide()
+    {
+        if (_sibling is not null && !_sibling.Visible) return false;
+        _visible = false;
+        return true;
+    }
+
+    public bool Show()
+    {
+        _visible = true;
+        return true;
+    }
+
+    public bool ToggleVisibility()
+    {
+        if (_visible) return Hide();
+        Show();
+        return true;
+    }
+
+    public bool ToggleVisible() => ToggleVisibility();
+    public bool Toggle() => ToggleVisibility();
+    public bool HidePanel() => Hide();
+    public bool ShowPanel() => Show();
 
     // ---------- Ancho ----------
     public double Width
@@ -431,7 +501,11 @@ public partial class EditorPanel
     public static (EditorPanel Left, EditorPanel Right) CreatePair(OpenDocument? document = null)
     {
         var doc = document ?? new OpenDocument();
-        return (CreateLeft(doc), CreateRight(doc));
+        var left = CreateLeft(doc);
+        var right = CreateRight(doc);
+        left.Sibling = right;
+        right.Sibling = left;
+        return (left, right);
     }
 
     public static EditorPanel[] CreatePanels(OpenDocument? document = null)
@@ -548,16 +622,56 @@ public partial class EditorPanels
     public EditorPanel Wysiwyg { get => Left; }
     public EditorPanel Markdown { get => Right; }
     public IReadOnlyList<EditorPanel> Panels { get; }
-
+ 
     public EditorPanels(OpenDocument? document = null)
     {
         Document = document ?? new OpenDocument();
         Left = EditorPanel.CreateLeft(Document);
         Right = EditorPanel.CreateRight(Document);
         Panels = new List<EditorPanel> { Left, Right }.AsReadOnly();
+        Left.Sibling = Right;
+        Right.Sibling = Left;
     }
 
     public EditorPanels() : this(new OpenDocument()) { }
+
+    // ---------- Visibilidad (T-048) ----------
+    public PanelVisibility Visibility => new PanelVisibility(Left, Right);
+    public PanelVisibility PanelVisibility => Visibility;
+    public PanelVisibility VisibilitySwitch => Visibility;
+    public VisibilitySwitch VisibilitySwitcherObj => new VisibilitySwitch(Left, Right);
+
+    public bool LeftVisible { get => Left.Visible; set { if (value) Left.Visible = true; else { if (Right.Visible) Left.Visible = false; } } }
+    public bool RightVisible { get => Right.Visible; set { if (value) Right.Visible = true; else { if (Left.Visible) Right.Visible = false; } } }
+    public bool LeftPanelVisible { get => LeftVisible; set => LeftVisible = value; }
+    public bool RightPanelVisible { get => RightVisible; set => RightVisible = value; }
+    public bool IsLeftVisible => LeftVisible;
+    public bool IsRightVisible => RightVisible;
+
+    public bool HideLeft() => Visibility.HideLeftPanel();
+    public bool HideLeftPanel() => Visibility.HideLeftPanel();
+    public bool HideLeftView() => Visibility.HideLeftPanel();
+    public bool HideRight() => Visibility.HideRightPanel();
+    public bool HideRightPanel() => Visibility.HideRightPanel();
+    public bool HideRightView() => Visibility.HideRightPanel();
+    public bool ShowLeft() => Visibility.ShowLeftPanel();
+    public bool ShowLeftPanel() => Visibility.ShowLeftPanel();
+    public bool ShowLeftView() => Visibility.ShowLeftPanel();
+    public bool ShowRight() => Visibility.ShowRightPanel();
+    public bool ShowRightPanel() => Visibility.ShowRightPanel();
+    public bool ShowRightView() => Visibility.ShowRightPanel();
+    public bool ToggleLeft() => Visibility.ToggleLeftPanel();
+    public bool ToggleLeftPanel() => Visibility.ToggleLeftPanel();
+    public bool ToggleRight() => Visibility.ToggleRightPanel();
+    public bool ToggleRightPanel() => Visibility.ToggleRightPanel();
+    public bool HidePanel(EditorPanel? p) => Visibility.HidePanel(p);
+    public bool ShowPanel(EditorPanel? p) => Visibility.ShowPanel(p);
+    public bool TogglePanel(EditorPanel? p) => Visibility.TogglePanel(p);
+    public bool SetVisible(EditorPanel? p, bool v) => Visibility.SetVisible(p, v);
+    public bool SetVisible(PanelSide side, bool v) => Visibility.SetVisible(side, v);
+    public bool SetVisible(string? side, bool v) => Visibility.SetVisible(side, v);
+    public bool RestoreVisibility() => Visibility.RestoreVisibility();
+    public PanelVisibilityState VisibilityState => Visibility.State;
 }
 
 public class PanelSet : EditorPanels { public PanelSet(OpenDocument? d = null) : base(d) { } public PanelSet() : base() { } }
