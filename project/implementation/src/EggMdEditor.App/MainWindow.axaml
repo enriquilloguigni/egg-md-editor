@@ -197,8 +197,26 @@
         </ItemsControl>
       </Border>
 
-      <!-- Área de documento vacía en F-001 (BR-F001-008). -->
-      <Border x:Name="DocumentArea" Grid.Row="2" />
+      <!-- Área de documento: layout de doble panel con separador redimensionable
+           (VR-008, T-047). Dos paneles (izq./der.) separados por un GridSplitter
+           de 4 px, con ancho mínimo y operable por teclado (NFR-009). -->
+      <Border x:Name="DocumentArea" Grid.Row="2">
+        <Grid x:Name="DualPanelLayout" ColumnDefinitions="*,4,*">
+          <Border x:Name="LeftPanel" Grid.Column="0" />
+          <GridSplitter x:Name="Splitter"
+                        Grid.Column="1"
+                        Width="4"
+                        MinWidth="4"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Focusable="True"
+                        IsTabStop="True"
+                        ResizeDirection="Columns"
+                        ResizeBehavior="PreviousAndNext"
+                        Background="{DynamicResource MenuPanelBorderBrush}" />
+          <Border x:Name="RightPanel" Grid.Column="2" />
+        </Grid>
+      </Border>
     </Grid>
 
     <!-- VR-002/OP-004 (T-010): aviso flotante superpuesto al área de
