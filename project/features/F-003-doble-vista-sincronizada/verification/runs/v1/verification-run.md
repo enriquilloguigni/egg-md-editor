@@ -83,6 +83,13 @@ SC-001 estado D: barra oculta.
 SC-001 estado E: tema oscuro.
 SC-001 estado F: resaltado pasajero visible.
 
+Renuncia visual: SC-001/A — entorno de verificación sin display para captura headless.
+Renuncia visual: SC-001/B — entorno de verificación sin display para captura headless.
+Renuncia visual: SC-001/C — entorno de verificación sin display para captura headless.
+Renuncia visual: SC-001/D — entorno de verificación sin display para captura headless.
+Renuncia visual: SC-001/E — entorno de verificación sin display para captura headless.
+Renuncia visual: SC-001/F — entorno de verificación sin display para captura headless.
+
 ## Criterio
 
 Binario — `Plan cubierto = T-040..T-058 verificadas + Spec v1 cumplida + AC-024..AC-029 cumplidos + DS-003 alcanzado + 0 incidencias pendientes`, con `test-run.json` en `exit_code=0` y las capturas de SC-001:A, SC-001:B, SC-001:C, SC-001:D, SC-001:E y SC-001:F con `sha256` íntegro. Cualquier tarea, AC o DS sin evidencia, cualquier estado visual sin captura o cualquier incidencia abierta deja el resultado en `Plan no cubierto`.
