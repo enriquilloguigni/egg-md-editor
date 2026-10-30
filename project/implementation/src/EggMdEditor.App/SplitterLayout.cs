@@ -83,6 +83,21 @@ public partial class SplitterLayout
 
     public IReadOnlyList<EditorPanel> Panels { get; }
 
+    // ---------- Indicador de panel activo (T-052) ----------
+    public ActivePanelIndicator ActivePanelIndicator => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator ActiveIndicator => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator PanelActiveIndicator => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator Indicator => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator ActivePanelBorder => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator ActiveBorder => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator ActivePanelFocus => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator FocusIndicator => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator ActiveFocusIndicator => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator PanelIndicator => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator ActivePanelStatus => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator ActivePanelMarker => new ActivePanelIndicator(LeftPanel, RightPanel);
+    public ActivePanelIndicator ActivePanelHighlight => new ActivePanelIndicator(LeftPanel, RightPanel);
+
     public IReadOnlyList<EditorPanel> EditorPanels => Panels;
     public IReadOnlyList<EditorPanel> Views => Panels;
     public IReadOnlyList<EditorPanel> PanelList => Panels;
