@@ -154,6 +154,12 @@
         "T-056": "done",
         "T-057": "done",
         "T-058": "done"
+      },
+      "verification": {
+        "run": "v1",
+        "execution": "E-007",
+        "spec": "v1",
+        "plan": "v1"
       }
     }
   },
@@ -288,7 +294,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-30T15:28:12.421Z",
+  "updated_at": "2026-10-30T19:24:32.115Z",
   "owner": "EG",
   "sources": [
     {
