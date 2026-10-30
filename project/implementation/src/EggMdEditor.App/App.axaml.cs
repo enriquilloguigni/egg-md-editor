@@ -96,9 +96,20 @@ public partial class App : Application
         // desde el primer pintado; OP-002 los conmuta después en caliente
         // (COM-003) y el selector de Herramientas → Tema muestra Sistema.
         var initialTheme = ApplicationThemeApplier.ResolveSystemTheme(this);
+
+        // T-057: cargar preferencias de visibilidad persistidas al iniciar la
+        // sesión (ENT-019, BR-019) y aplicarlas a paneles/barra. El idioma y
+        // el tema siguen resolviéndose del SO en cada arranque (F-001).
+        var persistedPrefs = UiPreferences.Load();
+        var initialPrefs = new UiPreferences("es", initialTheme, ThemePreference.System);
+        initialPrefs.LeftPanelVisible = persistedPrefs.LeftPanelVisible;
+        initialPrefs.RightPanelVisible = persistedPrefs.RightPanelVisible;
+        initialPrefs.FormatBarVisible = persistedPrefs.FormatBarVisible;
+        initialPrefs.SplitterWidth = persistedPrefs.SplitterWidth;
+
         _session = new Session(
             catalog,
-            new UiPreferences("es", initialTheme, ThemePreference.System));
+            initialPrefs);
         _themeApplier = new ApplicationThemeApplier(this);
         _themeApplier.Attach(_session);
 
@@ -111,6 +122,7 @@ public partial class App : Application
             ThemeApplier = _themeApplier,
             SessionId = _lifecycle.SessionId,
         };
+        try { viewModel.ApplyPreferences(initialPrefs); } catch { }
 
         _viewModel = viewModel;
         _mainWindow = new MainWindow(viewModel, _lifecycle);
