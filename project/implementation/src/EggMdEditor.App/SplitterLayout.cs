@@ -395,6 +395,36 @@ public partial class SplitterLayout
 
     public void Restore() => Load(_persistedWidth);
 
+    // ---------- Preferencias de visibilidad (T-057) ----------
+    public void LoadPreferences(UiPreferences? prefs)
+    {
+        if (prefs is null) return;
+        LeftPanel.Visible = prefs.LeftPanelVisible;
+        LeftPanel.IsVisible = prefs.LeftPanelVisible;
+        RightPanel.Visible = prefs.RightPanelVisible;
+        RightPanel.IsVisible = prefs.RightPanelVisible;
+        Load(prefs.SplitterWidth);
+        PersistedWidth = prefs.SplitterWidth;
+    }
+
+    public void ApplyPreferences(UiPreferences? prefs) => LoadPreferences(prefs);
+
+    public void LoadPreferences(string? path)
+    {
+        var prefs = UiPreferences.Load(path);
+        LoadPreferences(prefs);
+    }
+
+    public UiPreferences SavePreferencesTo(UiPreferences? prefs = null)
+    {
+        var p = prefs ?? new UiPreferences();
+        p.LeftPanelVisible = LeftPanel.Visible;
+        p.RightPanelVisible = RightPanel.Visible;
+        p.FormatBarVisible = true;
+        p.SplitterWidth = SplitterWidth;
+        return p;
+    }
+
     public void RestoreWidth() => Restore();
 
     // ---------- Operación por teclado ----------
