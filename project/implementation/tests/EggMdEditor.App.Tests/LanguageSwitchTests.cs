@@ -186,7 +186,7 @@ public class LanguageSwitchTests
             Assert.True(spanish.IsChecked);
             Assert.False(english.IsChecked);
 
-            Assert.Contains(logger.Entries, entry => entry.Level == LogLevel.Error);
+            Assert.Contains(logger.Entries, entry => entry.Level == Microsoft.Extensions.Logging.LogLevel.Error);
         }
         finally
         {
@@ -202,7 +202,7 @@ public class LanguageSwitchTests
         var completeViewModel = new MainWindowViewModel(complete) { Logger = completeLogger };
 
         Assert.True(completeViewModel.TryChangeLanguage("en"));
-        Assert.Contains(completeLogger.Entries, entry => entry.Level == LogLevel.Debug);
+        Assert.Contains(completeLogger.Entries, entry => entry.Level == Microsoft.Extensions.Logging.LogLevel.Debug);
 
         var fallbackLogger = new RecordingLogger();
         var fallback = new I18nCatalog(BuildResources(includeEnglish: true, omitEnglishKey: "Menu.Help"), "es", "es", fallbackLogger);
@@ -211,7 +211,7 @@ public class LanguageSwitchTests
         Assert.True(fallbackViewModel.TryChangeLanguage("en"));
         Assert.Contains(
             fallbackLogger.Entries,
-            entry => entry.Level == LogLevel.Warning && entry.Message.Contains("Menu.Help", StringComparison.Ordinal));
+            entry => entry.Level == Microsoft.Extensions.Logging.LogLevel.Warning && entry.Message.Contains("Menu.Help", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class LanguageSwitchTests
         Assert.Equal("es", session.Language);
         Assert.Equal("es", session.Preferences.Language);
         Assert.Equal(headersBefore, viewModel.Menus.Select(menu => menu.Header));
-        Assert.Contains(logger.Entries, entry => entry.Level == LogLevel.Error);
+        Assert.Contains(logger.Entries, entry => entry.Level == Microsoft.Extensions.Logging.LogLevel.Error);
     }
 
     private static Dictionary<string, IReadOnlyDictionary<string, string>> BuildResources(
@@ -276,15 +276,15 @@ public class LanguageSwitchTests
 
     private sealed class RecordingLogger : ILogger
     {
-        public List<(LogLevel Level, string Message)> Entries { get; } = new();
+        public List<(Microsoft.Extensions.Logging.LogLevel Level, string Message)> Entries { get; } = new();
 
         public IDisposable? BeginScope<TState>(TState state)
             where TState : notnull => null;
 
-        public bool IsEnabled(LogLevel logLevel) => true;
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
 
         public void Log<TState>(
-            LogLevel logLevel,
+            Microsoft.Extensions.Logging.LogLevel logLevel,
             EventId eventId,
             TState state,
             Exception? exception,
