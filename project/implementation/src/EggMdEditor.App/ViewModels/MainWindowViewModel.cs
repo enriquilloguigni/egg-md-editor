@@ -59,6 +59,8 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     {
         Catalog = session?.Catalog;
         RegisterAvailableShortcuts();
+        try { ApplyPreferences(session?.Preferences); } catch { }
+        try { ApplyPreferences(session?.LoadedPreferences); } catch { }
     }
 
     public MainWindowViewModel(II18nCatalog? catalog)
