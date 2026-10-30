@@ -8,7 +8,7 @@ namespace EggMdEditor.App;
 /// Sesión de aplicación en memoria (ENT-001): idioma, tema, estado de menú y aviso.
 /// Una instancia por composición; se libera al cerrar.
 /// </summary>
-public class Session : INotifyPropertyChanged, IDisposable
+public partial class Session : INotifyPropertyChanged, IDisposable
 {
     private string _language;
     private Theme _theme;
@@ -481,6 +481,10 @@ public class Session : INotifyPropertyChanged, IDisposable
             _preferences.TrySetThemePreference(
                 preferences.ThemePreference,
                 preferences.Theme);
+            _preferences.LeftPanelVisible = preferences.LeftPanelVisible;
+            _preferences.RightPanelVisible = preferences.RightPanelVisible;
+            _preferences.FormatBarVisible = preferences.FormatBarVisible;
+            _preferences.SplitterWidth = preferences.SplitterWidth;
         }
         finally
         {
