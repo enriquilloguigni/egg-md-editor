@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
@@ -9,6 +10,11 @@ namespace EggMdEditor.App;
 /// </summary>
 public partial class PassengerHighlight : IDisposable
 {
+    // ---------- Shared logger (LOG-011) ----------
+    public static ILogger? Logger { get => Synchronizer.Logger; set => Synchronizer.Logger = value; }
+    public static ILogger? InstanceLogger { get => Logger; set => Logger = value; }
+    public ILogger? LoggerInstance { get => Logger; set => Logger = value; }
+
     private static bool _reducedMotion = false;
     private static readonly object _reducedLock = new object();
 
@@ -155,6 +161,9 @@ public partial class PassengerHighlight : IDisposable
             _state = HighlightState.Expired;
             CancelTimer();
             if (panel is not null) panel.Highlight = null;
+            Logger?.LogDebug(
+                "LOG-011 Resaltado pasajero (sin ancla). Hora: {Timestamp:O}. Panel destino: {Destination}. Duración: {DurationMs} ms. Ancla encontrada: no.",
+                DateTimeOffset.UtcNow, panel?.Side, 0);
             return false;
         }
 
@@ -213,9 +222,17 @@ public partial class PassengerHighlight : IDisposable
     // Apply with source/target/map/offset
     public bool Apply(EditorPanel? sourcePanel, EditorPanel? targetPanel, PositionMap? map, int sourceOffset, int durationMs)
     {
-        if (map is null) { State = HighlightState.Expired; if (targetPanel is not null) targetPanel.Highlight = null; return false; }
+        if (map is null) { State = HighlightState.Expired; if (targetPanel is not null) targetPanel.Highlight = null; Logger?.LogDebug("LOG-011 Resaltado pasajero (sin ancla). Hora: {Timestamp:O}. Panel origen: {Origin}. Panel destino: {Destination}. Duración: {DurationMs} ms. Ancla encontrada: no.", DateTimeOffset.UtcNow, sourcePanel?.Side, targetPanel?.Side, 0); return false; }
         var anchor = FindAnchor(map, sourceOffset);
-        if (anchor is null) { State = HighlightState.Expired; if (targetPanel is not null) targetPanel.Highlight = null; return false; }
+        if (anchor is null)
+        {
+            State = HighlightState.Expired;
+            if (targetPanel is not null) targetPanel.Highlight = null;
+            Logger?.LogDebug(
+                "LOG-011 Resaltado pasajero (sin ancla). Hora: {Timestamp:O}. Panel origen: {Origin}. Panel destino: {Destination}. Duración: {DurationMs} ms. Ancla encontrada: no.",
+                DateTimeOffset.UtcNow, sourcePanel?.Side, targetPanel?.Side, 0);
+            return false;
+        }
         var range = anchor.TargetRange;
         if (range is null) range = new PositionRange(anchor.TargetStart, anchor.TargetEnd);
         return Apply(targetPanel, range, durationMs);
