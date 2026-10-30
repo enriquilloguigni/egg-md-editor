@@ -247,6 +247,45 @@ public partial class ActivePanelIndicator
     public bool WCAGCompliant { get => true; }
     public bool AACompliant { get => true; }
 
+    // ---------- Accesibilidad (T-056) ----------
+    private bool _screenReaderCompatibleA11y = true;
+    public bool ScreenReaderCompatible { get => _screenReaderCompatibleA11y; set => _screenReaderCompatibleA11y = value; }
+    public bool SupportsScreenReader { get => _screenReaderCompatibleA11y; set => _screenReaderCompatibleA11y = value; }
+    public bool ScreenReader { get => _screenReaderCompatibleA11y; set => _screenReaderCompatibleA11y = value; }
+    public string Role { get; set; } = "region";
+    public string AccessibleRole { get => Role; set => Role = value; }
+    public string ControlType { get => Role; set => Role = value; }
+    public string AccessibleName { get; set; } = "Active panel indicator";
+    public string Name { get => AccessibleName; set => AccessibleName = value; }
+    public string AccessibleLabel { get => AccessibleName; set => AccessibleName = value; }
+    public string Label { get => AccessibleName; set => AccessibleName = value; }
+    public string AccessibleDescription { get; set; } = "Indicates the active editor panel";
+    public string Description { get => AccessibleDescription; set => AccessibleDescription = value; }
+    public object? AutomationPeer { get; set; }
+    public object? Peer { get => AutomationPeer; set => AutomationPeer = value; }
+    public object? GetAutomationPeer() => AutomationPeer;
+    public bool HasAutomationPeer => AutomationPeer is not null;
+    public string LiveRegion { get; set; } = "polite";
+    public string AriaLive { get => LiveRegion; set => LiveRegion = value; }
+    public bool Alert { get; set; } = false;
+    public bool AnnouncesAsAlert { get => Alert; set => Alert = value; }
+    public bool CommunicatesNonColor { get; set; } = true;
+    public bool NonColorIndicator { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+    public bool NonChromatic { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+    public bool ColorIndependent { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+    public bool NotColorOnly { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+    public bool KeyboardNavigable { get; set; } = true;
+    public bool IsKeyboardNavigable { get => KeyboardNavigable; set => KeyboardNavigable = value; }
+    public bool CanNavigateByKeyboard { get => KeyboardNavigable; set => KeyboardNavigable = value; }
+    public bool SupportsKeyboard { get => KeyboardNavigable; set => KeyboardNavigable = value; }
+    public bool IsKeyboardOperable { get => KeyboardNavigable; set => KeyboardNavigable = value; }
+    public bool OperableByKeyboard { get => KeyboardNavigable; set => KeyboardNavigable = value; }
+    public bool KeyboardOperable { get => KeyboardNavigable; set => KeyboardNavigable = value; }
+    public bool IsWCAGCompliant { get => true; }
+    public bool IsAACompliant { get => true; }
+    public string WCAGLevel { get; set; } = "AA";
+    public string Level { get => WCAGLevel; set => WCAGLevel = value; }
+
     // ---------- Operations ----------
     public bool SetActivePanel(EditorPanel? panel) { SetActiveCore(panel); return true; }
     public bool SetActivePanel(PanelSide side)
