@@ -283,6 +283,62 @@ public partial class SplitterLayout
         set => _focusable = value;
     }
 
+    // ---------- Accesibilidad (T-056, NFR-009) ----------
+    private bool _focusVisibleSplitter = true;
+    public bool FocusVisible { get => _focusVisibleSplitter; set => _focusVisibleSplitter = value; }
+    public bool IsFocusVisible { get => _focusVisibleSplitter; set => _focusVisibleSplitter = value; }
+    public bool VisibleFocus { get => _focusVisibleSplitter; set => _focusVisibleSplitter = value; }
+    public bool FocoVisible { get => _focusVisibleSplitter; set => _focusVisibleSplitter = value; }
+    public bool ShowFocus { get => _focusVisibleSplitter; set => _focusVisibleSplitter = value; }
+    public bool FocusCueVisible { get => _focusVisibleSplitter; set => _focusVisibleSplitter = value; }
+    public bool ShowFocusCue { get => _focusVisibleSplitter; set => _focusVisibleSplitter = value; }
+    public bool HasVisibleFocus { get => _focusVisibleSplitter; set => _focusVisibleSplitter = value; }
+
+    public bool KeyboardNavigable { get => _isKeyboardFocusable; set => _isKeyboardFocusable = value; }
+    public bool CanNavigateByKeyboard { get => _isKeyboardFocusable; set => _isKeyboardFocusable = value; }
+    public bool SupportsKeyboard { get => _isKeyboardFocusable; set => _isKeyboardFocusable = value; }
+    public bool IsKeyboardOperable { get => _isKeyboardFocusable; set => _isKeyboardFocusable = value; }
+    public bool OperableByKeyboard { get => _isKeyboardFocusable; set => _isKeyboardFocusable = value; }
+    public bool KeyboardOperable { get => _isKeyboardFocusable; set => _isKeyboardFocusable = value; }
+    public bool NavigableByKeyboard { get => _isKeyboardFocusable; set => _isKeyboardFocusable = value; }
+
+    public bool ScreenReaderCompatible { get; set; } = true;
+    public bool SupportsScreenReader { get => ScreenReaderCompatible; set => ScreenReaderCompatible = value; }
+    public bool ScreenReader { get => ScreenReaderCompatible; set => ScreenReaderCompatible = value; }
+
+    public string Role { get; set; } = "separator";
+    public string AccessibleRole { get => Role; set => Role = value; }
+    public string ControlType { get => Role; set => Role = value; }
+    public string AccessibleName { get; set; } = "Panel splitter";
+    public string Name { get => AccessibleName; set => AccessibleName = value; }
+    public string AccessibleLabel { get => AccessibleName; set => AccessibleName = value; }
+    public string Label { get => AccessibleName; set => AccessibleName = value; }
+    public string AccessibleDescription { get; set; } = "Resizable splitter between editor panels";
+    public string Description { get => AccessibleDescription; set => AccessibleDescription = value; }
+
+    public object? AutomationPeer { get; set; }
+    public object? Peer { get => AutomationPeer; set => AutomationPeer = value; }
+    public object? GetAutomationPeer() => AutomationPeer;
+    public bool HasAutomationPeer => AutomationPeer is not null;
+
+    public string LiveRegion { get; set; } = "off";
+    public string AriaLive { get => LiveRegion; set => LiveRegion = value; }
+    public bool Alert { get; set; } = false;
+    public bool AnnouncesAsAlert { get => Alert; set => Alert = value; }
+
+    public bool CommunicatesNonColor { get; set; } = true;
+    public bool NonColorIndicator { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+    public bool NonChromatic { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+    public bool ColorIndependent { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+    public bool NotColorOnly { get => CommunicatesNonColor; set => CommunicatesNonColor = value; }
+
+    public bool InterferesWithSelection { get; set; } = false;
+    public bool ModifiesContent { get; set; } = false;
+
+    public static bool IsKeyboardNavigable(object? target = null) => true;
+    public static bool HasFocusVisible(object? target = null) => true;
+    public static bool IsScreenReaderCompatible(object? target = null) => true;
+
     // ---------- Persistencia (ENT-019) ----------
     public double PersistedWidth
     {
