@@ -30,14 +30,14 @@ public class ApplicationLifecycleTests
 
         var start = Assert.Single(logger.Entries, entry =>
             entry.Message.Contains("Inicio del proceso", StringComparison.Ordinal));
-        Assert.Equal(LogLevel.Information, start.Level);
+        Assert.Equal(Microsoft.Extensions.Logging.LogLevel.Information, start.Level);
         Assert.Contains(lifecycle.SessionId, start.Message, StringComparison.Ordinal);
         Assert.Contains(lifecycle.ApplicationVersion, start.Message, StringComparison.Ordinal);
         Assert.Contains(lifecycle.RuntimeVersion, start.Message, StringComparison.Ordinal);
 
         var end = Assert.Single(logger.Entries, entry =>
             entry.Message.Contains("Fin de la inicialización", StringComparison.Ordinal));
-        Assert.Equal(LogLevel.Information, end.Level);
+        Assert.Equal(Microsoft.Extensions.Logging.LogLevel.Information, end.Level);
         Assert.Contains(lifecycle.SessionId, end.Message, StringComparison.Ordinal);
         Assert.Contains("Idioma activo: es", end.Message, StringComparison.Ordinal);
         Assert.Contains("ms", end.Message, StringComparison.Ordinal);
@@ -63,17 +63,17 @@ public class ApplicationLifecycleTests
 
         Assert.Contains(
             logger.Entries,
-            entry => entry.Level == LogLevel.Information
+            entry => entry.Level == Microsoft.Extensions.Logging.LogLevel.Information
                 && entry.Message.Contains("Inicio del proceso", StringComparison.Ordinal));
         Assert.Contains(
             logger.Entries,
-            entry => entry.Level == LogLevel.Error
+            entry => entry.Level == Microsoft.Extensions.Logging.LogLevel.Error
                 && entry.Message.Contains("InvalidOperationException", StringComparison.Ordinal));
 
         // ERR-001: repetir el diagnóstico no duplica el mensaje ni el registro.
         Assert.Equal(exitCode, lifecycle.ReportStartupFailure(exception));
         Assert.Single(logger.Entries, entry =>
-            entry.Level == LogLevel.Error
+            entry.Level == Microsoft.Extensions.Logging.LogLevel.Error
             && entry.Message.Contains("Error al iniciar la aplicación", StringComparison.Ordinal));
         Assert.Single(
             errorOutput.ToString()
@@ -98,12 +98,12 @@ public class ApplicationLifecycleTests
         Assert.Equal(string.Empty, errorOutput.ToString());
 
         Assert.Single(logger.Entries, entry =>
-            entry.Level == LogLevel.Information
+            entry.Level == Microsoft.Extensions.Logging.LogLevel.Information
             && entry.Message.Contains("Inicio del cierre", StringComparison.Ordinal));
 
         var end = Assert.Single(logger.Entries, entry =>
             entry.Message.Contains("Fin del proceso", StringComparison.Ordinal));
-        Assert.Equal(LogLevel.Information, end.Level);
+        Assert.Equal(Microsoft.Extensions.Logging.LogLevel.Information, end.Level);
         Assert.Contains(lifecycle.SessionId, end.Message, StringComparison.Ordinal);
         Assert.Contains("Duración total de la sesión:", end.Message, StringComparison.Ordinal);
         Assert.Contains("ms", end.Message, StringComparison.Ordinal);
@@ -133,7 +133,7 @@ public class ApplicationLifecycleTests
             errorOutput.ToString());
 
         var error = Assert.Single(logger.Entries, entry =>
-            entry.Level == LogLevel.Error
+            entry.Level == Microsoft.Extensions.Logging.LogLevel.Error
             && entry.Message.Contains("Error al cerrar la aplicación", StringComparison.Ordinal));
         Assert.Contains(lifecycle.SessionId, error.Message, StringComparison.Ordinal);
         Assert.Contains("Duración total de la sesión:", error.Message, StringComparison.Ordinal);
@@ -190,15 +190,15 @@ public class ApplicationLifecycleTests
 
     private sealed class RecordingLogger : ILogger
     {
-        public List<(LogLevel Level, string Message, Exception? Exception)> Entries { get; } = new();
+        public List<(Microsoft.Extensions.Logging.LogLevel Level, string Message, Exception? Exception)> Entries { get; } = new();
 
         public IDisposable? BeginScope<TState>(TState state)
             where TState : notnull => null;
 
-        public bool IsEnabled(LogLevel logLevel) => true;
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
 
         public void Log<TState>(
-            LogLevel logLevel,
+            Microsoft.Extensions.Logging.LogLevel logLevel,
             EventId eventId,
             TState state,
             Exception? exception,
@@ -221,10 +221,10 @@ public class ApplicationLifecycleTests
             return null;
         }
 
-        public bool IsEnabled(LogLevel logLevel) => true;
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
 
         public void Log<TState>(
-            LogLevel logLevel,
+            Microsoft.Extensions.Logging.LogLevel logLevel,
             EventId eventId,
             TState state,
             Exception? exception,
