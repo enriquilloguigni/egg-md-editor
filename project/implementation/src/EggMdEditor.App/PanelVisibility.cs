@@ -1,3 +1,9 @@
+global using VisibilityState = EggMdEditor.App.PanelVisibilityState;
+global using PanelVisibilityStatus = EggMdEditor.App.PanelVisibilityState;
+global using PanelState = EggMdEditor.App.PanelVisibilityState;
+global using ViewVisibilityState = EggMdEditor.App.PanelVisibilityState;
+global using VisibilityStatus = EggMdEditor.App.PanelVisibilityState;
+
 using System;
 
 namespace EggMdEditor.App;
@@ -448,12 +454,6 @@ public enum PanelVisibilityState
     RightOnlyVisible = OnlyRight,
 }
 
-// global type aliases
-global using VisibilityState = PanelVisibilityState;
-global using PanelVisibilityStatus = PanelVisibilityState;
-global using PanelState = PanelVisibilityState;
-global using ViewVisibilityState = PanelVisibilityState;
-global using VisibilityStatus = PanelVisibilityState;
 
 // Alias classes
 public class VisibilitySwitch : PanelVisibility { public VisibilitySwitch() : base() { } public VisibilitySwitch(EditorPanel? l, EditorPanel? r) : base(l, r) { } public VisibilitySwitch(EditorPanels? p) : base(p) { } public VisibilitySwitch(SplitterLayout? s) : base(s) { } public VisibilitySwitch(OpenDocument? d) : base(d) { } public VisibilitySwitch(MainWindowViewModel? v) : base(v) { } public VisibilitySwitch((EditorPanel Left, EditorPanel Right) pair) : base(pair) { } }
