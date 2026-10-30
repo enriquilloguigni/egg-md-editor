@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
@@ -90,68 +91,219 @@ public partial class Synchronizer
     public static bool SyncEdit(EditorPanel? sourcePanel, string? newContent)
     {
         if (_syncing) return false;
+
+        // Determinar si este intento debe fallar (simulación / reintento).
+        bool persistentFailure = SimulateFailure || ForceFailure || FailSync || ShouldFail || ThrowOnSync;
+        bool firstAttemptFailure = persistentFailure || FailNextSync || FailuresRemaining > 0;
+        if (FailNextSync) FailNextSync = false;
+        if (FailuresRemaining > 0) FailuresRemaining--;
+
         _syncing = true;
         CurrentSourcePanel = sourcePanel;
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        bool failed = false;
+        Exception? lastException = null;
+        int attempts = 0;
+        int retries = 0;
+        bool degraded = false;
+        int maxAttempts = Math.Max(1, MaxRetries + 1);
+
         try
         {
-            var doc = sourcePanel?.Document;
-            if (doc is not null)
+            for (int attempt = 1; attempt <= maxAttempts; attempt++)
             {
-                doc.Content = newContent ?? string.Empty;
-            }
-            else
-            {
-                // try to find doc from panels
-            }
-
-            // render all panels sharing the document
-            var targets = AllPanels.Where(p => doc is null || ReferenceEquals(p.Document, doc)).ToList();
-            foreach (var p in targets)
-            {
-                try { p.Render(); } catch { }
-            }
-            if (sourcePanel is not null && !targets.Contains(sourcePanel))
-            {
-                try { sourcePanel.Render(); } catch { }
-            }
-
-            // Desplazamiento sincronizado durante la edición (T-046, BR-F003-005).
-            try
-            {
-                if (sourcePanel is not null)
+                attempts = attempt;
+                bool attemptFails = (attempt == 1) ? firstAttemptFailure : persistentFailure;
+                if (attemptFails)
                 {
+                    failed = true;
+                    lastException = new InvalidOperationException("Sync failed (simulated).");
+                    if (attempt < maxAttempts) { retries++; continue; }
+                    break;
+                }
+
+                try
+                {
+                    var doc = sourcePanel?.Document;
+                    if (doc is not null)
+                    {
+                        doc.Content = newContent ?? string.Empty;
+                    }
+
+                    var targets = AllPanels.Where(p => doc is null || ReferenceEquals(p.Document, doc)).ToList();
                     foreach (var p in targets)
                     {
-                        if (!ReferenceEquals(p, sourcePanel))
+                        try { p.Render(); } catch { }
+                    }
+                    if (sourcePanel is not null && !targets.Contains(sourcePanel))
+                    {
+                        try { sourcePanel.Render(); } catch { }
+                    }
+
+                    try
+                    {
+                        if (sourcePanel is not null)
                         {
-                            try { ScrollSynchronizer.SyncScroll(sourcePanel, p); } catch { }
+                            foreach (var p in targets)
+                            {
+                                if (!ReferenceEquals(p, sourcePanel))
+                                {
+                                    try { ScrollSynchronizer.SyncScroll(sourcePanel, p); } catch { }
+                                }
+                            }
                         }
                     }
+                    catch { }
+
+                    var args = new ContentChangedEventArgs(newContent) { SourcePanel = sourcePanel, Document = doc };
+                    try { ContentChanged?.Invoke(null, args); } catch { }
+                    try { Changed?.Invoke(null, EventArgs.Empty); } catch { }
+                    try { ContentUpdated?.Invoke(null, EventArgs.Empty); } catch { }
+                    try { ContentModified?.Invoke(null, EventArgs.Empty); } catch { }
+                    try { TextChanged?.Invoke(null, EventArgs.Empty); } catch { }
+                    try { Synced?.Invoke(null, EventArgs.Empty); } catch { }
+                    try { Synchronized?.Invoke(null, EventArgs.Empty); } catch { }
+                    try { Updated?.Invoke(null, EventArgs.Empty); } catch { }
+
+                    foreach (var p in targets)
+                    {
+                        try { p.RaiseContentChanged(newContent, sourcePanel); } catch { }
+                    }
+
+                    failed = false;
+                    lastException = null;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    failed = true;
+                    lastException = ex;
+                    if (attempt < maxAttempts) { retries++; continue; }
+                    break;
                 }
             }
-            catch { }
-
-            var args = new ContentChangedEventArgs(newContent) { SourcePanel = sourcePanel, Document = doc };
-            try { ContentChanged?.Invoke(null, args); } catch { }
-            try { Changed?.Invoke(null, EventArgs.Empty); } catch { }
-            try { ContentUpdated?.Invoke(null, EventArgs.Empty); } catch { }
-            try { ContentModified?.Invoke(null, EventArgs.Empty); } catch { }
-            try { TextChanged?.Invoke(null, EventArgs.Empty); } catch { }
-            try { Synced?.Invoke(null, EventArgs.Empty); } catch { }
-            try { Synchronized?.Invoke(null, EventArgs.Empty); } catch { }
-            try { Updated?.Invoke(null, EventArgs.Empty); } catch { }
-
-            foreach (var p in targets)
-            {
-                try { p.RaiseContentChanged(newContent, sourcePanel); } catch { }
-            }
-            return true;
         }
         finally
         {
+            sw.Stop();
             _syncing = false;
             CurrentSourcePanel = null;
         }
+
+        long duration = sw.ElapsedMilliseconds;
+        // Degradación: si se supera el umbral o se fuerza.
+        degraded = !failed && (ForceDegraded || SimulateDegradation || SimulateSlow || duration >= ThresholdMs);
+
+        // Actualizar estado.
+        IsDegraded = degraded;
+        Degraded = degraded;
+        Deferred = degraded;
+        DeferredSync = degraded;
+        DeferredRendering = degraded;
+        SyncDegraded = degraded;
+        DegradedMode = degraded;
+        IsDegradedMode = degraded;
+
+        Failed = failed;
+        SyncFailed = failed;
+        SyncError = failed;
+        SyncFailure = failed;
+        HasFailed = failed;
+        DidFail = failed;
+
+        RetryCount = retries;
+        Retries = retries;
+        RetriesAttempted = retries;
+        RetryAttempts = retries;
+        Attempts = attempts;
+        LastAttempts = attempts;
+
+        FailureCount = failed ? FailureCount + 1 : FailureCount;
+        LastFailureCount = FailureCount;
+
+        LastDurationMs = duration;
+        DurationMs = duration;
+        LatencyMs = duration;
+        ElapsedMs = duration;
+        SyncDurationMs = duration;
+        LastSyncDurationMs = duration;
+        SyncLatencyMs = duration;
+
+        WordCount = (newContent ?? string.Empty).Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+        LastWordCount = WordCount;
+
+        // Aviso no modal.
+        if (failed)
+        {
+            NoticeVisible = true;
+            NonModalNoticeVisible = true;
+            NonModalNotice = true;
+            NonModal = true;
+            IsModal = false;
+            Modal = false;
+            NoticeMessage = "No se pudo sincronizar las vistas. Sigue editando; se reintentará automáticamente.";
+            NonModalNoticeMessage = NoticeMessage;
+            NonModalMessage = NoticeMessage;
+            SyncNoticeMessage = NoticeMessage;
+            SyncNoticeText = NoticeMessage;
+            SyncErrorMessage = NoticeMessage;
+            SyncFailureMessage = NoticeMessage;
+            Message = NoticeMessage;
+        }
+        else if (degraded)
+        {
+            NoticeVisible = true;
+            NonModalNoticeVisible = true;
+            NonModalNotice = true;
+            NonModal = true;
+            IsModal = false;
+            Modal = false;
+            NoticeMessage = "El documento es muy grande; la sincronización puede ser más lenta.";
+            NonModalNoticeMessage = NoticeMessage;
+            NonModalMessage = NoticeMessage;
+            SyncNoticeMessage = NoticeMessage;
+            SyncNoticeText = NoticeMessage;
+            SyncWarningMessage = NoticeMessage;
+            Message = NoticeMessage;
+        }
+        else
+        {
+            NoticeVisible = false;
+            NonModalNoticeVisible = false;
+            NonModalNotice = false;
+            NoticeMessage = string.Empty;
+            NonModalNoticeMessage = string.Empty;
+            NonModalMessage = string.Empty;
+            SyncNoticeMessage = string.Empty;
+            SyncNoticeText = string.Empty;
+            Message = string.Empty;
+        }
+
+        // LOG-009
+        try
+        {
+            if (failed)
+            {
+                Logger?.LogError(lastException,
+                    "LOG-009 Sincronización de vistas. Hora: {Timestamp:O}. Resultado: fallo. Latencia: {LatencyMs} ms. Palabras: {WordCount}. Reintentos: {Retries}.",
+                    DateTimeOffset.UtcNow, duration, WordCount, retries);
+            }
+            else if (degraded)
+            {
+                Logger?.LogWarning(
+                    "LOG-009 Sincronización de vistas. Hora: {Timestamp:O}. Resultado: degradado. Latencia: {LatencyMs} ms. Palabras: {WordCount}.",
+                    DateTimeOffset.UtcNow, duration, WordCount);
+            }
+            else
+            {
+                Logger?.LogDebug(
+                    "LOG-009 Sincronización de vistas. Hora: {Timestamp:O}. Resultado: éxito. Latencia: {LatencyMs} ms. Palabras: {WordCount}.",
+                    DateTimeOffset.UtcNow, duration, WordCount);
+            }
+        }
+        catch { }
+
+        return !failed;
     }
 
     public static bool Sync(EditorPanel? sourcePanel, string? newContent) => SyncEdit(sourcePanel, newContent);
@@ -169,17 +321,16 @@ public partial class Synchronizer
     // instance
     public bool SyncEdit(string? newContent)
     {
-        if (_syncing) return false;
-        _syncing = true;
-        try
+        EditorPanel? src = SourcePanel ?? Left;
+        if (src is null)
         {
+            // fallback render
             var doc = Document;
             if (doc is not null) doc.Content = newContent ?? string.Empty;
             Left?.Render(); Right?.Render();
-            if (SourcePanel is not null) SourcePanel.Render();
             return true;
         }
-        finally { _syncing = false; }
+        return Synchronizer.SyncEdit(src, newContent);
     }
     public bool Sync(string? newContent) => SyncEdit(newContent);
     public bool Synchronize(string? newContent) => SyncEdit(newContent);
