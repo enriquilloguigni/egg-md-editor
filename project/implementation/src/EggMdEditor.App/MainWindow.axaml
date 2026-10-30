@@ -168,8 +168,8 @@
            acciones en F-001 (ADR-001). -->
       <Border x:Name="FormatBarContainer"
               Grid.Row="1"
-              Padding="8,5">
-        <ItemsControl x:Name="FormatBar"
+              Padding="8,5"
+              IsVisible="{Binding FormatBarVisible}">        <ItemsControl x:Name="FormatBar"
                       ItemsSource="{Binding FormatBarControls}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
