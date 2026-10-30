@@ -40,7 +40,7 @@ public class CloseErrorHandlingTests
             errorOutput.ToString());
         Assert.Contains(
             logger.Entries,
-            entry => entry.Level == LogLevel.Error
+            entry => entry.Level == Microsoft.Extensions.Logging.LogLevel.Error
                 && entry.Message.Contains("Error al cerrar la aplicación", StringComparison.Ordinal));
         Assert.False(lifecycle.IsStartupCompleted);
     }
@@ -67,15 +67,15 @@ public class CloseErrorHandlingTests
 
     private sealed class RecordingLogger : ILogger
     {
-        public List<(LogLevel Level, string Message, Exception? Exception)> Entries { get; } = new();
+        public List<(Microsoft.Extensions.Logging.LogLevel Level, string Message, Exception? Exception)> Entries { get; } = new();
 
         public IDisposable? BeginScope<TState>(TState state)
             where TState : notnull => null;
 
-        public bool IsEnabled(LogLevel logLevel) => true;
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
 
         public void Log<TState>(
-            LogLevel logLevel,
+            Microsoft.Extensions.Logging.LogLevel logLevel,
             EventId eventId,
             TState state,
             Exception? exception,
