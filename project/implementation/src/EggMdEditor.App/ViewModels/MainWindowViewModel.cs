@@ -407,10 +407,19 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     private ICommand? _showRightPanelCommand;
     private ICommand? _toggleLeftPanelCommand;
     private ICommand? _toggleRightPanelCommand;
-
+    private ICommand? _showFormatBarCommand;
+    private ICommand? _hideFormatBarCommand;
+    private ICommand? _toggleFormatBarCommand;
+    private EditorPanel? _activePanel;
     public PanelVisibility Visibility => new PanelVisibility(LeftPanel, RightPanel);
     public PanelVisibility PanelVisibility => Visibility;
     public VisibilitySwitch VisibilitySwitch => new VisibilitySwitch(LeftPanel, RightPanel);
+
+    // ---------- Conmutador de visibilidad de la barra de formato (T-049) ----------
+    public FormatBarVisibility FormatBarVisibility => new FormatBarVisibility(this);
+    public FormatBarVisibility FormatBarSwitch => new FormatBarVisibility(this);
+    public FormatBarVisibility FormatBarConmutator => new FormatBarVisibility(this);
+    public ConmutadorBarraFormato ConmutadorBarraFormatoObj => new ConmutadorBarraFormato(this);
 
     public bool LeftPanelVisible
     {
@@ -450,6 +459,212 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     public bool IsRightVisible => RightPanel.Visible;
     public bool IsLeftPanelVisible => LeftPanel.Visible;
     public bool IsRightPanelVisible => RightPanel.Visible;
+
+    // ---------- Visibilidad de la barra de formato (T-049) ----------
+    private bool _formatBarVisibleState = true;
+
+    public bool FormatBarVisible
+    {
+        get => _formatBarVisibleState;
+        set
+        {
+            if (_formatBarVisibleState == value) { RaiseFormatBarVisibilityChanged(); return; }
+            _formatBarVisibleState = value;
+            RaiseFormatBarVisibilityChanged();
+        }
+    }
+
+    public bool IsFormatBarVisible { get => FormatBarVisible; set => FormatBarVisible = value; }
+    public bool FormatBarShown { get => FormatBarVisible; set => FormatBarVisible = value; }
+    public bool FormatBarIsVisible { get => FormatBarVisible; set => FormatBarVisible = value; }
+    public bool IsFormatBarShown { get => FormatBarVisible; set => FormatBarVisible = value; }
+    public bool VisibleFormatBar { get => FormatBarVisible; set => FormatBarVisible = value; }
+    public bool FormatBarVisibleState { get => FormatBarVisible; set => FormatBarVisible = value; }
+    public bool IsFormatBarVisibleState { get => FormatBarVisible; set => FormatBarVisible = value; }
+
+    public FormatBarVisibilityState FormatBarState
+    {
+        get => FormatBarVisible ? FormatBarVisibilityState.Visible : FormatBarVisibilityState.Hidden;
+        set => FormatBarVisible = value == FormatBarVisibilityState.Visible;
+    }
+    public FormatBarVisibilityState FormatBarVisibilityStateValue
+    {
+        get => FormatBarState;
+        set => FormatBarState = value;
+    }
+    public FormatBarVisibilityState FormatBarVisibilityStatus => FormatBarState;
+
+    public bool ShowFormatBar()
+    {
+        FormatBarVisible = true;
+        return true;
+    }
+    public bool HideFormatBar()
+    {
+        FormatBarVisible = false;
+        return true;
+    }
+    public bool ToggleFormatBar()
+    {
+        FormatBarVisible = !FormatBarVisible;
+        return true;
+    }
+
+    public bool ShowFormatBarVisibility() => ShowFormatBar();
+    public bool HideFormatBarVisibility() => HideFormatBar();
+    public bool ToggleFormatBarVisibility() => ToggleFormatBar();
+
+    public bool MostrarBarraFormato() => ShowFormatBar();
+    public bool OcultarBarraFormato() => HideFormatBar();
+    public bool ConmutarBarraFormato() => ToggleFormatBar();
+
+    public bool ShowFormatBarPanel() => ShowFormatBar();
+    public bool HideFormatBarPanel() => HideFormatBar();
+    public bool ToggleFormatBarPanel() => ToggleFormatBar();
+
+    public ICommand ShowFormatBarCommand =>
+        _showFormatBarCommand ??= new RelayCommand(() => ShowFormatBar());
+    public ICommand HideFormatBarCommand =>
+        _hideFormatBarCommand ??= new RelayCommand(() => HideFormatBar());
+    public ICommand ToggleFormatBarCommand =>
+        _toggleFormatBarCommand ??= new RelayCommand(() => ToggleFormatBar());
+
+    public ICommand ShowFormatBarVisibilityCommand => ShowFormatBarCommand;
+    public ICommand HideFormatBarVisibilityCommand => HideFormatBarCommand;
+    public ICommand ToggleFormatBarVisibilityCommand => ToggleFormatBarCommand;
+
+    public ICommand MostrarBarraFormatoCommand => ShowFormatBarCommand;
+    public ICommand OcultarBarraFormatoCommand => HideFormatBarCommand;
+    public ICommand ConmutarBarraFormatoCommand => ToggleFormatBarCommand;
+
+    public ICommand FormatBarVisibleCommand => ToggleFormatBarCommand;
+    public ICommand FormatBarVisibilityCommand => ToggleFormatBarCommand;
+    public ICommand FormatBarToggleCommand => ToggleFormatBarCommand;
+    public ICommand FormatBarShowCommand => ShowFormatBarCommand;
+    public ICommand FormatBarHideCommand => HideFormatBarCommand;
+
+    private void RaiseFormatBarVisibilityChanged()
+    {
+        OnPropertyChanged(nameof(FormatBarVisible));
+        OnPropertyChanged(nameof(IsFormatBarVisible));
+        OnPropertyChanged(nameof(FormatBarShown));
+        OnPropertyChanged(nameof(FormatBarIsVisible));
+        OnPropertyChanged(nameof(IsFormatBarShown));
+        OnPropertyChanged(nameof(VisibleFormatBar));
+        OnPropertyChanged(nameof(FormatBarVisibleState));
+        OnPropertyChanged(nameof(IsFormatBarVisibleState));
+        OnPropertyChanged(nameof(FormatBarState));
+        OnPropertyChanged(nameof(FormatBarVisibilityStateValue));
+        OnPropertyChanged(nameof(FormatBarVisibilityStatus));
+    }
+
+    // ---------- Panel activo y barra de formato (BR-016, COM-021) ----------
+    public EditorPanel ActivePanel
+    {
+        get
+        {
+            if (_activePanel is null)
+            {
+                _activePanel = LeftPanel;
+            }
+            return _activePanel;
+        }
+        set
+        {
+            if (value is null) return;
+            _activePanel = value;
+            RaiseActivePanelChanged();
+        }
+    }
+
+    public EditorPanel ActiveEditorPanel { get => ActivePanel; set => ActivePanel = value; }
+    public EditorPanel ActiveView { get => ActivePanel; set => ActivePanel = value; }
+    public EditorPanel ActivePanelView { get => ActivePanel; set => ActivePanel = value; }
+    public EditorPanel CurrentPanel { get => ActivePanel; set => ActivePanel = value; }
+    public EditorPanel SelectedPanel { get => ActivePanel; set => ActivePanel = value; }
+    public EditorPanel FocusedPanel { get => ActivePanel; set => ActivePanel = value; }
+    public EditorPanel CurrentActivePanel { get => ActivePanel; set => ActivePanel = value; }
+
+    public PanelSide ActivePanelSide => ActivePanel.IsRight ? PanelSide.Right : PanelSide.Left;
+    public PanelSide ActiveSide => ActivePanelSide;
+    public PanelSide ActiveViewSide => ActivePanelSide;
+
+    public bool IsLeftPanelActive => ActivePanel.IsLeft;
+    public bool IsRightPanelActive => ActivePanel.IsRight;
+    public bool LeftPanelActive => IsLeftPanelActive;
+    public bool RightPanelActive => IsRightPanelActive;
+    public bool IsActiveLeft => IsLeftPanelActive;
+    public bool IsActiveRight => IsRightPanelActive;
+
+    public EditorPanel FormatBarTarget => ActivePanel;
+    public EditorPanel FormatTarget => ActivePanel;
+    public EditorPanel FormatBarTargetPanel => ActivePanel;
+    public EditorPanel FormatTargetPanel => ActivePanel;
+    public EditorPanel FormatBarPanel => ActivePanel;
+    public EditorPanel ActiveFormatPanel => ActivePanel;
+    public EditorPanel FormatActivePanel => ActivePanel;
+    public EditorPanel BarraFormatoTarget => ActivePanel;
+
+    public bool SetActivePanel(EditorPanel? panel)
+    {
+        if (panel is null) return false;
+        ActivePanel = panel;
+        return true;
+    }
+    public bool SetActivePanel(PanelSide side)
+    {
+        ActivePanel = side == PanelSide.Right || side == PanelSide.Derecho ? RightPanel : LeftPanel;
+        return true;
+    }
+    public bool SetActivePanel(string? side)
+    {
+        if (string.IsNullOrWhiteSpace(side)) return false;
+        var s = side!.Trim().ToLowerInvariant();
+        if (s is "left" or "izquierdo" or "l" or "leftpanel" or "leftview" or "wysiwyg") { ActivePanel = LeftPanel; return true; }
+        if (s is "right" or "derecho" or "r" or "rightpanel" or "rightview" or "markdown") { ActivePanel = RightPanel; return true; }
+        return false;
+    }
+
+    public bool ActivateLeftPanel() { ActivePanel = LeftPanel; return true; }
+    public bool ActivateRightPanel() { ActivePanel = RightPanel; return true; }
+    public bool ActivateLeft() => ActivateLeftPanel();
+    public bool ActivateRight() => ActivateRightPanel();
+
+    public bool SetActivePanelToLeft() => ActivateLeftPanel();
+    public bool SetActivePanelToRight() => ActivateRightPanel();
+
+    public ICommand SetActivePanelCommand => new RelayCommand<EditorPanel?>(p => { if (p is not null) ActivePanel = p; });
+    public ICommand ActivateLeftPanelCommand => new RelayCommand(() => ActivateLeftPanel());
+    public ICommand ActivateRightPanelCommand => new RelayCommand(() => ActivateRightPanel());
+
+    private void RaiseActivePanelChanged()
+    {
+        OnPropertyChanged(nameof(ActivePanel));
+        OnPropertyChanged(nameof(ActiveEditorPanel));
+        OnPropertyChanged(nameof(ActiveView));
+        OnPropertyChanged(nameof(ActivePanelView));
+        OnPropertyChanged(nameof(CurrentPanel));
+        OnPropertyChanged(nameof(SelectedPanel));
+        OnPropertyChanged(nameof(FocusedPanel));
+        OnPropertyChanged(nameof(CurrentActivePanel));
+        OnPropertyChanged(nameof(ActivePanelSide));
+        OnPropertyChanged(nameof(ActiveSide));
+        OnPropertyChanged(nameof(ActiveViewSide));
+        OnPropertyChanged(nameof(IsLeftPanelActive));
+        OnPropertyChanged(nameof(IsRightPanelActive));
+        OnPropertyChanged(nameof(LeftPanelActive));
+        OnPropertyChanged(nameof(RightPanelActive));
+        OnPropertyChanged(nameof(IsActiveLeft));
+        OnPropertyChanged(nameof(IsActiveRight));
+        OnPropertyChanged(nameof(FormatBarTarget));
+        OnPropertyChanged(nameof(FormatTarget));
+        OnPropertyChanged(nameof(FormatBarTargetPanel));
+        OnPropertyChanged(nameof(FormatTargetPanel));
+        OnPropertyChanged(nameof(FormatBarPanel));
+        OnPropertyChanged(nameof(ActiveFormatPanel));
+        OnPropertyChanged(nameof(FormatActivePanel));
+        OnPropertyChanged(nameof(BarraFormatoTarget));
+    }
 
     public bool HideLeftPanel()
     {
@@ -2095,4 +2310,13 @@ public sealed record MainMenuDefinition(string Key, string Header);
 /// <param name="Key">Clave del catálogo i18n (ENT-006); también identifica la posición.</param>
 /// <param name="Icon">Icono vectorial del control (VR-001), nunca un glifo de texto.</param>
 /// <param name="Name">Nombre del control en el idioma activo (VR-002, NFR-009).</param>
+public enum FormatBarVisibilityState
+{
+    Visible,
+    Hidden,
+    Shown = Visible,
+    Oculta = Hidden,
+    Oculto = Hidden,
+}
+
 public sealed record FormatBarControlDefinition(string Key, MaterialIconKind Icon, string Name);
