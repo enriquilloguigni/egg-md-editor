@@ -24,7 +24,7 @@ public static class ApplicationLogging
 
     /// <summary>
     /// Crea el <see cref="ILoggerFactory"/> de la aplicación. El nivel mínimo
-    /// es <see cref="LogLevel.Debug"/> para que LOG-002 pueda emitir su
+    /// es <see cref="Microsoft.Extensions.Logging.LogLevel.Debug"/> para que LOG-002 pueda emitir su
     /// registro de éxito; por defecto el formateador escribe todo por la
     /// salida estándar y nunca por la salida de error.
     /// </summary>
@@ -32,7 +32,7 @@ public static class ApplicationLogging
     {
         return LoggerFactory.Create(builder =>
         {
-            builder.SetMinimumLevel(LogLevel.Debug);
+            builder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Debug);
             builder.AddSimpleConsole(options =>
             {
                 options.SingleLine = true;
@@ -46,7 +46,7 @@ public static class ApplicationLogging
             // La salida de error se reserva a los mensajes ERR-001/ERR-002/
             // ERR-005, que escribe ApplicationLifecycle.
             builder.Services.Configure<ConsoleLoggerOptions>(options =>
-                options.LogToStandardErrorThreshold = LogLevel.None);
+                options.LogToStandardErrorThreshold = Microsoft.Extensions.Logging.LogLevel.None);
         });
     }
 
@@ -116,10 +116,10 @@ public static class ApplicationLogging
             }
         }
 
-        public bool IsEnabled(LogLevel logLevel) => _inner.IsEnabled(logLevel);
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => _inner.IsEnabled(logLevel);
 
         public void Log<TState>(
-            LogLevel logLevel,
+            Microsoft.Extensions.Logging.LogLevel logLevel,
             EventId eventId,
             TState state,
             Exception? exception,
