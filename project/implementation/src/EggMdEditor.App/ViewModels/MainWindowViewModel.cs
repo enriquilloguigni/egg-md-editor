@@ -222,6 +222,12 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
                 _rightPanel.Document = _document;
             }
 
+            if (_leftPanel is not null && _rightPanel is not null)
+            {
+                _leftPanel.Sibling = _rightPanel;
+                _rightPanel.Sibling = _leftPanel;
+            }
+
             if (_document is not null)
             {
                 _documentTitleChangedHandler ??= (_, e) =>
@@ -387,6 +393,263 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     {
         _ = LeftPanel;
         _ = RightPanel;
+        if (_leftPanel is not null && _rightPanel is not null)
+        {
+            _leftPanel.Sibling = _rightPanel;
+            _rightPanel.Sibling = _leftPanel;
+        }
+    }
+
+    // ---------- Visibilidad de paneles (T-048) ----------
+    private ICommand? _hideLeftPanelCommand;
+    private ICommand? _hideRightPanelCommand;
+    private ICommand? _showLeftPanelCommand;
+    private ICommand? _showRightPanelCommand;
+    private ICommand? _toggleLeftPanelCommand;
+    private ICommand? _toggleRightPanelCommand;
+
+    public PanelVisibility Visibility => new PanelVisibility(LeftPanel, RightPanel);
+    public PanelVisibility PanelVisibility => Visibility;
+    public VisibilitySwitch VisibilitySwitch => new VisibilitySwitch(LeftPanel, RightPanel);
+
+    public bool LeftPanelVisible
+    {
+        get => LeftPanel.Visible;
+        set
+        {
+            if (value) { LeftPanel.Visible = true; LeftPanel.IsVisible = true; }
+            else if (RightPanel.Visible) { LeftPanel.Visible = false; LeftPanel.IsVisible = false; }
+            OnPropertyChanged(nameof(LeftPanelVisible));
+            OnPropertyChanged(nameof(RightPanelVisible));
+            OnPropertyChanged(nameof(IsLeftPanelVisible));
+            OnPropertyChanged(nameof(IsRightPanelVisible));
+            OnPropertyChanged(nameof(LeftVisible));
+            OnPropertyChanged(nameof(RightVisible));
+        }
+    }
+
+    public bool RightPanelVisible
+    {
+        get => RightPanel.Visible;
+        set
+        {
+            if (value) { RightPanel.Visible = true; RightPanel.IsVisible = true; }
+            else if (LeftPanel.Visible) { RightPanel.Visible = false; RightPanel.IsVisible = false; }
+            OnPropertyChanged(nameof(LeftPanelVisible));
+            OnPropertyChanged(nameof(RightPanelVisible));
+            OnPropertyChanged(nameof(IsLeftPanelVisible));
+            OnPropertyChanged(nameof(IsRightPanelVisible));
+            OnPropertyChanged(nameof(LeftVisible));
+            OnPropertyChanged(nameof(RightVisible));
+        }
+    }
+
+    public bool LeftVisible { get => LeftPanel.Visible; set => LeftPanelVisible = value; }
+    public bool RightVisible { get => RightPanel.Visible; set => RightPanelVisible = value; }
+    public bool IsLeftVisible => LeftPanel.Visible;
+    public bool IsRightVisible => RightPanel.Visible;
+    public bool IsLeftPanelVisible => LeftPanel.Visible;
+    public bool IsRightPanelVisible => RightPanel.Visible;
+
+    public bool HideLeftPanel()
+    {
+        bool ok = Visibility.HideLeftPanel();
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool HideLeft() => HideLeftPanel();
+    public bool HideLeftView() => HideLeftPanel();
+    public bool HideLeftSide() => HideLeftPanel();
+
+    public bool HideRightPanel()
+    {
+        bool ok = Visibility.HideRightPanel();
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool HideRight() => HideRightPanel();
+    public bool HideRightView() => HideRightPanel();
+    public bool HideRightSide() => HideRightPanel();
+
+    public bool ShowLeftPanel()
+    {
+        bool ok = Visibility.ShowLeftPanel();
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool ShowLeft() => ShowLeftPanel();
+    public bool ShowLeftView() => ShowLeftPanel();
+    public bool ShowLeftSide() => ShowLeftPanel();
+
+    public bool ShowRightPanel()
+    {
+        bool ok = Visibility.ShowRightPanel();
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool ShowRight() => ShowRightPanel();
+    public bool ShowRightView() => ShowRightPanel();
+    public bool ShowRightSide() => ShowRightPanel();
+
+    public bool ToggleLeftPanel()
+    {
+        bool ok = Visibility.ToggleLeftPanel();
+        RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool ToggleLeft() => ToggleLeftPanel();
+    public bool ToggleLeftView() => ToggleLeftPanel();
+
+    public bool ToggleRightPanel()
+    {
+        bool ok = Visibility.ToggleRightPanel();
+        RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool ToggleRight() => ToggleRightPanel();
+    public bool ToggleRightView() => ToggleRightPanel();
+
+    public bool HidePanel(EditorPanel? p)
+    {
+        bool ok = Visibility.HidePanel(p);
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool HidePanel(PanelSide side)
+    {
+        bool ok = Visibility.HidePanel(side);
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool HidePanel(string? side)
+    {
+        bool ok = Visibility.HidePanel(side);
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+
+    public bool ShowPanel(EditorPanel? p)
+    {
+        bool ok = Visibility.ShowPanel(p);
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool ShowPanel(PanelSide side)
+    {
+        bool ok = Visibility.ShowPanel(side);
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool ShowPanel(string? side)
+    {
+        bool ok = Visibility.ShowPanel(side);
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+
+    public bool TogglePanel(EditorPanel? p)
+    {
+        bool ok = Visibility.TogglePanel(p);
+        RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool TogglePanel(PanelSide side)
+    {
+        bool ok = Visibility.TogglePanel(side);
+        RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool TogglePanel(string? side)
+    {
+        bool ok = Visibility.TogglePanel(side);
+        RaisePanelVisibilityChanged();
+        return ok;
+    }
+
+    public bool SetVisible(EditorPanel? p, bool v)
+    {
+        bool ok = Visibility.SetVisible(p, v);
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool SetVisible(PanelSide side, bool v)
+    {
+        bool ok = Visibility.SetVisible(side, v);
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool SetVisible(string? side, bool v)
+    {
+        bool ok = Visibility.SetVisible(side, v);
+        if (ok) RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool SetVisibility(EditorPanel? p, bool v) => SetVisible(p, v);
+    public bool SetVisibility(PanelSide side, bool v) => SetVisible(side, v);
+    public bool SetVisibility(string? side, bool v) => SetVisible(side, v);
+
+    public bool RestoreVisibility()
+    {
+        bool ok = Visibility.RestoreVisibility();
+        RaisePanelVisibilityChanged();
+        return ok;
+    }
+    public bool RestorePanelsVisibility() => RestoreVisibility();
+    public bool ResetVisibility() => RestoreVisibility();
+    public bool ResetPanelVisibility() => RestoreVisibility();
+
+    public PanelVisibilityState PanelVisibilityState => Visibility.State;
+    public PanelVisibilityState VisibilityState => Visibility.State;
+
+    public ICommand HideLeftPanelCommand =>
+        _hideLeftPanelCommand ??= new RelayCommand(() => HideLeftPanel());
+    public ICommand HideLeftCommand => HideLeftPanelCommand;
+    public ICommand HideLeftViewCommand => HideLeftPanelCommand;
+    public ICommand HideLeftSideCommand => HideLeftPanelCommand;
+
+    public ICommand HideRightPanelCommand =>
+        _hideRightPanelCommand ??= new RelayCommand(() => HideRightPanel());
+    public ICommand HideRightCommand => HideRightPanelCommand;
+    public ICommand HideRightViewCommand => HideRightPanelCommand;
+    public ICommand HideRightSideCommand => HideRightPanelCommand;
+
+    public ICommand ShowLeftPanelCommand =>
+        _showLeftPanelCommand ??= new RelayCommand(() => ShowLeftPanel());
+    public ICommand ShowLeftCommand => ShowLeftPanelCommand;
+    public ICommand ShowLeftViewCommand => ShowLeftPanelCommand;
+    public ICommand ShowLeftSideCommand => ShowLeftPanelCommand;
+
+    public ICommand ShowRightPanelCommand =>
+        _showRightPanelCommand ??= new RelayCommand(() => ShowRightPanel());
+    public ICommand ShowRightCommand => ShowRightPanelCommand;
+    public ICommand ShowRightViewCommand => ShowRightPanelCommand;
+    public ICommand ShowRightSideCommand => ShowRightPanelCommand;
+
+    public ICommand ToggleLeftPanelCommand =>
+        _toggleLeftPanelCommand ??= new RelayCommand(() => ToggleLeftPanel());
+    public ICommand ToggleLeftCommand => ToggleLeftPanelCommand;
+    public ICommand ToggleLeftViewCommand => ToggleLeftPanelCommand;
+
+    public ICommand ToggleRightPanelCommand =>
+        _toggleRightPanelCommand ??= new RelayCommand(() => ToggleRightPanel());
+    public ICommand ToggleRightCommand => ToggleRightPanelCommand;
+    public ICommand ToggleRightViewCommand => ToggleRightPanelCommand;
+
+    private void RaisePanelVisibilityChanged()
+    {
+        OnPropertyChanged(nameof(LeftPanelVisible));
+        OnPropertyChanged(nameof(RightPanelVisible));
+        OnPropertyChanged(nameof(IsLeftPanelVisible));
+        OnPropertyChanged(nameof(IsRightPanelVisible));
+        OnPropertyChanged(nameof(LeftVisible));
+        OnPropertyChanged(nameof(RightVisible));
+        OnPropertyChanged(nameof(IsLeftVisible));
+        OnPropertyChanged(nameof(IsRightVisible));
+        OnPropertyChanged(nameof(PanelVisibilityState));
+        OnPropertyChanged(nameof(VisibilityState));
+        OnPropertyChanged(nameof(Visibility));
+        OnPropertyChanged(nameof(PanelVisibility));
+        OnPropertyChanged(nameof(VisibilitySwitch));
     }
 
     /// <summary>Almacén de archivos recientes de F-002 (ENT-010).</summary>
