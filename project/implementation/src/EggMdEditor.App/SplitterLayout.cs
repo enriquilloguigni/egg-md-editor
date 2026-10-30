@@ -40,6 +40,8 @@ public partial class SplitterLayout
             _leftPanel.Document = document;
             _rightPanel.Document = document;
         }
+        _leftPanel.Sibling = _rightPanel;
+        _rightPanel.Sibling = _leftPanel;
         Panels = new List<EditorPanel> { _leftPanel, _rightPanel }.AsReadOnly();
     }
 
@@ -47,6 +49,8 @@ public partial class SplitterLayout
     {
         _leftPanel = left ?? EditorPanel.CreateLeft();
         _rightPanel = right ?? EditorPanel.CreateRight();
+        _leftPanel.Sibling = _rightPanel;
+        _rightPanel.Sibling = _leftPanel;
         Panels = new List<EditorPanel> { _leftPanel, _rightPanel }.AsReadOnly();
     }
 
@@ -418,6 +422,45 @@ public partial class SplitterLayout
     }
 
     public void ResetPosition() => Reset();
+
+    // ---------- Visibilidad (T-048) ----------
+    public PanelVisibility Visibility => new PanelVisibility(_leftPanel, _rightPanel);
+    public PanelVisibility PanelVisibility => Visibility;
+    public VisibilitySwitch VisibilitySwitch => new VisibilitySwitch(_leftPanel, _rightPanel);
+
+    public bool LeftVisible { get => _leftPanel.Visible; set { if (value) _leftPanel.Visible = true; else if (_rightPanel.Visible) _leftPanel.Visible = false; } }
+    public bool RightVisible { get => _rightPanel.Visible; set { if (value) _rightPanel.Visible = true; else if (_leftPanel.Visible) _rightPanel.Visible = false; } }
+    public bool LeftPanelVisible { get => LeftVisible; set => LeftVisible = value; }
+    public bool RightPanelVisible { get => RightVisible; set => RightVisible = value; }
+    public bool IsLeftVisible => LeftVisible;
+    public bool IsRightVisible => RightVisible;
+    public bool IsLeftPanelVisible => LeftVisible;
+    public bool IsRightPanelVisible => RightVisible;
+
+    public bool HideLeft() => Visibility.HideLeftPanel();
+    public bool HideLeftPanel() => Visibility.HideLeftPanel();
+    public bool HideLeftView() => Visibility.HideLeftPanel();
+    public bool HideRight() => Visibility.HideRightPanel();
+    public bool HideRightPanel() => Visibility.HideRightPanel();
+    public bool HideRightView() => Visibility.HideRightPanel();
+    public bool ShowLeft() => Visibility.ShowLeftPanel();
+    public bool ShowLeftPanel() => Visibility.ShowLeftPanel();
+    public bool ShowLeftView() => Visibility.ShowLeftPanel();
+    public bool ShowRight() => Visibility.ShowRightPanel();
+    public bool ShowRightPanel() => Visibility.ShowRightPanel();
+    public bool ShowRightView() => Visibility.ShowRightPanel();
+    public bool ToggleLeft() => Visibility.ToggleLeftPanel();
+    public bool ToggleLeftPanel() => Visibility.ToggleLeftPanel();
+    public bool ToggleRight() => Visibility.ToggleRightPanel();
+    public bool ToggleRightPanel() => Visibility.ToggleRightPanel();
+    public bool HidePanel(EditorPanel? p) => Visibility.HidePanel(p);
+    public bool ShowPanel(EditorPanel? p) => Visibility.ShowPanel(p);
+    public bool TogglePanel(EditorPanel? p) => Visibility.TogglePanel(p);
+    public bool SetVisible(EditorPanel? p, bool v) => Visibility.SetVisible(p, v);
+    public bool SetVisible(PanelSide side, bool v) => Visibility.SetVisible(side, v);
+    public bool SetVisible(string? side, bool v) => Visibility.SetVisible(side, v);
+    public bool RestoreVisibility() => Visibility.RestoreVisibility();
+    public PanelVisibilityState VisibilityState => Visibility.State;
 
     public override string ToString() => $"SplitterLayout(Left, Right, Width={_splitterWidth})";
 }
