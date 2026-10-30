@@ -115,6 +115,22 @@ public partial class Synchronizer
                 try { sourcePanel.Render(); } catch { }
             }
 
+            // Desplazamiento sincronizado durante la edición (T-046, BR-F003-005).
+            try
+            {
+                if (sourcePanel is not null)
+                {
+                    foreach (var p in targets)
+                    {
+                        if (!ReferenceEquals(p, sourcePanel))
+                        {
+                            try { ScrollSynchronizer.SyncScroll(sourcePanel, p); } catch { }
+                        }
+                    }
+                }
+            }
+            catch { }
+
             var args = new ContentChangedEventArgs(newContent) { SourcePanel = sourcePanel, Document = doc };
             try { ContentChanged?.Invoke(null, args); } catch { }
             try { Changed?.Invoke(null, EventArgs.Empty); } catch { }
