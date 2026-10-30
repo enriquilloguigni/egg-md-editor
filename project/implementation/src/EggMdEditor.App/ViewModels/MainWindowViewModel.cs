@@ -421,6 +421,40 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     public FormatBarVisibility FormatBarConmutator => new FormatBarVisibility(this);
     public ConmutadorBarraFormato ConmutadorBarraFormatoObj => new ConmutadorBarraFormato(this);
 
+    // ---------- Indicador de panel activo (T-052, VR-009, NFR-009) ----------
+    public ActivePanelIndicator ActivePanelIndicator => new ActivePanelIndicator(this);
+    public ActivePanelIndicator ActiveIndicator => new ActivePanelIndicator(this);
+    public ActivePanelIndicator PanelActiveIndicator => new ActivePanelIndicator(this);
+    public ActivePanelIndicator ActivePanelBorder => new ActivePanelIndicator(this);
+    public ActivePanelIndicator ActiveBorder => new ActivePanelIndicator(this);
+    public ActivePanelIndicator ActivePanelFocus => new ActivePanelIndicator(this);
+    public ActivePanelIndicator FocusIndicator => new ActivePanelIndicator(this);
+    public ActivePanelIndicator ActiveFocusIndicator => new ActivePanelIndicator(this);
+    public ActivePanelIndicator PanelIndicator => new ActivePanelIndicator(this);
+    public ActivePanelIndicator Indicator => new ActivePanelIndicator(this);
+    public ActivePanelIndicator ActivePanelStatus => new ActivePanelIndicator(this);
+    public ActivePanelIndicator ActivePanelMarker => new ActivePanelIndicator(this);
+    public ActivePanelIndicator ActivePanelHighlight => new ActivePanelIndicator(this);
+
+    public ActiveIndicator ActiveIndicatorObj => new ActiveIndicator(this);
+    public PanelActiveIndicator PanelActiveIndicatorObj => new PanelActiveIndicator(this);
+    public ActivePanelBorder ActivePanelBorderObj => new ActivePanelBorder(this);
+    public ActiveBorder ActiveBorderObj => new ActiveBorder(this);
+    public ActivePanelFocus ActivePanelFocusObj => new ActivePanelFocus(this);
+    public FocusIndicator FocusIndicatorObj => new FocusIndicator(this);
+    public ActiveFocusIndicator ActiveFocusIndicatorObj => new ActiveFocusIndicator(this);
+    public PanelIndicator PanelIndicatorObj => new PanelIndicator(this);
+    public Indicator IndicatorObj => new Indicator(this);
+    public ActivePanelStatus ActivePanelStatusObj => new ActivePanelStatus(this);
+    public ActivePanelMarker ActivePanelMarkerObj => new ActivePanelMarker(this);
+    public ActivePanelHighlight ActivePanelHighlightObj => new ActivePanelHighlight(this);
+
+    public IndicadorPanelActivo IndicadorPanelActivoObj => new IndicadorPanelActivo(this);
+    public IndicadorActivo IndicadorActivoObj => new IndicadorActivo(this);
+    public IndicadorActivoPanel IndicadorActivoPanelObj => new IndicadorActivoPanel(this);
+    public IndicadorFocoPanelActivo IndicadorFocoPanelActivoObj => new IndicadorFocoPanelActivo(this);
+    public IndicadorBordePanelActivo IndicadorBordePanelActivoObj => new IndicadorBordePanelActivo(this);
+
     public bool LeftPanelVisible
     {
         get => LeftPanel.Visible;
