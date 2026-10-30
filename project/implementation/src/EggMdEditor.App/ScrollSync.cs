@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
@@ -11,6 +12,11 @@ namespace EggMdEditor.App;
 /// </summary>
 public partial class ScrollSynchronizer
 {
+    // ---------- Shared logger (LOG-011) ----------
+    public static ILogger? Logger { get => Synchronizer.Logger; set => Synchronizer.Logger = value; }
+    public static ILogger? InstanceLogger { get => Logger; set => Logger = value; }
+    public ILogger? LoggerInstance { get => Logger; set => Logger = value; }
+
     public ScrollSynchronizer() { }
     public ScrollSynchronizer(OpenDocument? document) { }
     public ScrollSynchronizer(EditorPanel? left, EditorPanel? right) { }
@@ -36,11 +42,21 @@ public partial class ScrollSynchronizer
         }
         if (resolvedMap is null) return false;
 
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         int srcOffset = ToInt(sourcePanel.ScrollPosition);
         int? targetOffset = ResolveTargetOffset(resolvedMap, sourcePanel, srcOffset);
-        if (targetOffset is null) return false;
+        if (targetOffset is null)
+        {
+            sw.Stop();
+            Logger?.LogDebug(
+                "LOG-011 Resaltado pasajero (sin ancla). Hora: {Timestamp:O}. Panel origen: {Origin}. Panel destino: {Destination}. Duración: {DurationMs} ms. Ancla encontrada: no.",
+                DateTimeOffset.UtcNow, sourcePanel.Side, targetPanel.Side, sw.ElapsedMilliseconds);
+            return false;
+        }
 
-        return ScrollToAnchor(targetPanel, targetOffset.Value);
+        bool scrolled = ScrollToAnchor(targetPanel, targetOffset.Value);
+        sw.Stop();
+        return scrolled;
     }
 
     public static bool SyncScroll(EditorPanel? sourcePanel, EditorPanel? targetPanel, object? map)
