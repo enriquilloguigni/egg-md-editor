@@ -49,6 +49,7 @@ public partial class EditorPanel
 
     public EditorPanel()
     {
+        Synchronizer.AllPanels.Add(this);
     }
 
     public EditorPanel(PanelSide side, EditorMode mode, OpenDocument? document = null)
@@ -434,6 +435,7 @@ public partial class EditorPanel
             if (ReferenceEquals(_document, value)) return;
             DetachDocument(_document);
             _document = value;
+            if (!Synchronizer.AllPanels.Contains(this)) Synchronizer.AllPanels.Add(this);
             AttachDocument(_document);
         }
     }
