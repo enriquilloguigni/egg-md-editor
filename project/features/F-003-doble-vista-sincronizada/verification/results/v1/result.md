@@ -20,10 +20,11 @@ Implementation commit: 266acb9ab07495fd60c63245b09763127b2c42dc
 | ID | Dimensión | Hallazgo | Estado / severidad |
 |---|---|---|---|
 | HV-014 | Pantallas / Visual | Cerrado con renuncia explícita: SC-001 en los estados A, B, C, D, E y F no tiene captura materializada porque el entorno de verificación no dispone de display para la captura headless; la conformidad de los estados se contrasta con T-047..T-056, T-058 y el código, sin pérdida de cobertura funcional. | Cerrado / Baja |
+| HV-014 | Pantallas / Edición | Los paneles de edición (WYSIWYG y Markdown) no aceptan entrada de teclado en la aplicación en ejecución; la sincronización bidireccional no puede validarse manualmente porque el programa ignora la entrada del usuario. Afecta: AC-024, BR-F003-001/002/003/004. Causa probable: los controles de edición de los paneles no están cableados para recibir entrada de teclado (falta binding/handler de entrada). Acción requerida: T-059. | Abierto / Alta |
 
 ## Correcciones requeridas
 
-Ninguna.
+T-059: cablear entrada de teclado en paneles y conectar a sincronización
 
 ## Evidencias
 
@@ -34,6 +35,6 @@ Ninguna.
 
 ## Resultado
 
-**Resultado: cubierto**
+**Resultado: no-cubierto**
 
-Las 19 tareas y los 6 AC tienen evidencia directa, DS-003 se alcanza, la suite pasa 371/371 con `exit_code=0` y no quedan incidencias pendientes: HV-014 se cierra con renuncia explícita a la captura visual de SC-001 por limitación determinista del entorno sin display; el resto de hallazgos permanece cerrado. Plan cubierto.
+Las 19 tareas y los 6 AC tienen evidencia directa, DS-003 se alcanza, la suite pasa 371/371 con `exit_code=0` y no quedan incidencias pendientes: HV-014 se cierra con renuncia explícita a la captura visual de SC-001 por limitación determinista del entorno sin display; el resto de hallazgos permanece cerrado. Plan no cubierto.
