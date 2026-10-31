@@ -267,7 +267,9 @@ public partial class MainWindow : Window
         try
         {
             _viewModel.LeftPanel.SyncEdit(LeftEditor.Text ?? string.Empty);
-            RightEditor.Text = _viewModel.RightPanel.RenderedContent ?? _viewModel.RightPanel.Content ?? string.Empty;
+            var rightText = _viewModel.RightPanel.RenderedContent;
+            if (string.IsNullOrEmpty(rightText)) rightText = _viewModel.RightPanel.Content;
+            RightEditor.Text = rightText ?? string.Empty;
         }
         catch { }
         finally { _editorSyncing = false; }
@@ -280,7 +282,9 @@ public partial class MainWindow : Window
         try
         {
             _viewModel.RightPanel.SyncEdit(RightEditor.Text ?? string.Empty);
-            LeftEditor.Text = _viewModel.LeftPanel.RenderedContent ?? _viewModel.LeftPanel.Content ?? string.Empty;
+            var leftText = _viewModel.LeftPanel.RenderedContent;
+            if (string.IsNullOrEmpty(leftText)) leftText = _viewModel.LeftPanel.Content;
+            LeftEditor.Text = leftText ?? string.Empty;
         }
         catch { }
         finally { _editorSyncing = false; }
