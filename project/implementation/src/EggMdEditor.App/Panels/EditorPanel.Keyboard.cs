@@ -203,32 +203,9 @@ public partial class EditorPanel
 
     private bool ApplyKeyboardInput(string? text, bool isChar)
     {
-        if (_document is null)
-        {
-            // sin documento: nada que sincronizar
-            return false;
-        }
+        string newContent = text ?? string.Empty;
 
-        string newContent;
-        if (isChar && text is not null && text.Length == 1)
-        {
-            // Tecleo de un carácter: se anexa al contenido actual.
-            newContent = (_document.Content ?? string.Empty) + text;
-        }
-        else
-        {
-            // Entrada de texto completo: reemplaza el contenido (como SyncEdit).
-            newContent = text ?? string.Empty;
-        }
-
-        // Si es un carácter y el test espera reemplazo completo? Cubrimos ambos:
-        // intentamos primero reemplazo; si el contenido actual ya contiene el
-        // texto, anexamos. (Heurística desactivada: usamos reemplazo directo
-        // para coincidir con SyncEdit.)
-        // Revertimos la heurística: tratar siempre como reemplazo completo
-        // para alinearse con las pruebas de sincronización existentes.
-        newContent = text ?? string.Empty;
-
+        // T-064: no exigir documento previo; SyncEdit crea/comparte uno si falta.
         return SyncEdit(newContent);
     }
 
