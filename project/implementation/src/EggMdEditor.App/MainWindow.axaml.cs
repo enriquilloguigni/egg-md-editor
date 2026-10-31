@@ -16,6 +16,7 @@ public partial class MainWindow : Window
     private readonly ShortcutHandler _shortcutHandler;
     private Button? _lastOpenMenuButton;
     private HelpWindow? _helpWindow;
+    private bool _editorSyncing;
 
     /// <summary>
     /// Ciclo de vida técnico del proceso (LOG-003, ERR-005). La composición de
@@ -43,6 +44,14 @@ public partial class MainWindow : Window
         _viewModel = viewModel;
         _shortcutHandler = new ShortcutHandler(viewModel);
         DataContext = viewModel;
+
+        // T-060/HV-014: cablear controles de edición a la sincronización.
+        try
+        {
+            LeftEditor.Text = _viewModel.LeftPanel.Content ?? string.Empty;
+            RightEditor.Text = _viewModel.RightPanel.Content ?? string.Empty;
+        }
+        catch { }
 
         // OP-005/OP-006: el atajo de cierre disponible en F-001 solicita el
         // cierre de la ventana; el ViewModel no conoce la plataforma.
@@ -251,6 +260,32 @@ public partial class MainWindow : Window
     /// TR-005: un clic fuera del menú cierra la entrada desplegada. El foco
     /// sigue al elemento pulsado, nunca a una entrada ya cerrada.
     /// </summary>
+    private void OnLeftEditorTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (_editorSyncing) return;
+        _editorSyncing = true;
+        try
+        {
+            _viewModel.LeftPanel.SyncEdit(LeftEditor.Text ?? string.Empty);
+            RightEditor.Text = _viewModel.RightPanel.RenderedContent ?? _viewModel.RightPanel.Content ?? string.Empty;
+        }
+        catch { }
+        finally { _editorSyncing = false; }
+    }
+
+    private void OnRightEditorTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (_editorSyncing) return;
+        _editorSyncing = true;
+        try
+        {
+            _viewModel.RightPanel.SyncEdit(RightEditor.Text ?? string.Empty);
+            LeftEditor.Text = _viewModel.LeftPanel.RenderedContent ?? _viewModel.LeftPanel.Content ?? string.Empty;
+        }
+        catch { }
+        finally { _editorSyncing = false; }
+    }
+
     private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (!_viewModel.IsMenuOpen)
