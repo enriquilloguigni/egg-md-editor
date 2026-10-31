@@ -37,7 +37,7 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     private readonly List<string> _menuShortcutCombinations = new();
     private bool _registeringShortcuts;
     private DialogViewModel? _dialog;
-    private OpenDocument? _document;
+    private OpenDocument? _document = new OpenDocument();
     private EditorPanel? _leftPanel;
     private EditorPanel? _rightPanel;
     private PropertyChangedEventHandler? _documentTitleChangedHandler;
