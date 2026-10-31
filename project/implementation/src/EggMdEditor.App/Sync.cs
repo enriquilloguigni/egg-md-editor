@@ -144,6 +144,20 @@ public partial class Synchronizer
                     {
                         targets.Add(sourcePanel);
                     }
+                    // Propagar el modelo compartido a los paneles (incluido el opuesto)
+                    // antes de renderizar, para que Render() use el contenido actualizado
+                    // en lugar de vaciarse por falta de documento (HV-016).
+                    foreach (var p in targets)
+                    {
+                        try
+                        {
+                            if (doc is not null && !ReferenceEquals(p.Document, doc))
+                            {
+                                p.Document = doc;
+                            }
+                        }
+                        catch { }
+                    }
                     foreach (var p in targets)
                     {
                         try { p.Render(); } catch { }
@@ -340,6 +354,11 @@ public partial class Synchronizer
             // fallback render
             var doc = Document;
             if (doc is not null) doc.Content = newContent ?? string.Empty;
+            if (doc is not null)
+            {
+                if (Left is not null && !ReferenceEquals(Left.Document, doc)) Left.Document = doc;
+                if (Right is not null && !ReferenceEquals(Right.Document, doc)) Right.Document = doc;
+            }
             Left?.Render(); Right?.Render();
             return true;
         }
