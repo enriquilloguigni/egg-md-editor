@@ -537,6 +537,31 @@ public partial class EditorPanels
     public bool Input(object? input) => Left?.Input(input) ?? false;
     public bool Input(string? text) => Left?.Input(text) ?? false;
     public bool Input(char ch) => Left?.Input(ch) ?? false;
+
+    // T-061/HV-015: entrada de teclado en el panel derecho y sincronización.
+    public bool HandleRightKeyboardInput(object? input) => Right?.HandleKeyboardInput(input) ?? false;
+    public bool HandleRightKeyboardInput(string? text) => Right?.HandleKeyboardInput(text) ?? false;
+    public bool HandleRightKeyboardInput(char ch) => Right?.HandleKeyboardInput(ch) ?? false;
+    public bool HandleRightTextInput(object? input) => Right?.HandleTextInput(input) ?? false;
+    public bool HandleRightTextInput(string? text) => Right?.HandleTextInput(text) ?? false;
+    public bool HandleRightTextInput(char ch) => Right?.HandleTextInput(ch) ?? false;
+    public bool HandleRightKeyDown(object? input) => Right?.HandleKeyDown(input) ?? false;
+    public bool HandleRightKeyDown(string? text) => Right?.HandleKeyDown(text) ?? false;
+    public bool HandleRightKeyDown(char ch) => Right?.HandleKeyDown(ch) ?? false;
+    public bool TypeRight(object? input) => Right?.Type(input) ?? false;
+    public bool TypeRight(string? text) => Right?.Type(text) ?? false;
+    public bool TypeRight(char ch) => Right?.Type(ch) ?? false;
+    public bool InputRight(object? input) => Right?.Input(input) ?? false;
+    public bool InputRight(string? text) => Right?.Input(text) ?? false;
+    public bool InputRight(char ch) => Right?.Input(ch) ?? false;
+
+    // T-061/HV-015: entrada de teclado dirigida a un panel concreto.
+    public bool HandleKeyboardInput(EditorPanel? source, object? input) => source?.HandleKeyboardInput(input) ?? false;
+    public bool HandleKeyboardInput(EditorPanel? source, string? text) => source?.HandleKeyboardInput(text) ?? false;
+    public bool HandleKeyboardInput(EditorPanel? source, char ch) => source?.HandleKeyboardInput(ch) ?? false;
+    public bool Type(EditorPanel? source, object? input) => source?.Type(input) ?? false;
+    public bool Type(EditorPanel? source, string? text) => source?.Type(text) ?? false;
+    public bool Type(EditorPanel? source, char ch) => source?.Type(ch) ?? false;
 }
 
 // ---------- Alias classes for Sync ----------
