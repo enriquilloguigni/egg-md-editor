@@ -1,0 +1,16 @@
+{
+  "feature": "F-003-doble-vista-sincronizada",
+  "execution": "E-008",
+  "command": "dotnet test project/implementation/tests/EggMdEditor.App.Tests/EggMdEditor.App.Tests.csproj",
+  "exit_code": 1,
+  "passed": false,
+  "duration_ms": 20966,
+  "env": {
+    "os": "Linux",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "executed_at": "2026-10-31 18:18:06",
+  "stdout_tail": "  Determinando los proyectos que se van a restaurar...\n  Todos los proyectos están actualizados para la restauración.\n  EggMdEditor.App -> /home/enriquilloguigni/source/github/egg-md-editor/project/implementation/src/EggMdEditor.App/bin/Debug/net10.0/EggMdEditor.App.dll\n  EggMdEditor.App.Tests -> /home/enriquilloguigni/source/github/egg-md-editor/project/implementation/tests/EggMdEditor.App.Tests/bin/Debug/net10.0/EggMdEditor.App.Tests.dll\n  Ejecutar pruebas: '/home/enriquilloguigni/source/github/egg-md-editor/project/implementation/tests/EggMdEditor.App.Tests/bin/Debug/net10.0/EggMdEditor.App.Tests.dll' [net10.0|x64]\n  Error. Error: 1, Correcto: 370, Omitido: 0, Total: 371, Duración: 12s 989ms - EggMdEditor.App.Tests.dll (net10.0|x64)\n/home/enriquilloguigni/source/github/egg-md-editor/project/implementation/tests/EggMdEditor.App.Tests/bin/Debug/net10.0/EggMdEditor.App.Tests.dll : error run failed: Error en las pruebas: '/home/enriquilloguigni/source/github/egg-md-editor/project/implementation/tests/EggMdEditor.App.Tests/bin/Debug/net10.0/TestResults/EggMdEditor.App.Tests_net10.0_x64.log' [net10.0|x64] [/home/enriquilloguigni/source/github/egg-md-editor/project/implementation/tests/EggMdEditor.App.Tests/EggMdEditor.App.Tests.csproj]\n",
+  "stderr_tail": ""
+}
