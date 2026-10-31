@@ -128,7 +128,16 @@ public partial class Synchronizer
                 try
                 {
                     var doc = sourcePanel?.Document;
-                    if (doc is not null)
+                    // Raíz (T-064): si no hay documento compartido (p. ej. app real
+                    // antes de "Nuevo"), se crea uno y se cablea a ambos paneles
+                    // para que la sincronización no vacíe el panel opuesto.
+                    if (doc is null && sourcePanel is not null)
+                    {
+                        doc = new OpenDocument(newContent ?? string.Empty);
+                        if (sourcePanel is not null) sourcePanel.Document = doc;
+                        if (sourcePanel?.Sibling is not null) sourcePanel.Sibling.Document = doc;
+                    }
+                    else if (doc is not null)
                     {
                         doc.Content = newContent ?? string.Empty;
                     }
