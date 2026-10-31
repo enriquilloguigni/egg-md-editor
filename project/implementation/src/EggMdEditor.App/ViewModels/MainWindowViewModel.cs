@@ -335,6 +335,23 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
         set => Document = value;
     }
 
+    // T-060/HV-014: proxies de entrada de teclado.
+    public bool HandleKeyboardInput(object? input) => LeftPanel.HandleKeyboardInput(input);
+    public bool HandleKeyboardInput(string? text) => LeftPanel.HandleKeyboardInput(text);
+    public bool HandleKeyboardInput(char ch) => LeftPanel.HandleKeyboardInput(ch);
+    public bool HandleTextInput(object? input) => LeftPanel.HandleTextInput(input);
+    public bool HandleTextInput(string? text) => LeftPanel.HandleTextInput(text);
+    public bool HandleTextInput(char ch) => LeftPanel.HandleTextInput(ch);
+    public bool HandleKeyDown(object? input) => LeftPanel.HandleKeyDown(input);
+    public bool HandleKeyDown(string? text) => LeftPanel.HandleKeyDown(text);
+    public bool HandleKeyDown(char ch) => LeftPanel.HandleKeyDown(ch);
+    public bool Type(object? input) => LeftPanel.Type(input);
+    public bool Type(string? text) => LeftPanel.Type(text);
+    public bool Type(char ch) => LeftPanel.Type(ch);
+    public bool Input(object? input) => LeftPanel.Input(input);
+    public bool Input(string? text) => LeftPanel.Input(text);
+    public bool Input(char ch) => LeftPanel.Input(ch);
+
     /// <summary>Panels de doble vista (ENT-015, F-003): izquierdo WYSIWYG, derecho Markdown, sobre el mismo modelo.</summary>
     public EditorPanel LeftPanel
     {
