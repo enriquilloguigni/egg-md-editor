@@ -158,13 +158,14 @@
       },
       "verification": {
         "run": "v1",
-        "execution": "E-007",
+        "execution": "E-008",
         "spec": "v1",
         "plan": "v1",
         "evidence_sha256": "2a2c5b2d639d8d6959ef8cf8619fed1f67fab478d796a880995e5e676cebc433",
         "result": "v1",
         "outcome": "no-cubierto",
-        "commit": "266acb9ab07495fd60c63245b09763127b2c42dc"
+        "commit": "54436ad135d6874e14f033ac0022897963481187",
+        "stale": false
       }
     }
   },
@@ -299,7 +300,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-31T18:16:31.375Z",
+  "updated_at": "2026-10-31T18:17:32.376Z",
   "owner": "EG",
   "sources": [
     {
