@@ -157,7 +157,8 @@
         "T-060": "done",
         "T-061": "done",
         "T-062": "doing",
-        "T-063": "done"
+        "T-063": "done",
+        "T-064": "done"
       },
       "verification": {
         "run": "v1",
@@ -303,7 +304,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-31T20:26:58.503Z",
+  "updated_at": "2026-10-31T22:38:07.151Z",
   "owner": "EG",
   "sources": [
     {
