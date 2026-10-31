@@ -134,6 +134,16 @@ public partial class Synchronizer
                     }
 
                     var targets = AllPanels.Where(p => doc is null || ReferenceEquals(p.Document, doc)).ToList();
+                    // Asegurar que el panel opuesto (hermano) se incluye y re-renderiza
+                    // con el contenido completo del modelo (HV-016).
+                    if (sourcePanel?.Sibling is not null && !targets.Contains(sourcePanel.Sibling))
+                    {
+                        targets.Add(sourcePanel.Sibling);
+                    }
+                    if (sourcePanel is not null && !targets.Contains(sourcePanel))
+                    {
+                        targets.Add(sourcePanel);
+                    }
                     foreach (var p in targets)
                     {
                         try { p.Render(); } catch { }
