@@ -373,7 +373,9 @@ public partial class EditorPanel
         get => _document?.Content;
         set
         {
-            if (_document is not null && value is not null) _document.Content = value;
+            if (_document is null || value is null) return;
+            // Cablear entrada a la sincronización bidireccional (T-060/HV-014).
+            SyncEdit(value);
         }
     }
     public string? Text { get => Content; set => Content = value; }
@@ -515,6 +517,23 @@ public partial class EditorPanels
     public bool Synchronize(string? newContent) => Synchronizer.SyncEdit(Left, newContent);
     public bool Update(EditorPanel? sourcePanel, string? newContent) => Synchronizer.SyncEdit(sourcePanel, newContent);
     public bool Update(string? newContent) => Synchronizer.SyncEdit(Left, newContent);
+
+    // T-060/HV-014: proxies de entrada de teclado.
+    public bool HandleKeyboardInput(object? input) => Left?.HandleKeyboardInput(input) ?? false;
+    public bool HandleKeyboardInput(string? text) => Left?.HandleKeyboardInput(text) ?? false;
+    public bool HandleKeyboardInput(char ch) => Left?.HandleKeyboardInput(ch) ?? false;
+    public bool HandleTextInput(object? input) => Left?.HandleTextInput(input) ?? false;
+    public bool HandleTextInput(string? text) => Left?.HandleTextInput(text) ?? false;
+    public bool HandleTextInput(char ch) => Left?.HandleTextInput(ch) ?? false;
+    public bool HandleKeyDown(object? input) => Left?.HandleKeyDown(input) ?? false;
+    public bool HandleKeyDown(string? text) => Left?.HandleKeyDown(text) ?? false;
+    public bool HandleKeyDown(char ch) => Left?.HandleKeyDown(ch) ?? false;
+    public bool Type(object? input) => Left?.Type(input) ?? false;
+    public bool Type(string? text) => Left?.Type(text) ?? false;
+    public bool Type(char ch) => Left?.Type(ch) ?? false;
+    public bool Input(object? input) => Left?.Input(input) ?? false;
+    public bool Input(string? text) => Left?.Input(text) ?? false;
+    public bool Input(char ch) => Left?.Input(ch) ?? false;
 }
 
 // ---------- Alias classes for Sync ----------
