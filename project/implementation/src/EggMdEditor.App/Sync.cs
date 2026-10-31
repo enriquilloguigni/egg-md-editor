@@ -30,13 +30,16 @@ public class ContentChangedEventArgs : EventArgs
 /// </summary>
 public partial class Synchronizer
 {
+    // Guarda de reentrada por hilo: evita que pruebas/ejecuciones paralelas
+    // se pisen con el flag estático compartido (T-060/HV-014).
+    [System.ThreadStatic]
     private static bool _syncing;
 
     public static bool IsSyncing => _syncing;
 
     public static EditorPanel? CurrentSourcePanel { get; set; }
 
-    public static List<EditorPanel> AllPanels { get; } = new List<EditorPanel>();
+    public static System.Collections.Concurrent.ConcurrentBag<EditorPanel> AllPanels { get; } = new System.Collections.Concurrent.ConcurrentBag<EditorPanel>();
 
     public static void Begin() => _syncing = true;
     public static void End() => _syncing = false;
@@ -349,7 +352,7 @@ public partial class Synchronizer
 // ---------- Partial EditorPanel additions ----------
 public partial class EditorPanel
 {
-    public static List<EditorPanel> AllPanels => Synchronizer.AllPanels;
+    public static System.Collections.Concurrent.ConcurrentBag<EditorPanel> AllPanels => Synchronizer.AllPanels;
 
     // rendered state
     private string _renderedContent = string.Empty;
