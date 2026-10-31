@@ -6,7 +6,9 @@ namespace EggMdEditor.App;
 public partial class Synchronizer
 {
     // ---------- Static Logger (LOG-009) ----------
-    public static ILogger? Logger { get; set; }
+    [ThreadStatic]
+    private static ILogger? _logger;
+    public static ILogger? Logger { get => _logger; set => _logger = value; }
     public static ILogger? InstanceLogger { get => Logger; set => Logger = value; }
     public ILogger? LoggerInstance { get => Logger; set => Logger = value; }
 
