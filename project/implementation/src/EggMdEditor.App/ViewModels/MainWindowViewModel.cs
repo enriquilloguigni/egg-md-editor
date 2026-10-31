@@ -352,6 +352,27 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     public bool Input(string? text) => LeftPanel.Input(text);
     public bool Input(char ch) => LeftPanel.Input(ch);
 
+    // T-061/HV-015: entrada de teclado en el panel derecho y sincronización.
+    public bool HandleRightKeyboardInput(object? input) => RightPanel.HandleKeyboardInput(input);
+    public bool HandleRightKeyboardInput(string? text) => RightPanel.HandleKeyboardInput(text);
+    public bool HandleRightKeyboardInput(char ch) => RightPanel.HandleKeyboardInput(ch);
+    public bool HandleRightTextInput(object? input) => RightPanel.HandleTextInput(input);
+    public bool HandleRightTextInput(string? text) => RightPanel.HandleTextInput(text);
+    public bool HandleRightTextInput(char ch) => RightPanel.HandleTextInput(ch);
+    public bool HandleRightKeyDown(object? input) => RightPanel.HandleKeyDown(input);
+    public bool HandleRightKeyDown(string? text) => RightPanel.HandleKeyDown(text);
+    public bool HandleRightKeyDown(char ch) => RightPanel.HandleKeyDown(ch);
+    public bool TypeRight(object? input) => RightPanel.Type(input);
+    public bool TypeRight(string? text) => RightPanel.Type(text);
+    public bool TypeRight(char ch) => RightPanel.Type(ch);
+    public bool InputRight(object? input) => RightPanel.Input(input);
+    public bool InputRight(string? text) => RightPanel.Input(text);
+    public bool InputRight(char ch) => RightPanel.Input(ch);
+
+    public bool HandleKeyboardInput(EditorPanel? source, object? input) => source?.HandleKeyboardInput(input) ?? (source is null ? LeftPanel.HandleKeyboardInput(input) : false);
+    public bool HandleKeyboardInput(EditorPanel? source, string? text) => source?.HandleKeyboardInput(text) ?? (source is null ? LeftPanel.HandleKeyboardInput(text) : false);
+    public bool HandleKeyboardInput(EditorPanel? source, char ch) => source?.HandleKeyboardInput(ch) ?? (source is null ? LeftPanel.HandleKeyboardInput(ch) : false);
+
     /// <summary>Panels de doble vista (ENT-015, F-003): izquierdo WYSIWYG, derecho Markdown, sobre el mismo modelo.</summary>
     public EditorPanel LeftPanel
     {
