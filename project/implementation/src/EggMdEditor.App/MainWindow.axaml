@@ -202,7 +202,13 @@
            de 4 px, con ancho mínimo y operable por teclado (NFR-009). -->
       <Border x:Name="DocumentArea" Grid.Row="2">
         <Grid x:Name="DualPanelLayout" ColumnDefinitions="*,4,*">
-          <Border x:Name="LeftPanel" Grid.Column="0" />
+          <Border x:Name="LeftPanel" Grid.Column="0">
+            <TextBox x:Name="LeftEditor"
+                     x:FieldModifier="public"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     TextChanged="OnLeftEditorTextChanged" />
+          </Border>
           <GridSplitter x:Name="Splitter"
                         Grid.Column="1"
                         Width="4"
@@ -214,7 +220,13 @@
                         ResizeDirection="Columns"
                         ResizeBehavior="PreviousAndNext"
                         Background="{DynamicResource MenuPanelBorderBrush}" />
-          <Border x:Name="RightPanel" Grid.Column="2" />
+          <Border x:Name="RightPanel" Grid.Column="2">
+            <TextBox x:Name="RightEditor"
+                     x:FieldModifier="public"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     TextChanged="OnRightEditorTextChanged" />
+          </Border>
         </Grid>
       </Border>
     </Grid>
