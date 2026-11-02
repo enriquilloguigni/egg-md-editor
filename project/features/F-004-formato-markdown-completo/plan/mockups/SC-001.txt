@@ -1,0 +1,16 @@
++--------------------------------------------------------------+
+| Egg MD Editor — Sin título                      [_][□][X]    |
++--------------------------------------------------------------+
+| Archivo  Edición  Ver  Formato  Herramientas  Ayuda           |
++--------------------------------------------------------------+
+| [Énfasis][Encabezados][Listas][Cita][Código][Enlace][Imagen][Tabla][Nota][Fórmula][Diagrama][Índice] |
++--------------------------------------------------------------+
+|  Panel WYSIWYG (izq.)  |#|  Panel Markdown (der.)            |
+|  renderizado puro      |#|  sintaxis visible y editable      |
+|                        |#|                                  |
+|  ┌─resaltado pasajero─┐|#|                                  |
+|  │ sección equivalente│|#|                                  |
+|  └────────────────────┘|#|                                  |
++--------------------------------------------------------------+
+| Estado: panel activo = Izquierdo   | formato actúa sobre el panel activo (BR-016) |
++--------------------------------------------------------------+
