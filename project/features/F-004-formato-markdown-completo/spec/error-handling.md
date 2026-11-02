@@ -12,4 +12,27 @@ Mensajes en el idioma activo (es/en); se muestra el texto base en español.
 | ERR-024 | Imagen local no encontrada o no legible | Se muestra un marcador de imagen rota; el Markdown no se altera | «No se pudo cargar la imagen «<ruta>».» | Corregir la ruta o elegir otra imagen | No requerido |
 ```
 
-No requerido / Fuera de alcance: el renderizado normal y la cancelación de diálogos no generan error; los fallos de E/S de archivo son de F-002 (ERR-006–ERR-015); la sincronización entre vistas es F-003 (ERR-016); la degradación por documento grande reutiliza ERR-017 (F-003) y el error de renderizado de fórmula/diagrama reutiliza ERR-019 (F-003, BR-011, LOG-013); los fallos de arranque o cierre son F-001 (ERR-001–ERR-005). Referencias: FR-002 · BR-009 · BR-011 · NFR-003 · NFR-013 · NFR-016 · NFR-017.
+No requerido / Fuera de alcance: el renderizado normal y la cancelación de diálogos no generan error; los fallos de E/S de archivo son de F-002; la sincronización entre vistas es F-003; la degradación por documento grande y el error de renderizado de fórmula/diagrama reutilizan errores de F-003; los fallos de arranque o cierre son F-001.
+
+Referencias:
+- ERR-001–ERR-005
+- ERR-006–ERR-015
+- ERR-016
+- ERR-017
+- ERR-019
+- ERR-020
+- ERR-021
+- ERR-022
+- ERR-023
+- ERR-024
+- LOG-012
+- LOG-013
+- LOG-014
+- LOG-015
+- BR-009
+- BR-011
+- FR-002
+- NFR-003
+- NFR-013
+- NFR-016
+- NFR-017
