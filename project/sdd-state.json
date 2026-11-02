@@ -156,7 +156,7 @@
         "T-058": "done",
         "T-060": "done",
         "T-061": "done",
-        "T-062": "doing",
+        "T-062": "done",
         "T-063": "done",
         "T-064": "done"
       },
@@ -305,7 +305,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-02T03:44:57.620Z",
+  "updated_at": "2026-11-02T15:04:23.109Z",
   "owner": "EG",
   "sources": [
     {
@@ -565,6 +565,19 @@
     {
       "name": "PLAN_COVERED",
       "artifact": "F-003 verification/ (Run v1, E-009, Result v1, commit post-T-064, renuncias visuales SC-001 A-F)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-11-02",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "PROJECT_SPEC_REVIEW",
+      "artifact": "project/project-spec/ (4 documentos, v2)",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "humano",
