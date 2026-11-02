@@ -169,7 +169,8 @@
         "result": "v1",
         "outcome": "no-cubierto",
         "commit": "54436ad135d6874e14f033ac0022897963481187",
-        "stale": false
+        "stale": false,
+        "visual_sha256": "5a8556b29a63abbe76080ad010019aa8b5c7715294f4344d1bfa72127d64dc4e"
       }
     }
   },
@@ -304,7 +305,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-10-31T22:38:07.151Z",
+  "updated_at": "2026-11-02T03:34:56.241Z",
   "owner": "EG",
   "sources": [
     {
