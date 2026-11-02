@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SC-001 Ventana principal — Egg MD Editor</title>
+<style>
+  :root {
+    /* TK-001 Paleta */ --tk-001-bg:#ffffff; --tk-001-text:#222; --tk-001-accent:#2563eb; --tk-001-sep:#c0c0c0;
+    /* TK-002 Tipografía UI */ --tk-002-font:system-ui,sans-serif; --tk-002-size:13px;
+    /* TK-004 Espaciado */ --tk-004-gap:4px; --tk-004-bar-h:40px; --tk-004-icon:16px;
+    /* TK-008 Resaltado */ --tk-008-hl:#fff3cd;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:var(--tk-002-font); font-size:var(--tk-002-size); color:var(--tk-001-text); background:#e8e8e8; }
+  .window { width:1280px; height:720px; margin:0 auto; background:var(--tk-001-bg); display:flex; flex-direction:column; }
+  .titlebar { height:32px; background:#e8e8e8; display:flex; align-items:center; padding:0 16px; justify-content:space-between; }
+  .menubar { height:28px; background:#f0f0f0; display:flex; align-items:center; padding:0 16px; gap:16px; }
+  .formatbar { height:var(--tk-004-bar-h); background:#f5f5f5; display:flex; align-items:center; padding:0 16px; gap:var(--tk-004-gap); flex-wrap:wrap; }
+  .formatbar button { height:24px; padding:0 8px; font-size:12px; border:1px solid #ccc; background:#fff; cursor:pointer; }
+  .content { flex:1; display:flex; }
+  .panel { flex:1; padding:16px; overflow:auto; }
+  .sep { width:4px; background:var(--tk-001-sep); }
+  .highlight { background:var(--tk-008-hl); border:1px solid #e0c060; border-radius:4px; padding:8px; margin-top:8px; }
+  .statusbar { height:28px; background:#e8e8e8; display:flex; align-items:center; padding:0 16px; font-size:12px; }
+  .active { font-weight:600; color:var(--tk-001-accent); }
+</style>
+</head>
+<body>
+<div class="window" id="SC-001" data-surface="ventana-principal">
+  <div class="titlebar"><span>Egg MD Editor — Sin título</span><span>[_][□][X]</span></div>
+  <div class="menubar"><span>Archivo</span><span>Edición</span><span>Ver</span><span>Formato</span><span>Herramientas</span><span>Ayuda</span></div>
+  <div class="formatbar">
+    <button>Énfasis</button><button>Encabezados</button><button>Listas</button><button>Cita</button><button>Código</button><button>Enlace</button><button>Imagen</button><button>Tabla</button><button>Nota</button><button>Fórmula</button><button>Diagrama</button><button>Índice</button>
+  </div>
+  <div class="content">
+    <div class="panel">
+      <div>Panel WYSIWYG (izq.)</div>
+      <div style="color:#888;font-size:12px">renderizado puro</div>
+      <div class="highlight">sección equivalente</div>
+    </div>
+    <div class="sep"></div>
+    <div class="panel">
+      <div>Panel Markdown (der.)</div>
+      <div style="color:#888;font-size:12px">sintaxis visible y editable</div>
+    </div>
+  </div>
+  <div class="statusbar">Estado: panel activo = <span class="active">Izquierdo</span> | formato actúa sobre el panel activo (BR-016)</div>
+</div>
+</body>
+</html>
