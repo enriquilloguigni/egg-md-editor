@@ -2,7 +2,9 @@
 
 ## SC-001 — Ventana principal (F-004)
 
-Propósito: reutilizar la ventana principal de F-001/F-002/F-003; F-004 no introduce pantallas nuevas. El formato completo se aplica desde el menú Formato, la barra de formato (FR-012) y los atajos, actuando sobre la selección o preparando la estructura en el panel activo (BR-016, FR-002), sobre SC-001.
+Propósito: reutilizar la ventana principal de F-001/F-002/F-003; F-004 no introduce pantallas nuevas.
+
+El formato completo se aplica desde el menú Formato, la barra de formato (FR-012) y los atajos, actuando sobre la selección o preparando la estructura en el panel activo (BR-016, FR-002), sobre SC-001.
 
 Elementos: menú Formato y barra de formato (12 controles de FR-012) ya presentes; indicador de panel activo; área de documento con paneles (F-003); diálogos modales sobre la superficie genérica para enlace (texto + destino interno/externo), imagen (origen + texto alternativo), tabla (filas, columnas, alineación), fórmula (código LaTeX) y diagrama (código Mermaid); escape de sintaxis con barra invertida en el panel Markdown.
 
