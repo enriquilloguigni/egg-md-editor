@@ -35,5 +35,5 @@ Sí — el soporte de formato se verifica sin depender de exportación, edición
 
 ## Estado
 
-planned
+Planificada — Plan v1 propuesto (pendiente de PLAN_REVIEW).
 " 
