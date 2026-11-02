@@ -116,7 +116,7 @@
       }
     },
     "F-003-doble-vista-sincronizada": {
-      "status": "verifying",
+      "status": "completed",
       "spec_version": "v1",
       "docs": {
         "process": "approved",
@@ -167,7 +167,7 @@
         "plan": "v1",
         "evidence_sha256": "41144703977f20db81e7de07e1cb5b4e60666ecd1d85fb098d16dd4f71d0e5e4",
         "result": "v1",
-        "outcome": "no-cubierto",
+        "outcome": "cubierto",
         "commit": "HEAD",
         "stale": false,
         "visual_sha256": "5a8556b29a63abbe76080ad010019aa8b5c7715294f4344d1bfa72127d64dc4e"
@@ -175,7 +175,7 @@
     }
   },
   "current": {
-    "level": "feature",
+    "level": "project",
     "id": "F-003-doble-vista-sincronizada",
     "phase": "verification"
   },
@@ -305,7 +305,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-02T03:36:23.239Z",
+  "updated_at": "2026-11-02T03:44:57.620Z",
   "owner": "EG",
   "sources": [
     {
@@ -556,6 +556,19 @@
       "result": "pass",
       "decided_by": "humano",
       "decided_at": "2026-10-29",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "PLAN_COVERED",
+      "artifact": "F-003 verification/ (Run v1, E-009, Result v1, commit post-T-064, renuncias visuales SC-001 A-F)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-11-02",
       "approver": "EG",
       "norm": {
         "metodologia": "1.10",
