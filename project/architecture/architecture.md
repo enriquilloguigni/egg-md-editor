@@ -3,29 +3,31 @@
 ## Estilo y principios
 
 - Arquitectura de escritorio local-first: un proceso por usuario, sin servidor, sin red ni servicios externos; todo el estado vive en el equipo del usuario (C-001, C-013, NFR-004, NFR-005).
-- Un único documento por instancia, representado por un modelo único del que derivan las dos vistas sincronizadas (BR-001, C-002).
-- UX de procesador de texto tradicional: menús persistentes, barra de formato y atajos sobre comandos compartidos (FR-011, FR-012).
-- CommonMark + GFM como contrato de sintaxis del documento (C-009, BR-009).
+- Un único documento por instancia representado por un modelo único del que derivan las dos vistas sincronizadas (BR-001, C-002).
+- UX de procesador de texto tradicional: menús persistentes, barra de formato de doble naturaleza y atajos sobre comandos compartidos (FR-011, FR-012, BR-016).
+- CommonMark + GFM como contrato de sintaxis del documento; la barra invertida escapa caracteres literales (C-009, BR-009).
+- Cobertura completa del requerimiento FUENTE-001 sin recortes: formato, enlaces, tablas, fórmulas, diagramas, índice, PDF, metadatos, ortografía y edición (ADR-003).
 
 ## Límites y responsabilidades
 
 - Límite del sistema: el proceso de la aplicación. No existen interfaces externas de red ni contratos con terceros (NFR-004, NFR-005); las interfaces son internas: modelo de documento, servicios y adaptadores.
-- UI (menús, barra de formato, dos paneles, diálogos): entrada del usuario y presentación, sin lógica de dominio.
-- Modelo de documento y sincronización: representación única, correspondencia de posiciones y reflejo bidireccional en menos de 200 ms (NFR-001).
-- Servicios internos (archivo UTF-8 con finales de línea por SO, exportación a PDF, ortografía, metadatos, i18n): tras interfaces del núcleo y sin I/O de red.
+- UI (menús, barra de formato, dos paneles, diálogos, ayuda): entrada del usuario y presentación, sin lógica de dominio.
+- Modelo de documento y sincronización: representación única, correspondencia de posiciones y reflejo bidireccional en menos de 200 ms (NFR-001); resaltado pasajero sin modificar contenido (BR-014).
+- Servicios internos (archivo UTF-8 con finales de línea por SO, exportación a PDF, ortografía, metadatos, i18n, índice, búsqueda): tras interfaces del núcleo y sin I/O de red.
 - Adaptadores de plataforma (Windows, macOS, Linux): rutas, diálogos nativos, fuentes y finales de línea.
 
 ## Relaciones entre partes
 
 - UI → ViewModel → modelo único de documento; los dos paneles leen y escriben el mismo modelo por separado.
-- El parser CommonMark (con tareas y tachado GFM) es el contrato entre sintaxis y WYSIWYG y media la sincronización en ambas direcciones.
+- El parser CommonMark (con tareas y tachado GFM) es el contrato entre sintaxis y WYSIWYG y media la sincronización en ambas direcciones; el mapa de posiciones traduce selecciones y scroll.
 - Exportación a PDF y ortografía dependen del modelo, nunca de la UI; la corrección usa el idioma del bloque de metadatos (FR-006, FR-008).
 - Metadatos: bloque delimitado al inicio con esquema fijo más campos personalizados, visible como ficha y editable como Markdown (C-005, BR-005).
+- Índice: se regenera desde encabezados H1-H6 en menos de 500 ms y es navegable (FR-003, NFR-015).
 
 ## Tecnologías fundamentales
 
 - Stack: .NET 10 (`net10.0`) y Avalonia UI multiplataforma (C-011, NFR-008); distribución como código fuente con build local.
-- Librerías de dominio (Markdown, fórmulas LaTeX vía KaTeX/MathJax, diagramas Mermaid, PDF, ortografía, i18n): selección en Plan/Implementation; ninguna puede requerir red ni sustituir el stack base; licencias MIT-compatibles (NFR-011).
+- Librerías de dominio (Markdown/CommonMark+GFM, fórmulas LaTeX vía KaTeX/MathJax, diagramas Mermaid, PDF, ortografía, i18n): selección en Plan/Implementation; ninguna puede requerir red ni sustituir el stack base; licencias MIT-compatibles (NFR-011).
 - Sin tecnologías de datos, red ni telemetría: solo archivos locales y preferencias del usuario (C-013, NFR-005).
 - Persistencia de preferencias y diccionario personal por idioma en el directorio de configuración del usuario (A-008).
 
@@ -49,10 +51,12 @@
 
 - Stack .NET 10 + Avalonia UI y matriz de plataformas de .NET 10: inamovibles sin un ADR aprobado por el humano.
 - NFR-001 se certifica sobre el hardware base declarado; NFR-005 sobre la matriz de soporte de .NET 10; NFR-011 exige licencias MIT-compatibles.
-- Idiomas de UI v1: español e inglés, default español; tema claro/oscuro, modo foco y zoom son atributos de la aplicación (A-005).
+- Idiomas de UI: español e inglés, default español; tema claro/oscuro, modo foco y zoom son atributos de la aplicación (A-005).
 - Un documento por instancia, sin multi-ventana (A-002, BR-001).
 - Autoguardado cada 30 s con recuperación automática al abrir (A-009, BR-008).
-Comando de prueba: dotnet test project/implementation/tests/EggMdEditor.App.Tests/EggMdEditor.App.Tests.csproj
+- PDF fiel al panel WYSIWYG, configurable (márgenes, orientación, encabezados/pies) y legible con texto seleccionable (BR-004, NFR-002, NFR-021).
+- Metadatos como front matter con idioma gobernando la ortografía; ortografía en ambos paneles con diccionario personal persistente (BR-005, BR-006).
+- Comando de prueba: dotnet test project/implementation/tests/EggMdEditor.App.Tests/EggMdEditor.App.Tests.csproj
 
 ## Constraints
 
@@ -67,9 +71,9 @@ Comando de prueba: dotnet test project/implementation/tests/EggMdEditor.App.Test
 | C-006 | Corrección ortográfica visible en ambos paneles, con sugerencias y diccionario personal. | requerimiento.txt | confirmed |
 | C-007 | Codificación UTF-8 y finales de línea consistentes. | requerimiento.txt | confirmed |
 | C-008 | Autoguardado silencioso y lista de 10 archivos recientes. | requerimiento.txt | confirmed |
-| C-009 | Soporte CommonMark + GFM y escape con backslash en el panel Markdown. | requerimiento.txt | confirmed |
+| C-009 | Soporte CommonMark + GFM y escape con barra invertida en el panel Markdown. | requerimiento.txt | confirmed |
 | C-010 | Índice auto-generado a partir de encabezados H1-H6. | requerimiento.txt | confirmed |
-| C-011 | Stack: Avalonia UI multiplataforma; las pruebas en múltiples plataformas quedan cubiertas por el framework. | PD-DISC-001 | confirmed |
+| C-011 | Stack: Avalonia UI multiplataforma; las pruebas en múltiples plataformas quedan cubiertas por el framework y no son requeridas para la solución actual. | PD-DISC-001 | confirmed |
 | C-012 | Fórmulas en LaTeX (KaTeX/MathJax) y diagramas en Mermaid. | PD-DISC-003 | confirmed |
 | C-013 | Sin telemetría, actualizaciones automáticas ni servicios en la nube; actualizaciones manuales. | PD-DISC-005 | confirmed |
 ```
