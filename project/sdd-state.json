@@ -191,8 +191,36 @@
         "acceptance-criteria": "approved"
       },
       "spec_version": "v1",
-      "tasks": {},
-      "verification": {}
+      "tasks": {
+        "T-065": "todo",
+        "T-066": "todo",
+        "T-067": "todo",
+        "T-068": "todo",
+        "T-069": "todo",
+        "T-070": "todo",
+        "T-071": "todo",
+        "T-072": "todo",
+        "T-073": "todo",
+        "T-074": "todo",
+        "T-075": "todo",
+        "T-076": "todo",
+        "T-077": "todo",
+        "T-078": "todo",
+        "T-079": "todo",
+        "T-080": "todo",
+        "T-081": "todo",
+        "T-082": "todo",
+        "T-083": "todo",
+        "T-084": "todo",
+        "T-085": "todo",
+        "T-086": "todo",
+        "T-087": "todo",
+        "T-088": "todo",
+        "T-089": "todo",
+        "T-090": "todo"
+      },
+      "verification": {},
+      "plan_version": "v1"
     }
   },
   "current": {
@@ -326,7 +354,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-02T18:39:33.460Z",
+  "updated_at": "2026-11-02T18:40:44.632Z",
   "owner": "EG",
   "sources": [
     {
