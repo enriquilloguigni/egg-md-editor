@@ -35,4 +35,5 @@ Sí — el soporte de formato se verifica sin depender de exportación, edición
 
 ## Estado
 
-Planificada — Spec pendiente.
+planned
+" 
