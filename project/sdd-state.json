@@ -165,7 +165,7 @@
         "execution": "E-009",
         "spec": "v1",
         "plan": "v1",
-        "evidence_sha256": "2a2c5b2d639d8d6959ef8cf8619fed1f67fab478d796a880995e5e676cebc433",
+        "evidence_sha256": "41144703977f20db81e7de07e1cb5b4e60666ecd1d85fb098d16dd4f71d0e5e4",
         "result": "v1",
         "outcome": "no-cubierto",
         "commit": "HEAD",
@@ -305,7 +305,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-02T03:35:24.803Z",
+  "updated_at": "2026-11-02T03:36:23.239Z",
   "owner": "EG",
   "sources": [
     {
