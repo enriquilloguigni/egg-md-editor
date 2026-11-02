@@ -1,0 +1,13 @@
+{
+  "feature": "F-003-doble-vista-sincronizada",
+  "execution": "E-008",
+  "sc": "SC-001",
+  "scenario": "C",
+  "surface": "terminal",
+  "command": "dotnet run --project project/implementation/scripts/EggMdEditor.VisualCapture/EggMdEditor.VisualCapture.csproj -- ventana-principal SC-001 C project/features/F-003-doble-vista-sincronizada/verification/executions/E-008/evidence/visual-capture/SC-001-C.txt",
+  "exit_code": 0,
+  "capture_file": "project/features/F-003-doble-vista-sincronizada/verification/executions/E-008/evidence/visual-capture/SC-001-C.png",
+  "capture_sha256": "64a055ef1d49850f14b441f0fb77f216f345e33aa593cd32aad54a826575ba0f",
+  "duration_ms": 5609,
+  "captured_at": "2026-11-02 03:34:33"
+}
