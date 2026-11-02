@@ -305,7 +305,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-02T15:04:23.109Z",
+  "updated_at": "2026-11-02T15:14:38.086Z",
   "owner": "EG",
   "sources": [
     {
@@ -578,6 +578,32 @@
     {
       "name": "PROJECT_SPEC_REVIEW",
       "artifact": "project/project-spec/ (4 documentos, v2)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-11-02",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "DESIGN_APPROVED",
+      "artifact": "project/architecture/, project/design/ (v2)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-11-02",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "ROADMAP_APPROVED",
+      "artifact": "project/roadmap/roadmap.md (v1)",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "humano",
