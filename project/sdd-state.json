@@ -172,12 +172,33 @@
         "stale": false,
         "visual_sha256": "5a8556b29a63abbe76080ad010019aa8b5c7715294f4344d1bfa72127d64dc4e"
       }
+    },
+    "F-004-formato-markdown-completo": {
+      "status": "planned",
+      "docs": {
+        "process": "proposed",
+        "screens": "proposed",
+        "data-structures": "proposed",
+        "inapp-communication": "proposed",
+        "security-permissions": "proposed",
+        "logs": "proposed",
+        "audit": "proposed",
+        "visual-resources": "proposed",
+        "external-services": "proposed",
+        "business-rules": "proposed",
+        "error-handling": "proposed",
+        "states-transitions": "proposed",
+        "acceptance-criteria": "proposed"
+      },
+      "spec_version": "v1",
+      "tasks": {},
+      "verification": {}
     }
   },
   "current": {
-    "level": "project",
-    "id": "F-003-doble-vista-sincronizada",
-    "phase": "verification"
+    "level": "feature",
+    "id": "F-004-formato-markdown-completo",
+    "phase": "spec"
   },
   "tier": {
     "category": "M",
@@ -305,7 +326,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-02T15:14:38.086Z",
+  "updated_at": "2026-11-02T15:19:49.572Z",
   "owner": "EG",
   "sources": [
     {
