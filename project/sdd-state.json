@@ -174,7 +174,7 @@
       }
     },
     "F-004-formato-markdown-completo": {
-      "status": "planned",
+      "status": "implementing",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -226,7 +226,7 @@
   "current": {
     "level": "feature",
     "id": "F-004-formato-markdown-completo",
-    "phase": "plan"
+    "phase": "implementation"
   },
   "tier": {
     "category": "M",
@@ -354,7 +354,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-02T18:40:44.632Z",
+  "updated_at": "2026-11-02T18:44:25.968Z",
   "owner": "EG",
   "sources": [
     {
@@ -679,6 +679,19 @@
     {
       "name": "UI_REVIEW",
       "artifact": "F-004 spec/screens.md + spec/visual-resources.md (SC-001, v1)",
+      "verdict": "aprobar",
+      "result": "pass",
+      "decided_by": "humano",
+      "decided_at": "2026-11-02",
+      "approver": "EG",
+      "norm": {
+        "metodologia": "1.10",
+        "tooling": "1.4.0"
+      }
+    },
+    {
+      "name": "PLAN_REVIEW",
+      "artifact": "F-004 plan/ (plan.md v1 + mockups.md v1, SC-001)",
       "verdict": "aprobar",
       "result": "pass",
       "decided_by": "humano",
