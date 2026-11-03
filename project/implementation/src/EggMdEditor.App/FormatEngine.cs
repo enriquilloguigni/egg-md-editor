@@ -170,6 +170,11 @@ public partial class FormatEngine
     // ---------- Core Apply ----------
     public FormatOutcome Apply(string? formatKey)
     {
+        if (IsEmphasisKey(formatKey))
+        {
+            PropagateEmphasisState(formatKey);
+            return TransformEmphasis(formatKey, -1, -1, null);
+        }
         _lastFormatKey = formatKey;
         _lastResult = true;
         _count++;
@@ -196,10 +201,47 @@ public partial class FormatEngine
     public FormatOutcome Perform(string? formatKey) => Apply(formatKey);
     public FormatOutcome Act(string? formatKey) => Apply(formatKey);
 
-    public FormatOutcome Apply(string? formatKey, int start, int end) => Apply(formatKey);
-    public FormatOutcome Apply(string? formatKey, int start, int end, int length) => Apply(formatKey);
-    public FormatOutcome Apply(string? formatKey, object? selection) => Apply(formatKey);
-    public FormatOutcome Apply(string? formatKey, object? selection, object? parameters) => Apply(formatKey);
+    public FormatOutcome Apply(string? formatKey, int start, int end)
+    {
+        if (IsEmphasisKey(formatKey))
+        {
+            PropagateEmphasisState(formatKey);
+            return TransformEmphasis(formatKey, start, end, null);
+        }
+        return Apply(formatKey);
+    }
+    public FormatOutcome Apply(string? formatKey, int start, int end, int length)
+    {
+        if (IsEmphasisKey(formatKey))
+        {
+            PropagateEmphasisState(formatKey);
+            return TransformEmphasis(formatKey, start, end, null, length);
+        }
+        return Apply(formatKey);
+    }
+    public FormatOutcome Apply(string? formatKey, object? selection)
+    {
+        if (IsEmphasisKey(formatKey))
+        {
+            PropagateEmphasisState(formatKey);
+            return TransformEmphasis(formatKey, -1, -1, selection);
+        }
+        // allow type passed via selection? 
+        if (IsEmphasisKey(null) == false && selection is not null)
+        {
+            // maybe formatKey is null but selection contains type? treat as emphasis if selection has type
+        }
+        return Apply(formatKey);
+    }
+    public FormatOutcome Apply(string? formatKey, object? selection, object? parameters)
+    {
+        if (IsEmphasisKey(formatKey))
+        {
+            PropagateEmphasisState(formatKey);
+            return TransformEmphasis(formatKey, -1, -1, selection);
+        }
+        return Apply(formatKey);
+    }
     public FormatOutcome ApplyFormat(string? formatKey, int start, int end) => Apply(formatKey, start, end);
     public FormatOutcome ApplyFormat(string? formatKey, object? selection) => Apply(formatKey, selection);
 
@@ -210,11 +252,27 @@ public partial class FormatEngine
         return new FormatOutcome { Success = true, Applied = true, Ast = _ast };
     }
 
-    public FormatOutcome Apply(object? input, string? formatKey) => Apply(formatKey);
+    public FormatOutcome Apply(object? input, string? formatKey)
+    {
+        var ast = ToAst(input);
+        if (ast is not null) _ast = ast;
+        if (_document is null && input is OpenDocument od) _document = od;
+        if (IsEmphasisKey(formatKey))
+        {
+            PropagateEmphasisState(formatKey);
+            return TransformEmphasis(formatKey, -1, -1, null);
+        }
+        return Apply(formatKey);
+    }
 
     // ---------- Static helpers ----------
     public static FormatOutcome Apply(object? input, string? formatKey, bool _static = true)
     {
+        if (IsEmphasisKey(formatKey))
+        {
+            var engine = new FormatEngine(input);
+            return engine.ApplyEmphasis(formatKey, -1, -1);
+        }
         var ast = ToAst(input);
         return new FormatOutcome { Success = true, Applied = true, Ast = ast, FormatKey = formatKey };
     }
