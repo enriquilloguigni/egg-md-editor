@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Markdig;
+using Markdig.Extensions.AutoIdentifiers;
 using Markdig.Renderers.Normalize;
 using Markdig.Syntax;
 
@@ -21,7 +22,7 @@ public class MarkdownAst
 
     public MarkdownAst()
     {
-        _pipeline = new MarkdownPipelineBuilder().UsePipeTables().UseTaskLists().UseEmphasisExtras().UseAutoLinks().Build();
+        _pipeline = new MarkdownPipelineBuilder().UsePipeTables().UseTaskLists().UseEmphasisExtras().UseAutoLinks().UseAutoIdentifiers().Build();
         _document = new global::Markdig.Syntax.MarkdownDocument();
         _source = string.Empty;
         _isValid = false;
