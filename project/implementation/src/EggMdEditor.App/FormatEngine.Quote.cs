@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
-using Markdig.Syntax.Inlines;
 // alias to avoid conflict with local QuoteBlock model
 using MarkdigQuoteBlock = global::Markdig.Syntax.QuoteBlock;
 
