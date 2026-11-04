@@ -248,6 +248,19 @@ public partial class FormatEngine
         bool isPromote = promote || IsPromoteKey(typeKey) || IsPromoteKey(keyOrType);
         bool isDemote = demote || IsDemoteKey(typeKey) || IsDemoteKey(keyOrType);
 
+        if (isPromote || isDemote)
+        {
+            try
+            {
+                var txt = CurrentText();
+                if (HasQuoteLinesInRange(txt, start, end) && !HasHeadingLinesInRange(txt, start, end))
+                {
+                    return TransformQuote(isPromote ? "promote quote" : "demote quote", start, end, selection, 0, isPromote, isDemote);
+                }
+            }
+            catch { }
+        }
+
         int? setLevel = null;
         if (!isPromote && !isDemote)
         {
