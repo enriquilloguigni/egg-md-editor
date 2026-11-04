@@ -190,6 +190,11 @@ public partial class FormatEngine
             PropagateListState(formatKey);
             return TransformList(formatKey, -1, -1, null);
         }
+        if (IsFormulaKey(formatKey))
+        {
+            PropagateFormulaState(formatKey);
+            return TransformFormula(formatKey, -1, -1, null);
+        }
         if (IsCodeKey(formatKey))
         {
             PropagateCodeState(formatKey);
@@ -263,6 +268,11 @@ public partial class FormatEngine
             PropagateListState(formatKey);
             return TransformList(formatKey, start, end, null);
         }
+        if (IsFormulaKey(formatKey))
+        {
+            PropagateFormulaState(formatKey);
+            return TransformFormula(formatKey, start, end, null);
+        }
         if (IsCodeKey(formatKey))
         {
             PropagateCodeState(formatKey);
@@ -317,6 +327,13 @@ public partial class FormatEngine
             int e = end;
             if (length > 0 && e < start) e = start + length;
             return TransformList(formatKey, start, e, null);
+        }
+        if (IsFormulaKey(formatKey))
+        {
+            PropagateFormulaState(formatKey);
+            int e = end;
+            if (length > 0 && e < start) e = start + length;
+            return TransformFormula(formatKey, start, e, null, length);
         }
         if (IsCodeKey(formatKey))
         {
@@ -377,6 +394,11 @@ public partial class FormatEngine
             PropagateListState(formatKey);
             return TransformList(formatKey, -1, -1, selection);
         }
+        if (IsFormulaKey(formatKey))
+        {
+            PropagateFormulaState(formatKey);
+            return TransformFormula(formatKey, -1, -1, selection);
+        }
         if (IsCodeKey(formatKey))
         {
             PropagateCodeState(formatKey);
@@ -430,6 +452,11 @@ public partial class FormatEngine
         {
             PropagateListState(formatKey);
             return TransformList(formatKey, -1, -1, selection);
+        }
+        if (IsFormulaKey(formatKey))
+        {
+            PropagateFormulaState(formatKey);
+            return TransformFormula(formatKey, -1, -1, selection);
         }
         if (IsCodeKey(formatKey))
         {
@@ -488,6 +515,11 @@ public partial class FormatEngine
             PropagateListState(formatKey);
             return TransformList(formatKey, -1, -1, null);
         }
+        if (IsFormulaKey(formatKey))
+        {
+            PropagateFormulaState(formatKey);
+            return TransformFormula(formatKey, -1, -1, null);
+        }
         if (IsCodeKey(formatKey))
         {
             PropagateCodeState(formatKey);
@@ -533,6 +565,11 @@ public partial class FormatEngine
         {
             var engine = new FormatEngine(input);
             return engine.ApplyList(formatKey);
+        }
+        if (IsFormulaKey(formatKey))
+        {
+            var engine = new FormatEngine(input);
+            return engine.ApplyFormula(formatKey);
         }
         if (IsCodeKey(formatKey))
         {
