@@ -175,6 +175,11 @@ public partial class FormatEngine
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, -1, -1, null);
         }
+        if (IsHeadingKey(formatKey))
+        {
+            PropagateHeadingState(formatKey);
+            return TransformHeading(formatKey, -1, -1, null);
+        }
         _lastFormatKey = formatKey;
         _lastResult = true;
         _count++;
@@ -208,6 +213,11 @@ public partial class FormatEngine
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, start, end, null);
         }
+        if (IsHeadingKey(formatKey))
+        {
+            PropagateHeadingState(formatKey);
+            return TransformHeading(formatKey, start, end, null);
+        }
         return Apply(formatKey);
     }
     public FormatOutcome Apply(string? formatKey, int start, int end, int length)
@@ -217,6 +227,13 @@ public partial class FormatEngine
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, start, end, null, length);
         }
+        if (IsHeadingKey(formatKey))
+        {
+            PropagateHeadingState(formatKey);
+            int e = end;
+            if (length > 0 && e < start) e = start + length;
+            return TransformHeading(formatKey, start, e, null);
+        }
         return Apply(formatKey);
     }
     public FormatOutcome Apply(string? formatKey, object? selection)
@@ -225,6 +242,11 @@ public partial class FormatEngine
         {
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, -1, -1, selection);
+        }
+        if (IsHeadingKey(formatKey))
+        {
+            PropagateHeadingState(formatKey);
+            return TransformHeading(formatKey, -1, -1, selection);
         }
         // allow type passed via selection? 
         if (IsEmphasisKey(null) == false && selection is not null)
@@ -239,6 +261,11 @@ public partial class FormatEngine
         {
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, -1, -1, selection);
+        }
+        if (IsHeadingKey(formatKey))
+        {
+            PropagateHeadingState(formatKey);
+            return TransformHeading(formatKey, -1, -1, selection);
         }
         return Apply(formatKey);
     }
@@ -262,6 +289,11 @@ public partial class FormatEngine
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, -1, -1, null);
         }
+        if (IsHeadingKey(formatKey))
+        {
+            PropagateHeadingState(formatKey);
+            return TransformHeading(formatKey, -1, -1, null);
+        }
         return Apply(formatKey);
     }
 
@@ -272,6 +304,11 @@ public partial class FormatEngine
         {
             var engine = new FormatEngine(input);
             return engine.ApplyEmphasis(formatKey, -1, -1);
+        }
+        if (IsHeadingKey(formatKey))
+        {
+            var engine = new FormatEngine(input);
+            return engine.Apply(formatKey);
         }
         var ast = ToAst(input);
         return new FormatOutcome { Success = true, Applied = true, Ast = ast, FormatKey = formatKey };
