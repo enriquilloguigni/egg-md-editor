@@ -205,6 +205,11 @@ public partial class FormatEngine
             PropagateImageState(formatKey);
             return TransformImage(formatKey, -1, -1, null);
         }
+        if (IsTableKey(formatKey))
+        {
+            PropagateTableState(formatKey);
+            return TransformTable(formatKey, -1, -1, null);
+        }
         _lastFormatKey = formatKey;
         _lastResult = true;
         _count++;
@@ -268,6 +273,11 @@ public partial class FormatEngine
             PropagateImageState(formatKey);
             return TransformImage(formatKey, start, end, null);
         }
+        if (IsTableKey(formatKey))
+        {
+            PropagateTableState(formatKey);
+            return TransformTable(formatKey, start, end, null);
+        }
         return Apply(formatKey);
     }
     public FormatOutcome Apply(string? formatKey, int start, int end, int length)
@@ -319,6 +329,13 @@ public partial class FormatEngine
             if (length > 0 && e < start) e = start + length;
             return TransformImage(formatKey, start, e, null, length);
         }
+        if (IsTableKey(formatKey))
+        {
+            PropagateTableState(formatKey);
+            int e = end;
+            if (length > 0 && e < start) e = start + length;
+            return TransformTable(formatKey, start, e, null, length);
+        }
         return Apply(formatKey);
     }
     public FormatOutcome Apply(string? formatKey, object? selection)
@@ -358,6 +375,11 @@ public partial class FormatEngine
             PropagateImageState(formatKey);
             return TransformImage(formatKey, -1, -1, selection);
         }
+        if (IsTableKey(formatKey))
+        {
+            PropagateTableState(formatKey);
+            return TransformTable(formatKey, -1, -1, selection);
+        }
         // allow type passed via selection? 
         if (IsEmphasisKey(null) == false && selection is not null)
         {
@@ -396,6 +418,11 @@ public partial class FormatEngine
         {
             PropagateImageState(formatKey);
             return TransformImage(formatKey, -1, -1, selection);
+        }
+        if (IsTableKey(formatKey))
+        {
+            PropagateTableState(formatKey);
+            return TransformTable(formatKey, -1, -1, selection);
         }
         return Apply(formatKey);
     }
@@ -449,6 +476,11 @@ public partial class FormatEngine
             PropagateImageState(formatKey);
             return TransformImage(formatKey, -1, -1, null);
         }
+        if (IsTableKey(formatKey))
+        {
+            PropagateTableState(formatKey);
+            return TransformTable(formatKey, -1, -1, null);
+        }
         return Apply(formatKey);
     }
 
@@ -489,6 +521,11 @@ public partial class FormatEngine
         {
             var engine = new FormatEngine(input);
             return engine.ApplyImage(formatKey);
+        }
+        if (IsTableKey(formatKey))
+        {
+            var engine = new FormatEngine(input);
+            return engine.ApplyTable(formatKey);
         }
         var ast = ToAst(input);
         return new FormatOutcome { Success = true, Applied = true, Ast = ast, FormatKey = formatKey };
