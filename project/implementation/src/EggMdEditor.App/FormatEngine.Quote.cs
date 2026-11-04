@@ -375,7 +375,7 @@ public partial class FormatEngine
         {
             try { return lit.Content.ToString(); } catch { return lit.ToString() ?? string.Empty; }
         }
-        if (inline is CodeInline ci)
+        if (inline is Markdig.Syntax.Inlines.CodeInline ci)
         {
             try { return ci.Content; } catch { return ci.ToString() ?? string.Empty; }
         }
