@@ -200,6 +200,11 @@ public partial class FormatEngine
             PropagateLinkState(formatKey);
             return TransformLink(formatKey, -1, -1, null);
         }
+        if (IsImageKey(formatKey))
+        {
+            PropagateImageState(formatKey);
+            return TransformImage(formatKey, -1, -1, null);
+        }
         _lastFormatKey = formatKey;
         _lastResult = true;
         _count++;
@@ -258,6 +263,11 @@ public partial class FormatEngine
             PropagateLinkState(formatKey);
             return TransformLink(formatKey, start, end, null);
         }
+        if (IsImageKey(formatKey))
+        {
+            PropagateImageState(formatKey);
+            return TransformImage(formatKey, start, end, null);
+        }
         return Apply(formatKey);
     }
     public FormatOutcome Apply(string? formatKey, int start, int end, int length)
@@ -302,6 +312,13 @@ public partial class FormatEngine
             if (length > 0 && e < start) e = start + length;
             return TransformLink(formatKey, start, e, null, length);
         }
+        if (IsImageKey(formatKey))
+        {
+            PropagateImageState(formatKey);
+            int e = end;
+            if (length > 0 && e < start) e = start + length;
+            return TransformImage(formatKey, start, e, null, length);
+        }
         return Apply(formatKey);
     }
     public FormatOutcome Apply(string? formatKey, object? selection)
@@ -336,6 +353,11 @@ public partial class FormatEngine
             PropagateLinkState(formatKey);
             return TransformLink(formatKey, -1, -1, selection);
         }
+        if (IsImageKey(formatKey))
+        {
+            PropagateImageState(formatKey);
+            return TransformImage(formatKey, -1, -1, selection);
+        }
         // allow type passed via selection? 
         if (IsEmphasisKey(null) == false && selection is not null)
         {
@@ -369,6 +391,11 @@ public partial class FormatEngine
         {
             PropagateCodeState(formatKey);
             return TransformCode(formatKey, -1, -1, selection);
+        }
+        if (IsImageKey(formatKey))
+        {
+            PropagateImageState(formatKey);
+            return TransformImage(formatKey, -1, -1, selection);
         }
         return Apply(formatKey);
     }
@@ -417,6 +444,11 @@ public partial class FormatEngine
             PropagateLinkState(formatKey);
             return TransformLink(formatKey, -1, -1, null);
         }
+        if (IsImageKey(formatKey))
+        {
+            PropagateImageState(formatKey);
+            return TransformImage(formatKey, -1, -1, null);
+        }
         return Apply(formatKey);
     }
 
@@ -452,6 +484,11 @@ public partial class FormatEngine
         {
             var engine = new FormatEngine(input);
             return engine.ApplyLink(formatKey);
+        }
+        if (IsImageKey(formatKey))
+        {
+            var engine = new FormatEngine(input);
+            return engine.ApplyImage(formatKey);
         }
         var ast = ToAst(input);
         return new FormatOutcome { Success = true, Applied = true, Ast = ast, FormatKey = formatKey };
