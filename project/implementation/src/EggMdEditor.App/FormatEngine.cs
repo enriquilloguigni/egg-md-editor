@@ -175,6 +175,11 @@ public partial class FormatEngine
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, -1, -1, null);
         }
+        if (IsQuoteKey(formatKey))
+        {
+            PropagateQuoteState(formatKey);
+            return TransformQuote(formatKey, -1, -1, null);
+        }
         if (IsHeadingKey(formatKey))
         {
             PropagateHeadingState(formatKey);
@@ -218,6 +223,11 @@ public partial class FormatEngine
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, start, end, null);
         }
+        if (IsQuoteKey(formatKey))
+        {
+            PropagateQuoteState(formatKey);
+            return TransformQuote(formatKey, start, end, null);
+        }
         if (IsHeadingKey(formatKey))
         {
             PropagateHeadingState(formatKey);
@@ -236,6 +246,13 @@ public partial class FormatEngine
         {
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, start, end, null, length);
+        }
+        if (IsQuoteKey(formatKey))
+        {
+            PropagateQuoteState(formatKey);
+            int e = end;
+            if (length > 0 && e < start) e = start + length;
+            return TransformQuote(formatKey, start, e, null, 0, false, false);
         }
         if (IsHeadingKey(formatKey))
         {
@@ -260,6 +277,11 @@ public partial class FormatEngine
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, -1, -1, selection);
         }
+        if (IsQuoteKey(formatKey))
+        {
+            PropagateQuoteState(formatKey);
+            return TransformQuote(formatKey, -1, -1, selection);
+        }
         if (IsHeadingKey(formatKey))
         {
             PropagateHeadingState(formatKey);
@@ -283,6 +305,11 @@ public partial class FormatEngine
         {
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, -1, -1, selection);
+        }
+        if (IsQuoteKey(formatKey))
+        {
+            PropagateQuoteState(formatKey);
+            return TransformQuote(formatKey, -1, -1, selection);
         }
         if (IsHeadingKey(formatKey))
         {
@@ -316,6 +343,11 @@ public partial class FormatEngine
             PropagateEmphasisState(formatKey);
             return TransformEmphasis(formatKey, -1, -1, null);
         }
+        if (IsQuoteKey(formatKey))
+        {
+            PropagateQuoteState(formatKey);
+            return TransformQuote(formatKey, -1, -1, null);
+        }
         if (IsHeadingKey(formatKey))
         {
             PropagateHeadingState(formatKey);
@@ -336,6 +368,11 @@ public partial class FormatEngine
         {
             var engine = new FormatEngine(input);
             return engine.ApplyEmphasis(formatKey, -1, -1);
+        }
+        if (IsQuoteKey(formatKey))
+        {
+            var engine = new FormatEngine(input);
+            return engine.ApplyQuote(formatKey);
         }
         if (IsHeadingKey(formatKey))
         {
