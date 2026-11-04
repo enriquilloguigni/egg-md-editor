@@ -142,6 +142,10 @@ public class MarkdownAst
     // --- reversibilidad: AST → Markdown ---
     public string ToMarkdown()
     {
+        // Prefer the stored source so that format-specific spacing (e.g. ">>")
+        // is preserved instead of being normalized by Markdig's renderer.
+        if (!string.IsNullOrEmpty(_source))
+            return _source;
         try
         {
             var sw = new StringWriter();
