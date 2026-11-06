@@ -148,4 +148,19 @@ public partial class MainWindowViewModel
     public FormatBar FormatBarControl => new FormatBar(this);
     public FormatBarAction BarraFormato => new FormatBarAction(this);
     public FormatBarAction FormatBarServiceObj => new FormatBarAction(this);
+
+    public string FormatEmphasisHeader => ResolveCatalog().Get("barra.enfasis");
+    public string FormatHeadingsHeader => ResolveCatalog().Get("barra.encabezados");
+    public string FormatListsHeader => ResolveCatalog().Get("barra.listas");
+    public string FormatQuoteHeader => ResolveCatalog().Get("barra.cita");
+    public string FormatCodeHeader => ResolveCatalog().Get("barra.codigo");
+    public string FormatLinkHeader => ResolveCatalog().Get("barra.enlace");
+    public string FormatImageHeader => ResolveCatalog().Get("barra.imagen");
+    public string FormatTableHeader => ResolveCatalog().Get("barra.tabla");
+    public string FormatFootnoteHeader => ResolveCatalog().Get("barra.nota-al-pie");
+    public string FormatFormulaHeader => ResolveCatalog().Get("barra.formula");
+    public string FormatDiagramHeader => ResolveCatalog().Get("barra.diagrama");
+    public string FormatTocHeader => ResolveCatalog().Get("barra.indice");
+    public string FormatEscapeHeader => ResolveCatalog().Get("barra.escape");
+
 }
