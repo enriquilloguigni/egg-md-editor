@@ -234,4 +234,7 @@
   <data name="Menu.File.GuardarComo" xml:space="preserve">
     <value>Save as…</value>
   </data>
+  <data name="barra.escape" xml:space="preserve">
+    <value>Escape</value>
+  </data>
 </root>
