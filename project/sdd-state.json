@@ -205,7 +205,7 @@
         "T-075": "done",
         "T-076": "done",
         "T-077": "done",
-        "T-078": "todo",
+        "T-078": "done",
         "T-079": "todo",
         "T-080": "todo",
         "T-081": "todo",
@@ -354,7 +354,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-06T19:34:33.312Z",
+  "updated_at": "2026-11-06T19:48:33.972Z",
   "owner": "EG",
   "sources": [
     {
