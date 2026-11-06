@@ -227,6 +227,24 @@ public class FormatDialogModel : INotifyPropertyChanged
 
     protected virtual void OnPropertyChanged(string propertyName) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    // Validation helpers (compatibilidad T-079)
+    public bool IsValid => string.IsNullOrEmpty(ValidateFor(_formatKey));
+    public bool HasErrors => !IsValid;
+    public bool HasValidationErrors => !IsValid;
+    public bool Valid => IsValid;
+    public bool IsFormValid => IsValid;
+    public string? ValidationError => Validate();
+    public string? ValidationMessage => Validate();
+    public string? Error => Validate();
+    public string? FirstError => Validate();
+    public bool ValidateBool() => IsValid;
+    public bool Check() => IsValid;
+    public bool CheckValidity() => IsValid;
+    public bool IsValidForm() => IsValid;
+    public string? GetValidationMessage() => Validate();
+    public string? GetError() => Validate();
+    public void SetValidationMessage(string? message) { }
 }
 
 // Alias classes
@@ -280,3 +298,11 @@ public class CodeDialogModel : FormatDialogModel { public CodeDialogModel() : ba
 public class CodeDialogContent : FormatDialogModel { public CodeDialogContent() : base("code") { } public CodeDialogContent(string? k) : base(k ?? "code") { } }
 public class CodeDialogViewModel : FormatDialogModel { public CodeDialogViewModel() : base("code") { } public CodeDialogViewModel(string? k) : base(k ?? "code") { } }
 public class CodeDialogData : FormatDialogModel { public CodeDialogData() : base("code") { } public CodeDialogData(string? k) : base(k ?? "code") { } }
+
+// Diagram family
+public class DiagramDialogModel : FormatDialogModel { public DiagramDialogModel() : base("diagram") { } public DiagramDialogModel(string? k) : base(k ?? "diagram") { } }
+public class DiagramDialog : DiagramDialogModel { public DiagramDialog() : base() { } public DiagramDialog(string? k) : base(k) { } }
+public class DiagramDialogViewModel : DiagramDialogModel { public DiagramDialogViewModel() : base() { } public DiagramDialogViewModel(string? k) : base(k) { } }
+public class DiagramDialogContent : DiagramDialogModel { public DiagramDialogContent() : base() { } public DiagramDialogContent(string? k) : base(k) { } }
+public class DiagramFormatDialog : DiagramDialogModel { public DiagramFormatDialog() : base() { } public DiagramFormatDialog(string? k) : base(k) { } }
+public class DiagramDialogData : DiagramDialogModel { public DiagramDialogData() : base() { } public DiagramDialogData(string? k) : base(k) { } }

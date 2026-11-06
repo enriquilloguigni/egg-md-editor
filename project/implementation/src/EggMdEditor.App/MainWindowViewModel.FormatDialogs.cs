@@ -16,6 +16,7 @@ public partial class MainWindowViewModel
         if (k.Contains("formula") || k.Contains("fórmula") || k.Contains("latex") || k.Contains("math") || k.Contains("matematic")) return "formula";
         if (k.Contains("footnote") || k.Contains("nota") || k.Contains("pie")) return "footnote";
         if (k.Contains("code") || k.Contains("codigo") || k.Contains("código") || k.Contains("language") || k.Contains("lenguaje") || k.Contains("lang")) return "code";
+        if (k.Contains("diagram") || k.Contains("diagrama") || k.Contains("mermaid")) return "diagram";
         return k;
     }
 
@@ -26,6 +27,7 @@ public partial class MainWindowViewModel
         "formula" => new FormulaDialogViewModel(key),
         "footnote" => new FootnoteDialogViewModel(key),
         "code" => new CodeDialogViewModel(key),
+        "diagram" => new DiagramDialogViewModel(key),
         _ => new FormatDialogModel(key),
     };
 
@@ -37,6 +39,7 @@ public partial class MainWindowViewModel
         "formula" => "Fórmula",
         "footnote" => "Nota al pie",
         "code" => "Código",
+        "diagram" => "Diagrama",
         _ => key,
     };
 
@@ -48,6 +51,7 @@ public partial class MainWindowViewModel
         "formula" => "Introduce el código LaTeX.",
         "footnote" => "Introduce el identificador y el texto.",
         "code" => "Introduce el lenguaje del código.",
+        "diagram" => "Introduce el código Mermaid.",
         _ => "Configura el formato.",
     };
 
@@ -151,4 +155,60 @@ public partial class MainWindowViewModel
     public string? LastFormatDialogKey { get => _lastFormatDialogKey; set => _lastFormatDialogKey = value; }
     public string? FormatDialogKey { get => _lastFormatDialogKey; set => _lastFormatDialogKey = value; }
     public string? CurrentFormatDialogKey { get => _lastFormatDialogKey; set => _lastFormatDialogKey = value; }
+
+
+    // Specific dialog openers (compatibilidad T-079)
+    public bool ShowLinkDialog() => ShowFormatDialog("link");
+    public bool ShowLinkDialog(object? formContent) => ShowFormatDialog("link", formContent);
+    public bool OpenLinkDialog() => ShowFormatDialog("link");
+    public bool OpenLinkDialog(object? formContent) => ShowFormatDialog("link", formContent);
+    public bool CreateLinkDialog() => ShowFormatDialog("link");
+    public bool NewLinkDialog() => ShowFormatDialog("link");
+
+    public bool ShowTableDialog() => ShowFormatDialog("table");
+    public bool ShowTableDialog(object? formContent) => ShowFormatDialog("table", formContent);
+    public bool OpenTableDialog() => ShowFormatDialog("table");
+    public bool OpenTableDialog(object? formContent) => ShowFormatDialog("table", formContent);
+
+    public bool ShowImageDialog() => ShowFormatDialog("image");
+    public bool ShowImageDialog(object? formContent) => ShowFormatDialog("image", formContent);
+    public bool OpenImageDialog() => ShowFormatDialog("image");
+    public bool OpenImageDialog(object? formContent) => ShowFormatDialog("image", formContent);
+
+    public bool ShowFormulaDialog() => ShowFormatDialog("formula");
+    public bool ShowFormulaDialog(object? formContent) => ShowFormatDialog("formula", formContent);
+    public bool OpenFormulaDialog() => ShowFormatDialog("formula");
+    public bool OpenFormulaDialog(object? formContent) => ShowFormatDialog("formula", formContent);
+
+    public bool ShowDiagramDialog() => ShowFormatDialog("diagram");
+    public bool ShowDiagramDialog(object? formContent) => ShowFormatDialog("diagram", formContent);
+    public bool OpenDiagramDialog() => ShowFormatDialog("diagram");
+    public bool OpenDiagramDialog(object? formContent) => ShowFormatDialog("diagram", formContent);
+
+    public bool ShowFootnoteDialog() => ShowFormatDialog("footnote");
+    public bool ShowFootnoteDialog(object? formContent) => ShowFormatDialog("footnote", formContent);
+    public bool OpenFootnoteDialog() => ShowFormatDialog("footnote");
+    public bool OpenFootnoteDialog(object? formContent) => ShowFormatDialog("footnote", formContent);
+
+    public bool ShowCodeDialog() => ShowFormatDialog("code");
+    public bool ShowCodeDialog(object? formContent) => ShowFormatDialog("code", formContent);
+    public bool OpenCodeDialog() => ShowFormatDialog("code");
+    public bool OpenCodeDialog(object? formContent) => ShowFormatDialog("code", formContent);
+
+    // Dialog property aliases
+    public DialogViewModel FormatDialog => Dialog;
+    public DialogViewModel FormatDialogSurface => Dialog;
+    public DialogViewModel FormatDialogViewModel => Dialog;
+
+    // Validation helpers
+    public bool IsValidFormatDialog => Dialog.IsValid;
+    public bool FormatDialogIsValid => Dialog.IsValid;
+    public string? FormatDialogValidationMessage => Dialog.ValidationMessage;
+    public bool ValidateFormatDialog() => Dialog.IsValid;
+    public bool ValidateFormatDialog(object? formContent) => ApplyFormatDialog(null, formContent) is false ? false : true;
+
+    public FormatOutcome ShowFormatDialogOutcome() => new FormatOutcome { Success = ShowFormatDialog(), Applied = true };
+    public FormatOutcome ShowFormatDialogOutcome(string? key) => new FormatOutcome { Success = ShowFormatDialog(key), Applied = true, FormatKey = key };
+    public FormatOutcome OpenFormatDialogOutcome(string? key) => ShowFormatDialogOutcome(key);
+
 }
