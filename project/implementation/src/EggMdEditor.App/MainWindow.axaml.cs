@@ -290,6 +290,39 @@ public partial class MainWindow : Window
         finally { _editorSyncing = false; }
     }
 
+    private void OnFormatControlClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control control && control.Tag is string key)
+        {
+            try { _viewModel.ApplyFormat(key); } catch { }
+            e.Handled = true;
+        }
+    }
+
+    private void OnFormatEntryClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is string key)
+        {
+            _viewModel.CloseMenu();
+            try
+            {
+                if (button.Command is not null && button.Command.CanExecute(button.CommandParameter))
+                {
+                    button.Command.Execute(button.CommandParameter);
+                }
+                else
+                {
+                    _viewModel.ApplyFormat(key);
+                }
+            }
+            catch
+            {
+                try { _viewModel.ApplyFormat(key); } catch { }
+            }
+            e.Handled = true;
+        }
+    }
+
     private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (!_viewModel.IsMenuOpen)
