@@ -225,6 +225,11 @@ public partial class FormatEngine
             PropagateDiagramState(formatKey);
             return TransformDiagram(formatKey, -1, -1, null);
         }
+        if (IsEscapeKey(formatKey))
+        {
+            PropagateEscapeState(formatKey);
+            return TransformEscape(formatKey, -1, -1, null);
+        }
         _lastFormatKey = formatKey;
         _lastResult = true;
         _count++;
@@ -308,6 +313,11 @@ public partial class FormatEngine
             PropagateDiagramState(formatKey);
             return TransformDiagram(formatKey, start, end, null);
         }
+        if (IsEscapeKey(formatKey))
+        {
+            PropagateEscapeState(formatKey);
+            return TransformEscape(formatKey, start, end, null);
+        }
         return Apply(formatKey);
     }
     public FormatOutcome Apply(string? formatKey, int start, int end, int length)
@@ -387,6 +397,13 @@ public partial class FormatEngine
             if (length > 0 && e < start) e = start + length;
             return TransformDiagram(formatKey, start, e, null, length);
         }
+        if (IsEscapeKey(formatKey))
+        {
+            PropagateEscapeState(formatKey);
+            int e = end;
+            if (length > 0 && e < start) e = start + length;
+            return TransformEscape(formatKey, start, e, null, length);
+        }
         return Apply(formatKey);
     }
     public FormatOutcome Apply(string? formatKey, object? selection)
@@ -446,6 +463,11 @@ public partial class FormatEngine
             PropagateDiagramState(formatKey);
             return TransformDiagram(formatKey, -1, -1, selection);
         }
+        if (IsEscapeKey(formatKey))
+        {
+            PropagateEscapeState(formatKey);
+            return TransformEscape(formatKey, -1, -1, selection);
+        }
         // allow type passed via selection? 
         if (IsEmphasisKey(null) == false && selection is not null)
         {
@@ -504,6 +526,12 @@ public partial class FormatEngine
         {
             PropagateDiagramState(formatKey);
             return TransformDiagram(formatKey, -1, -1, selection);
+        }
+        if (IsEscapeKey(formatKey))
+        {
+            PropagateEscapeState(formatKey);
+            var chars = parameters is string ps ? ps : parameters?.ToString();
+            return TransformEscape(formatKey, -1, -1, selection, 0, chars);
         }
         return Apply(formatKey);
     }
@@ -572,6 +600,11 @@ public partial class FormatEngine
             PropagateDiagramState(formatKey);
             return TransformDiagram(formatKey, -1, -1, null);
         }
+        if (IsEscapeKey(formatKey))
+        {
+            PropagateEscapeState(formatKey);
+            return TransformEscape(formatKey, -1, -1, null);
+        }
         return Apply(formatKey);
     }
 
@@ -632,6 +665,11 @@ public partial class FormatEngine
         {
             var engine = new FormatEngine(input);
             return engine.ApplyDiagram(formatKey);
+        }
+        if (IsEscapeKey(formatKey))
+        {
+            var engine = new FormatEngine(input);
+            return engine.ApplyEscape(formatKey);
         }
         var ast = ToAst(input);
         return new FormatOutcome { Success = true, Applied = true, Ast = ast, FormatKey = formatKey };
