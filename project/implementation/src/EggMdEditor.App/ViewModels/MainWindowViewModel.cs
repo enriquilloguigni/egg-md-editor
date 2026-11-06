@@ -1010,7 +1010,7 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     /// cierra sin opciones conectadas (BR-F001-002, ADR-001).
     /// </summary>
     public bool IsMenuDropdownOpen =>
-        IsMenuOpen && (IsFileMenuSelected || IsToolsMenuSelected || IsHelpMenuSelected);
+        IsMenuOpen && (IsFileMenuSelected || IsFormatMenuSelected || IsToolsMenuSelected || IsHelpMenuSelected);
 
     /// <summary>Rótulo del botón «Anterior» en el idioma activo (OP-007).</summary>
     public string PreviousMenuLabel => ResolveCatalog().Get(PreviousMenuKey);
