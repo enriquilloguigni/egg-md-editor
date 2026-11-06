@@ -177,8 +177,12 @@ public partial class FormatEngine
     {
         if (text is null) return null;
         var slug = Slugify(text);
+        var anchor = text.Trim();
+        if (anchor.StartsWith("#")) anchor = anchor.Substring(1).Trim();
         return GetHeadings().FirstOrDefault(h => string.Equals(h.Anchor, slug, StringComparison.OrdinalIgnoreCase)
-            || string.Equals(h.Text, text, StringComparison.Ordinal));
+            || string.Equals(h.Anchor, anchor, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(h.Text, text, StringComparison.Ordinal)
+            || string.Equals(h.Text, text.Trim(), StringComparison.OrdinalIgnoreCase));
     }
     public HeadingAnchorInfo? FindHeading(string? text) => GetHeading(text);
     public HeadingAnchorInfo? FindHeadingByText(string? text) => GetHeading(text);
@@ -194,13 +198,26 @@ public partial class FormatEngine
     public HeadingAnchorInfo? ResolveHeading(object? anchorOrLink)
     {
         if (anchorOrLink is null) return null;
+        if (anchorOrLink is int i || anchorOrLink is long l)
+        {
+            int idx = anchorOrLink is int ii ? ii : (int)(long)anchorOrLink;
+            return GetHeading(idx);
+        }
+        if (anchorOrLink is string s && int.TryParse(s.Trim(), out var n) && !s.Trim().StartsWith("#"))
+        {
+            // only treat as index if no matching heading text/anchor
+            var byText = GetHeadings().FirstOrDefault(h => string.Equals(h.Text, s.Trim(), StringComparison.Ordinal)
+                || string.Equals(h.Anchor, s.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (byText is null) return GetHeading(n);
+        }
+
         string raw = anchorOrLink.ToString() ?? string.Empty;
         string anchor = raw.Trim();
         if (anchor.StartsWith("#")) anchor = anchor.Substring(1);
         anchor = anchor.Trim();
 
-        // direct anchor match
         var hs = GetHeadings();
+        // direct anchor match
         var match = hs.FirstOrDefault(h => string.Equals(h.Anchor, anchor, StringComparison.OrdinalIgnoreCase));
         if (match is not null) return match;
 
@@ -209,7 +226,9 @@ public partial class FormatEngine
         match = hs.FirstOrDefault(h => string.Equals(h.Anchor, slug, StringComparison.OrdinalIgnoreCase));
         if (match is not null) return match;
 
-        // text match
+        // text match (case-insensitive then exact)
+        match = hs.FirstOrDefault(h => string.Equals(h.Text, anchor, StringComparison.OrdinalIgnoreCase));
+        if (match is not null) return match;
         match = hs.FirstOrDefault(h => string.Equals(h.Text, anchor, StringComparison.Ordinal));
         if (match is not null) return match;
 
@@ -264,7 +283,18 @@ public partial class FormatEngine
     public static HeadingAnchorInfo? GetHeading(object? input, string? text) => new FormatEngine(input).GetHeading(text);
     // already defined above
     // duplicate removed
-    public static string? GetHeadingAnchor(object? input, string? text) => FormatEngine.GetHeadingAnchor(text);
+    public static string? GetHeadingAnchor(object? input, string? text)
+    {
+        if (text is null) return null;
+        try
+        {
+            var engine = new FormatEngine(input);
+            var h = engine.GetHeading(text);
+            if (h is not null && !string.IsNullOrWhiteSpace(h.Anchor)) return h.Anchor;
+        }
+        catch { }
+        return FormatEngine.GetHeadingAnchor(text);
+    }
 
     // ----- Private helpers -----
 
