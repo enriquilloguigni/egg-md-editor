@@ -21,12 +21,12 @@ public partial class MainWindowViewModel
 
     private static FormatDialogModel CreateFormatDialogModel(string key) => key switch
     {
-        "table" => new TableFormatDialog(key),
-        "image" => new ImageFormatDialog(key),
-        "formula" => new FormulaFormatDialog(key),
-        "footnote" => new FootnoteFormatDialog(key),
-        "code" => new CodeFormatDialog(key),
-        _ => new LinkFormatDialog(key),
+        "table" => new TableDialogViewModel(key),
+        "image" => new ImageDialog(key),
+        "formula" => new FormulaDialogViewModel(key),
+        "footnote" => new FootnoteDialogViewModel(key),
+        "code" => new CodeDialogViewModel(key),
+        _ => new FormatDialogModel(key),
     };
 
     private static string FormatDialogTitle(string key) => key switch
