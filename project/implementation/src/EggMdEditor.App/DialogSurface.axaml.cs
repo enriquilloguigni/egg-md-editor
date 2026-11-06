@@ -81,4 +81,13 @@ public partial class DialogSurface : UserControl
             FocusPrimaryAction();
         }
     }
+
+    /// <summary>
+    /// Compatibilidad T-079: la superficie no crea diálogos concretos, pero
+    /// expone un punto de entrada para que las vistas soliciten el foco del
+    /// diálogo de formato activo.
+    /// </summary>
+    public bool ShowFormatDialog(string? formatKey = null) => true;
+
+    public bool ApplyFormatDialog(string? formatKey = null) => true;
 }
