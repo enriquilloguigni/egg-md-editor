@@ -182,6 +182,7 @@
                       Tag="{Binding Key}"
                       AutomationProperties.AutomationId="{Binding Key}"
                       AutomationProperties.Name="{Binding Name}"
+                      Click="OnFormatControlClick"
                       PointerEntered="OnFormatControlPointerEntered"
                       PointerExited="OnFormatControlPointerExited">
                 <!-- VR-001: icono vectorial por control; nunca un glifo de texto. -->
@@ -387,6 +388,24 @@
                          CommandParameter="system"
                          AutomationProperties.AutomationId="Theme.system"
                          AutomationProperties.Name="{Binding SystemThemeOptionHeader}" />
+          </StackPanel>
+
+          <StackPanel x:Name="FormatMenuEntries"
+                      IsVisible="{Binding IsFormatMenuSelected}"
+                      Spacing="2">
+            <Button x:Name="FormatEmphasisItem" Classes="menu-entry" Content="{Binding FormatEmphasisHeader}" Tag="barra.enfasis" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatEmphasisHeader}" />
+            <Button x:Name="FormatHeadingsItem" Classes="menu-entry" Content="{Binding FormatHeadingsHeader}" Tag="barra.encabezados" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatHeadingsHeader}" />
+            <Button x:Name="FormatListsItem" Classes="menu-entry" Content="{Binding FormatListsHeader}" Tag="barra.listas" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatListsHeader}" />
+            <Button x:Name="FormatQuoteItem" Classes="menu-entry" Content="{Binding FormatQuoteHeader}" Tag="barra.cita" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatQuoteHeader}" />
+            <Button x:Name="FormatCodeItem" Classes="menu-entry" Content="{Binding FormatCodeHeader}" Tag="barra.codigo" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatCodeHeader}" />
+            <Button x:Name="FormatLinkItem" Classes="menu-entry" Content="{Binding FormatLinkHeader}" Tag="barra.enlace" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatLinkHeader}" />
+            <Button x:Name="FormatImageItem" Classes="menu-entry" Content="{Binding FormatImageHeader}" Tag="barra.imagen" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatImageHeader}" />
+            <Button x:Name="FormatTableItem" Classes="menu-entry" Content="{Binding FormatTableHeader}" Tag="barra.tabla" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatTableHeader}" />
+            <Button x:Name="FormatFootnoteItem" Classes="menu-entry" Content="{Binding FormatFootnoteHeader}" Tag="barra.nota-al-pie" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatFootnoteHeader}" />
+            <Button x:Name="FormatFormulaItem" Classes="menu-entry" Content="{Binding FormatFormulaHeader}" Tag="barra.formula" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatFormulaHeader}" />
+            <Button x:Name="FormatDiagramItem" Classes="menu-entry" Content="{Binding FormatDiagramHeader}" Tag="barra.diagrama" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatDiagramHeader}" />
+            <Button x:Name="FormatTocItem" Classes="menu-entry" Content="{Binding FormatTocHeader}" Tag="barra.indice" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatTocHeader}" />
+            <Button x:Name="FormatEscapeItem" Classes="menu-entry" Content="{Binding FormatEscapeHeader}" Tag="escape" Click="OnFormatEntryClick" AutomationProperties.AutomationId="{Binding Tag, RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{Binding FormatEscapeHeader}" />
           </StackPanel>
 
           <StackPanel x:Name="HelpMenuEntries"
