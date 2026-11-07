@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Markdig;
 using Markdig.Syntax;
 
@@ -12,6 +13,8 @@ namespace EggMdEditor.App;
 /// </summary>
 public class FormulaDiagramRenderer
 {
+    public static ILogger? Logger { get; set; }
+
     public string? Code { get; set; }
     public string? Mode { get; set; }
     public bool IsDiagram { get; set; }
@@ -80,7 +83,7 @@ public class FormulaDiagramRenderer
 
     public string Render()
     {
-        if (IsError) return Renderer.WysiwygErrorMarker;
+        if (IsError) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
         if (IsDiagram) return DiagramRenderer.Render(Code);
         return FormulaRenderer.Render(Code, Mode);
     }
@@ -111,23 +114,26 @@ public class FormulaDiagramRenderer
     }
 
     public static string Render(string? code, string? mode, bool error)
-        => error ? Renderer.WysiwygErrorMarker : Render(code, mode);
+    {
+        if (error) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
+        return Render(code, mode);
+    }
     public static string Render(string? code, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
     {
-        if (error || fail || !success) return Renderer.WysiwygErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return Renderer.WysiwygErrorMarker;
+        if (error || fail || !success) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
         return Render(code, mode);
     }
     public static string Render(string? code, string? mode, bool error, string? renderState)
     {
-        if (error) return Renderer.WysiwygErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return Renderer.WysiwygErrorMarker;
+        if (error) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
         return Render(code, mode);
     }
 
     public static string Render(object? input, string? mode = null)
     {
-        if (input is null) return Renderer.WysiwygErrorMarker;
+        if (input is null) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
         if (input is string s)
         {
             if (IsDiagramCode(s, mode)) return DiagramRenderer.Render(s);
@@ -175,18 +181,28 @@ public class FormulaDiagramRenderer
     }
 
     public static string Render(object? input, string? mode, bool error)
-        => error ? Renderer.WysiwygErrorMarker : Render(input, mode);
+    {
+        if (error) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
+        return Render(input, mode);
+    }
     public static string Render(object? input, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
     {
-        if (error || fail || !success) return Renderer.WysiwygErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return Renderer.WysiwygErrorMarker;
+        if (error || fail || !success) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
         return Render(input, mode);
     }
     public static string Render(object? input, string? mode, bool error, string? renderState)
     {
-        if (error) return Renderer.WysiwygErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return Renderer.WysiwygErrorMarker;
+        if (error) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError(); return Renderer.WysiwygErrorMarker; }
         return Render(input, mode);
+    }
+
+    private static void LogRenderError()
+    {
+        var blockType = "fórmula/diagrama";
+        try { (Logger ?? Renderer.Logger)?.LogWarning("LOG-013 Error de renderizado de fórmula/diagrama. Hora: {Timestamp:O}. Resultado: fallo. Identificador de documento/solicitud: {DocumentId}. Tipo de bloque: {BlockType}. Tiempo de ejecución: {DurationMs} ms. Código de error: ERR-019. Nivel: warn.", DateTimeOffset.UtcNow, Guid.Empty, blockType, 0L); } catch { }
+        try { (Logger ?? Renderer.Logger)?.LogError("LOG-013 Error de renderizado de fórmula/diagrama. Hora: {Timestamp:O}. Resultado: fallo. Identificador de documento/solicitud: {DocumentId}. Tipo de bloque: {BlockType}. Tiempo de ejecución: {DurationMs} ms. Código de error: ERR-019. Nivel: error.", DateTimeOffset.UtcNow, Guid.Empty, blockType, 0L); } catch { }
     }
 
     private static void CollectDiagrams(Block block, List<string> result)
