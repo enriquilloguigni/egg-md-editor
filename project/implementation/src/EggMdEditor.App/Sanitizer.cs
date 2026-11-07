@@ -80,7 +80,7 @@ public class Sanitizer
         s = Regex.Replace(s, @"vbscript\s*:", "#", RegexOptions.IgnoreCase);
         if (!string.Equals(original, s, StringComparison.Ordinal))
         {
-            try { Logger?.LogError("LOG-014 Fallo de sanitización. Hora: {Timestamp:O}. Resultado: fallo. Regla violada: contenido peligroso. Código de error: ERR-020. Mensaje: Se ha neutralizado contenido potencialmente peligroso al abrir el documento.", DateTimeOffset.UtcNow); }
+            try { (Logger ?? Renderer.Logger)?.LogError("LOG-014 Fallo de sanitización. Hora: {Timestamp:O}. Resultado: fallo. Regla violada: contenido peligroso. Código de error: ERR-020. Mensaje: Se ha neutralizado contenido potencialmente peligroso al abrir el documento.", DateTimeOffset.UtcNow); }
             catch { }
         }
         return s;
