@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace EggMdEditor.App;
 
@@ -11,6 +12,7 @@ namespace EggMdEditor.App;
 /// </summary>
 public class FileReader
 {
+    public static ILogger? Logger { get; set; }
     public static readonly Encoding StrictUtf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
     public FileReader()
@@ -268,6 +270,56 @@ public class FileReader
     public static bool HasDangerousContent(string? content) => Sanitizer.IsDangerous(content);
     public static bool IsSafe(string? content) => Sanitizer.IsSafe(content);
     public static string Neutralize(string? content) => Sanitizer.Sanitize(content);
+
+    // ---------- Parse error handling (T-085) ----------
+    public const string ParseErrorMarker = "No se pudo analizar el documento como Markdown; revisa la sintaxis.";
+    public const string ParseErrorMessage = ParseErrorMarker;
+    public const string ParseErrorText = ParseErrorMarker;
+
+    public static MarkdownAst ParseMarkdownAst(string? content) => MarkdownAst.Parse(content);
+    public static MarkdownAst ParseMarkdownDocument(string? content) => MarkdownAst.Parse(content);
+    public static MarkdownAst ParseCommonMark(string? content) => MarkdownAst.Parse(content);
+    public static MarkdownAst ParseGfm(string? content) => MarkdownAst.Parse(content);
+    public static MarkdownAst ParseMarkdownContent(string? content) => MarkdownAst.Parse(content);
+
+    public static bool TryParseMarkdown(string? content, out MarkdownAst? ast)
+    {
+        ast = MarkdownAst.Parse(content);
+        if (!ast.IsValid)
+        {
+            try { Logger?.LogError("LOG-012 Error de parseo CommonMark/GFM. Hora: {Timestamp:O}. Resultado: fallo. Código de error: ERR-022. Mensaje: No se pudo analizar el documento como Markdown; revisa la sintaxis.", DateTimeOffset.UtcNow); }
+            catch { }
+        }
+        return ast.IsValid;
+    }
+
+    public static bool TryParseMarkdown(string? content, out MarkdownAst? ast, out Exception? exception)
+    {
+        ast = MarkdownAst.Parse(content);
+        exception = ast.ParseException;
+        if (!ast.IsValid)
+        {
+            try { Logger?.LogError("LOG-012 Error de parseo CommonMark/GFM. Hora: {Timestamp:O}. Resultado: fallo. Código de error: ERR-022. Mensaje: No se pudo analizar el documento como Markdown; revisa la sintaxis.", DateTimeOffset.UtcNow); }
+            catch { }
+        }
+        return ast.IsValid;
+    }
+
+    public static bool IsMarkdownParseable(string? content) => MarkdownAst.Parse(content).IsValid;
+    public static bool IsParseableMarkdown(string? content) => MarkdownAst.Parse(content).IsValid;
+
+    public static void HandleParseError(Exception? ex = null, string? message = null)
+    {
+        try { Logger?.LogError("LOG-012 Error de parseo CommonMark/GFM. Hora: {Timestamp:O}. Resultado: fallo. Código de error: ERR-022. Mensaje: {Message}", DateTimeOffset.UtcNow, string.IsNullOrWhiteSpace(message) ? ParseErrorMarker : message); }
+        catch { }
+        if (ex is not null) { try { Logger?.LogError(ex, "LOG-012"); } catch { } }
+    }
+
+    public static string ReadMarkdownOrSource(string? path)
+    {
+        try { return Read(path); }
+        catch { return string.Empty; }
+    }
 
     // ---------- Result-returning ----------
 
