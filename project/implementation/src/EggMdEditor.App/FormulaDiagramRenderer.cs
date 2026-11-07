@@ -110,6 +110,21 @@ public class FormulaDiagramRenderer
         return FormulaRenderer.Render(code, mode);
     }
 
+    public static string Render(string? code, string? mode, bool error)
+        => error ? Renderer.WysiwygErrorMarker : Render(code, mode);
+    public static string Render(string? code, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
+    {
+        if (error || fail || !success) return Renderer.WysiwygErrorMarker;
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return Renderer.WysiwygErrorMarker;
+        return Render(code, mode);
+    }
+    public static string Render(string? code, string? mode, bool error, string? renderState)
+    {
+        if (error) return Renderer.WysiwygErrorMarker;
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return Renderer.WysiwygErrorMarker;
+        return Render(code, mode);
+    }
+
     public static string Render(object? input, string? mode = null)
     {
         if (input is null) return Renderer.WysiwygErrorMarker;
@@ -157,6 +172,21 @@ public class FormulaDiagramRenderer
             }
         }
         return Renderer.WysiwygErrorMarker;
+    }
+
+    public static string Render(object? input, string? mode, bool error)
+        => error ? Renderer.WysiwygErrorMarker : Render(input, mode);
+    public static string Render(object? input, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
+    {
+        if (error || fail || !success) return Renderer.WysiwygErrorMarker;
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return Renderer.WysiwygErrorMarker;
+        return Render(input, mode);
+    }
+    public static string Render(object? input, string? mode, bool error, string? renderState)
+    {
+        if (error) return Renderer.WysiwygErrorMarker;
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return Renderer.WysiwygErrorMarker;
+        return Render(input, mode);
     }
 
     private static void CollectDiagrams(Block block, List<string> result)
