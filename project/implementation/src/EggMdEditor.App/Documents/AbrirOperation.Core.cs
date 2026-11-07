@@ -35,7 +35,12 @@ public partial class AbrirOperation
             try { content = FileReader.Read(trimmed); }
             catch (Exception ex) when (ex is not ArgumentException && ex is not FileNotFoundException && ex is not UnauthorizedAccessException)
             { throw new InvalidOperationException("No se pudo abrir: el archivo no está en UTF-8.", ex); }
-            var doc = new OpenDocument(content, trimmed, DocumentOrigin.Open, DocumentLastOperation.Open);
+
+            // Sanitización (T-084, NFR-017, ERR-020): neutralizar contenido peligroso.
+            bool dangerous = Sanitizer.IsDangerous(content);
+            string sanitizedContent = dangerous ? Sanitizer.Sanitize(content) : content;
+
+            var doc = new OpenDocument(sanitizedContent, trimmed, DocumentOrigin.Open, DocumentLastOperation.Open);
             doc.MarkClean();
             try
             {
@@ -44,6 +49,18 @@ public partial class AbrirOperation
                     DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), doc.Id, Path.GetExtension(trimmed), bytes, "UTF-8", "LF", 0);
             }
             catch { }
+
+            if (dangerous)
+            {
+                try
+                {
+                    logger?.LogError(
+                        "LOG-014 Fallo de sanitización. Hora: {Timestamp:O}. Sesión: {SessionId}. Documento: {DocumentId}. Operación: Abrir. Regla violada: contenido peligroso. Resultado: fallo. Código: ERR-020. Mensaje: Se ha neutralizado contenido potencialmente peligroso al abrir el documento.",
+                        DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"), doc.Id);
+                }
+                catch { }
+            }
+
             return doc;
         }
         catch (Exception ex)
@@ -165,4 +182,13 @@ public partial class AbrirOperation
     public static bool TryAbrir(string? path, out OpenDocument? document) => TryExecute(path, out document);
     public static bool TryLoad(string? path, out OpenDocument? document) => TryExecute(path, out document);
     public static bool TryRead(string? path, out OpenDocument? document) => TryExecute(path, out document);
+
+    // Sanitization helpers (T-084)
+    public static string Sanitize(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeMarkdown(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeHtml(string? content) => Sanitizer.Sanitize(content);
+    public static bool IsDangerous(string? content) => Sanitizer.IsDangerous(content);
+    public static bool HasDangerousContent(string? content) => Sanitizer.IsDangerous(content);
+    public static bool IsSafe(string? content) => Sanitizer.IsSafe(content);
+    public static string Neutralize(string? content) => Sanitizer.Sanitize(content);
 }
