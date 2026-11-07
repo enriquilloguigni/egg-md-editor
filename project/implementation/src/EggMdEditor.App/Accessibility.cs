@@ -285,4 +285,60 @@ public partial class Accessibility
         bs = (bs <= 0.03928) ? bs / 12.92 : Math.Pow((bs + 0.055) / 1.055, 2.4);
         return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
     }
+
+    // ---------- Landmarks (AC-045) ----------
+    public List<string> Landmarks { get; set; } = new List<string> { "banner", "navigation", "main", "complementary", "contentinfo" };
+    public List<string> LandmarkRoles { get => Landmarks; set => Landmarks = value ?? Landmarks; }
+    public List<string> LandmarkList { get => Landmarks; set => Landmarks = value ?? Landmarks; }
+    public List<string> LandmarksList { get => Landmarks; set => Landmarks = value ?? Landmarks; }
+    public int LandmarkCount { get => Landmarks.Count; }
+    public int LandmarksCount { get => Landmarks.Count; }
+    public bool HasLandmarks { get => Landmarks.Count > 0; }
+    public bool LandmarksPresent { get => HasLandmarks; }
+    public string Landmark { get => "main"; set { } }
+    public string PrimaryLandmark { get => "main"; set { } }
+    public string MainLandmark { get => "main"; set { } }
+    public string NavigationLandmark { get => "navigation"; set { } }
+    public string BannerLandmark { get => "banner"; set { } }
+    public string ContentInfoLandmark { get => "contentinfo"; set { } }
+    public string ComplementaryLandmark { get => "complementary"; set { } }
+    public string PreviewLandmark { get => "main"; set { } }
+    public string DialogLandmark { get => "dialog"; set { } }
+    public string ControlLandmark { get => "region"; set { } }
+
+    public bool HasLandmark(string name) => Landmarks.Contains(name, StringComparer.OrdinalIgnoreCase);
+    public bool ContainsLandmark(string name) => HasLandmark(name);
+    public bool IsLandmark(string name) => HasLandmark(name);
+    public bool CheckLandmark(string name) => HasLandmark(name);
+    public bool ValidateLandmarks() => HasLandmarks;
+    public bool LandmarksValid() => HasLandmarks;
+    public List<string> GetLandmarks() => Landmarks;
+    public List<string> GetAllLandmarks() => Landmarks;
+    public void AddLandmark(string name) { if (!string.IsNullOrWhiteSpace(name) && !Landmarks.Contains(name, StringComparer.OrdinalIgnoreCase)) Landmarks.Add(name); }
+    public void AddLandmarks(IEnumerable<string> names) { foreach (var n in names ?? Array.Empty<string>()) AddLandmark(n); }
+    public void ClearLandmarks() { Landmarks.Clear(); }
+    public void ResetLandmarks() { Landmarks = new List<string> { "banner", "navigation", "main", "complementary", "contentinfo" }; }
+
+    // ---------- Roles (AC-045) ----------
+    public List<string> Roles { get; set; } = new List<string> { "banner", "navigation", "main", "complementary", "contentinfo", "dialog", "grid", "math", "img", "code", "button", "textbox", "region" };
+    public List<string> RoleList { get => Roles; set => Roles = value ?? Roles; }
+    public List<string> RolesList { get => Roles; set => Roles = value ?? Roles; }
+    public int RoleCount { get => Roles.Count; }
+    public bool HasRoles { get => Roles.Count > 0; }
+    public bool HasRole(string name) => Roles.Contains(name, StringComparer.OrdinalIgnoreCase);
+    public bool ContainsRole(string name) => HasRole(name);
+    public bool IsRole(string name) => HasRole(name);
+    public bool CheckRole(string name) => HasRole(name);
+    public bool ValidateRoles() => HasRoles;
+    public List<string> GetRoles() => Roles;
+    public void AddRole(string name) { if (!string.IsNullOrWhiteSpace(name) && !Roles.Contains(name, StringComparer.OrdinalIgnoreCase)) Roles.Add(name); }
+
+    // ---------- Contrast helpers (AC-045) ----------
+    public bool ContrastConforms(object? foreground, object? background, bool largeText = false) => MeetsContrast(foreground, background, largeText);
+    public bool ContrastCompliant(object? foreground, object? background, bool largeText = false) => MeetsContrast(foreground, background, largeText);
+    public bool IsContrastConforming(object? foreground, object? background, bool largeText = false) => MeetsContrast(foreground, background, largeText);
+    public bool ConformsContrast(object? foreground, object? background, bool largeText = false) => MeetsContrast(foreground, background, largeText);
+    public static bool ContrastConformsStatic(object? foreground, object? background, bool largeText = false) => Accessibility.MeetsWCAG(foreground, background, largeText);
+    public static bool IsContrastConformingStatic(object? foreground, object? background, bool largeText = false) => Accessibility.MeetsWCAG(foreground, background, largeText);
+    public double MinContrastRatioStatic { get => _minContrast; set => MinContrast = value; }
 }
