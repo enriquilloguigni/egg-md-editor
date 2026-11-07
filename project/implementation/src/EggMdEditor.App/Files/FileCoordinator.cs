@@ -760,6 +760,14 @@ public class FileCoordinator : IDisposable
 
     public bool Cerrar() => Close();
 
+    // ---------- Sanitization helpers (T-084) ----------
+    public string Sanitize(string? content) => Sanitizer.Sanitize(content);
+    public string SanitizeMarkdown(string? content) => Sanitizer.Sanitize(content);
+    public string SanitizeHtml(string? content) => Sanitizer.Sanitize(content);
+    public bool IsDangerous(string? content) => Sanitizer.IsDangerous(content);
+    public bool HasDangerousContent(string? content) => Sanitizer.IsDangerous(content);
+    public string Neutralize(string? content) => Sanitizer.Sanitize(content);
+
     public void Dispose()
     {
         if (_disposed) return;
