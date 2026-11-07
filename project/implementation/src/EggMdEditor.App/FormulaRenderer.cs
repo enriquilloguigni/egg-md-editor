@@ -14,7 +14,7 @@ namespace EggMdEditor.App;
 /// Renderizado de fórmulas LaTeX en el panel WYSIWYG (T-083, VR-012, AC-039).
 /// Genera marcado accesible; ante error devuelve el marcador ERR-019 sin alterar el Markdown.
 /// </summary>
-public class FormulaRenderer
+public partial class FormulaRenderer
 {
     public const string ErrorMarker = Renderer.WysiwygErrorMarker;
 
