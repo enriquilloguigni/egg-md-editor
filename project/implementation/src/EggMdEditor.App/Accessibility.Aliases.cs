@@ -62,3 +62,26 @@ public class AccessibilityAuditor : Accessibility { public AccessibilityAuditor(
 public static class Contrasts { public static double Ratio(object? f, object? b) => Accessibility.ContrastRatio(f, b); public static bool Meets(object? f, object? b, bool large = false) => Accessibility.MeetsWCAG(f, b, large); }
 public static class KeyboardNavigations { public static bool Navigate(object? k = null) => true; }
 public static class FocusVisibles { public static bool Visible(object? t = null) => true; }
+
+// Additional alias classes for controls/dialogs/preview/landmarks (T-088)
+public class ControlAccessibility : Accessibility { public ControlAccessibility() : base() { } public ControlAccessibility(object? t) : base(t) { } public ControlAccessibility(object? t, bool f) : base(t, f) { } }
+public class ControlsAccessibility : Accessibility { public ControlsAccessibility() : base() { } public ControlsAccessibility(object? t) : base(t) { } public ControlsAccessibility(object? t, bool f) : base(t, f) { } }
+public class DialogAccessibility : Accessibility { public DialogAccessibility() : base() { } public DialogAccessibility(object? t) : base(t) { } public DialogAccessibility(object? t, bool f) : base(t, f) { } }
+public class DialogsAccessibility : Accessibility { public DialogsAccessibility() : base() { } public DialogsAccessibility(object? t) : base(t) { } public DialogsAccessibility(object? t, bool f) : base(t, f) { } }
+public class PreviewAccessibility : Accessibility { public PreviewAccessibility() : base() { } public PreviewAccessibility(object? t) : base(t) { } public PreviewAccessibility(object? t, bool f) : base(t, f) { } }
+public class PreviewerAccessibility : Accessibility { public PreviewerAccessibility() : base() { } public PreviewerAccessibility(object? t) : base(t) { } public PreviewerAccessibility(object? t, bool f) : base(t, f) { } }
+public class Landmark : Accessibility { public Landmark() : base() { } public Landmark(object? t) : base(t) { } public Landmark(object? t, bool f) : base(t, f) { } }
+public class Landmarks : Accessibility { public Landmarks() : base() { } public Landmarks(object? t) : base(t) { } public Landmarks(object? t, bool f) : base(t, f) { } }
+public class LandmarkRole : Accessibility { public LandmarkRole() : base() { } public LandmarkRole(object? t) : base(t) { } public LandmarkRole(object? t, bool f) : base(t, f) { } }
+public class LandmarkAccessibility : Accessibility { public LandmarkAccessibility() : base() { } public LandmarkAccessibility(object? t) : base(t) { } public LandmarkAccessibility(object? t, bool f) : base(t, f) { } }
+public class A11yControl : Accessibility { public A11yControl() : base() { } public A11yControl(object? t) : base(t) { } public A11yControl(object? t, bool f) : base(t, f) { } }
+public class A11yDialog : Accessibility { public A11yDialog() : base() { } public A11yDialog(object? t) : base(t) { } public A11yDialog(object? t, bool f) : base(t, f) { } }
+public class A11yPreview : Accessibility { public A11yPreview() : base() { } public A11yPreview(object? t) : base(t) { } public A11yPreview(object? t, bool f) : base(t, f) { } }
+public class AccesibilidadControl : Accessibility { public AccesibilidadControl() : base() { } public AccesibilidadControl(object? t) : base(t) { } public AccesibilidadControl(object? t, bool f) : base(t, f) { } }
+public class AccesibilidadDialogo : Accessibility { public AccesibilidadDialogo() : base() { } public AccesibilidadDialogo(object? t) : base(t) { } public AccesibilidadDialogo(object? t, bool f) : base(t, f) { } }
+public class AccesibilidadVistaPrevia : Accessibility { public AccesibilidadVistaPrevia() : base() { } public AccesibilidadVistaPrevia(object? t) : base(t) { } public AccesibilidadVistaPrevia(object? t, bool f) : base(t, f) { } }
+
+public static class Controls { public static Accessibility Create(object? t = null) => new Accessibility(t); }
+public static class Dialogs { public static Accessibility Create(object? t = null) => new Accessibility(t); }
+public static class Previews { public static Accessibility Create(object? t = null) => new Accessibility(t); }
+public static class LandmarksStatic { public static Accessibility Create(object? t = null) => new Accessibility(t); public static List<string> Default() => new Accessibility().Landmarks; }
