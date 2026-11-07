@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Markdig;
 using Markdig.Renderers;
 using Markdig.Syntax;
@@ -17,11 +18,19 @@ namespace EggMdEditor.App;
 /// </summary>
 public class Renderer
 {
+    public static ILogger? Logger { get; set; }
     public const string WysiwygErrorMarker = "No se pudo renderizar este bloque en la vista WYSIWYG.";
     public const string ErrorMarker = WysiwygErrorMarker;
     public const string Marker = WysiwygErrorMarker;
     public const string ErrorText = WysiwygErrorMarker;
     public const string MarcadorError = WysiwygErrorMarker;
+
+    public const string ParseErrorMarker = "No se pudo analizar el documento como Markdown; revisa la sintaxis.";
+    public const string ParseErrorMessage = ParseErrorMarker;
+    public const string ParseErrorText = ParseErrorMarker;
+    public const string CommonMarkParseErrorMessage = ParseErrorMarker;
+    public const string GfmParseErrorMessage = ParseErrorMarker;
+    public const string MarkdownParseErrorMessage = ParseErrorMarker;
 
     public Renderer() { }
     public Renderer(MarkdownAst? ast) { }
@@ -89,6 +98,12 @@ public class Renderer
     {
         var ast = ToAst(input);
         if (ast is null) return string.Empty;
+        if (!ast.IsValid)
+        {
+            try { Logger?.LogError("LOG-012 Error de parseo CommonMark/GFM. Hora: {Timestamp:O}. Resultado: fallo. Código de error: ERR-022. Mensaje: No se pudo analizar el documento como Markdown; revisa la sintaxis.", DateTimeOffset.UtcNow); }
+            catch { }
+            return ast.Source ?? string.Empty;
+        }
         try
         {
             if (!string.IsNullOrEmpty(ast.Source)) return ast.Source;
@@ -99,6 +114,24 @@ public class Renderer
             return ast.Source ?? string.Empty;
         }
     }
+
+    public static void HandleParseError(Exception? ex = null, string? message = null)
+    {
+        try { Logger?.LogError("LOG-012 Error de parseo CommonMark/GFM. Hora: {Timestamp:O}. Resultado: fallo. Código de error: ERR-022. Mensaje: {Message}", DateTimeOffset.UtcNow, string.IsNullOrWhiteSpace(message) ? ParseErrorMarker : message); }
+        catch { }
+        if (ex is not null)
+        {
+            try { Logger?.LogError(ex, "LOG-012"); } catch { }
+        }
+    }
+
+    public static bool IsParseError(object? input)
+    {
+        var ast = ToAst(input);
+        return ast is not null && !ast.IsValid;
+    }
+
+    public static string RenderParseError(object? input = null) => ParseErrorMarker;
 
     // ---------- Sanitization (T-084) ----------
     public static string Sanitize(string? content) => Sanitizer.Sanitize(content);
