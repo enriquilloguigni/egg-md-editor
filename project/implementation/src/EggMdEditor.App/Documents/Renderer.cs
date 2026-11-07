@@ -281,6 +281,57 @@ public class Renderer
     public string RenderTableInstance(object? input) => RenderTable(input);
     public string RenderTableInstance(object? input, int activeRow, int activeCol) => RenderTable(input, activeRow, activeCol);
     public string RenderTableInstance(object? input, int activeRow, int activeCol, bool editing) => RenderTable(input, activeRow, activeCol, editing);
+
+    // ---------- Formula/diagram rendering with error marker (T-083) ----------
+    public static string RenderFormula(object? input = null, string? mode = null, bool error = false)
+        => FormulaRenderer.Render(input, mode, error);
+    public static string RenderFormula(string? code, string? mode = null, bool error = false)
+        => FormulaRenderer.Render(code, mode, error);
+    public static string RenderFormula(object? input, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
+        => FormulaRenderer.Render(input, mode, error, fail, success, renderState);
+    public static string RenderFormula(string? code, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
+        => FormulaRenderer.Render(code, mode, error, fail, success, renderState);
+    public static string RenderFormula(object? input, string? mode, bool error, string? renderState)
+        => FormulaRenderer.Render(input, mode, error, renderState);
+    public static string RenderFormula(string? code, string? mode, bool error, string? renderState)
+        => FormulaRenderer.Render(code, mode, error, renderState);
+
+    public static string RenderLatex(object? input = null, string? mode = null, bool error = false) => FormulaRenderer.Render(input, mode, error);
+    public static string RenderLatex(string? code, string? mode = null, bool error = false) => FormulaRenderer.Render(code, mode, error);
+    public static string RenderMath(object? input = null, string? mode = null, bool error = false) => FormulaRenderer.Render(input, mode, error);
+    public static string RenderMath(string? code, string? mode = null, bool error = false) => FormulaRenderer.Render(code, mode, error);
+    public static string RenderFormulaInline(object? input = null) => FormulaRenderer.Render(input, "inline");
+    public static string RenderFormulaBlock(object? input = null) => FormulaRenderer.Render(input, "block");
+
+    public static string RenderDiagram(object? input = null, string? mode = null, bool error = false)
+        => DiagramRenderer.Render(input, mode, error);
+    public static string RenderDiagram(string? code, string? mode = null, bool error = false)
+        => DiagramRenderer.Render(code, mode, error);
+    public static string RenderDiagram(object? input, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
+        => DiagramRenderer.Render(input, mode, error, fail, success, renderState);
+    public static string RenderDiagram(string? code, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
+        => DiagramRenderer.Render(code, mode, error, fail, success, renderState);
+    public static string RenderDiagram(object? input, string? mode, bool error, string? renderState)
+        => DiagramRenderer.Render(input, mode, error, renderState);
+    public static string RenderDiagram(string? code, string? mode, bool error, string? renderState)
+        => DiagramRenderer.Render(code, mode, error, renderState);
+
+    public static string RenderMermaid(object? input = null, string? mode = null, bool error = false) => DiagramRenderer.Render(input, mode, error);
+    public static string RenderMermaid(string? code, string? mode = null, bool error = false) => DiagramRenderer.Render(code, mode, error);
+    public static string RenderDiagramBlock(object? input = null) => DiagramRenderer.Render(input);
+
+    public static string RenderFormulaDiagram(object? input = null, string? mode = null, bool error = false)
+        => FormulaDiagramRenderer.Render(input, mode, error);
+    public static string RenderFormulaDiagram(string? code, string? mode = null, bool error = false)
+        => FormulaDiagramRenderer.Render(code, mode, error);
+
+    public static string RenderFormulaHtml(object? input = null, string? mode = null, bool error = false) => RenderFormula(input, mode, error);
+    public static string RenderDiagramHtml(object? input = null, string? mode = null, bool error = false) => RenderDiagram(input, mode, error);
+    public static string RenderFormulaDiagramHtml(object? input = null, string? mode = null, bool error = false) => RenderFormulaDiagram(input, mode, error);
+
+    public string RenderFormulaInstance(object? input = null, string? mode = null, bool error = false) => RenderFormula(input, mode, error);
+    public string RenderDiagramInstance(object? input = null, string? mode = null, bool error = false) => RenderDiagram(input, mode, error);
+    public string RenderFormulaDiagramInstance(object? input = null, string? mode = null, bool error = false) => RenderFormulaDiagram(input, mode, error);
 }
 
 // ---------- Alias classes ----------
