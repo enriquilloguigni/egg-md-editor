@@ -94,6 +94,8 @@ public class MarkdownAst
     private void ApplyParse(string? markdown)
     {
         _source = markdown ?? string.Empty;
+        _largeDocDegraded = false;
+        _tableLimitExceeded = false;
         _parseException = null;
         _parseError = null;
         _lastParseError = null;
@@ -157,6 +159,14 @@ public class MarkdownAst
         if (_version < 1) _version = 1;
         ResetParseFailureFlags();
         ResetLargeDocumentFlags();
+    }
+
+    private static void ResetLargeDocumentFlags()
+    {
+        _simulateLargeDocument = false;
+        _forceLargeDocument = false;
+        _simulateDegradation = false;
+        _forceDegradation = false;
     }
 
     private static void ResetParseFailureFlags()
@@ -368,13 +378,13 @@ public class MarkdownAst
     public string Content => _source;
 
     // ---------- Degradación en documentos grandes y límites de tabla (T-086) ----------
-    public const int LargeDocumentThresholdWords = 100000;
-    public const int LargeDocumentThresholdLines = 10000;
-    public const int LargeDocumentThreshold = 100000;
-    public const int MaxDocumentWords = 100000;
-    public const int MaxDocumentLines = 10000;
-    public const int MaxTableRows = 1000;
-    public const int MaxTableColumns = 50;
+    public static int LargeDocumentThresholdWords = 100000;
+    public static int LargeDocumentThresholdLines = 10000;
+    public static int LargeDocumentThreshold = 100000;
+    public static int MaxDocumentWords = 100000;
+    public static int MaxDocumentLines = 10000;
+    public static int MaxTableRows = 1000;
+    public static int MaxTableColumns = 50;
     public const string LargeDocumentMessage = "El documento es muy grande; el renderizado puede ser más lento.";
     public const string LargeDocumentNotice = LargeDocumentMessage;
     public const string DegradationMessage = LargeDocumentMessage;
@@ -409,8 +419,8 @@ public class MarkdownAst
     // Threshold aliases
     public static int LargeDocumentWordThreshold { get => LargeDocumentThresholdWords; set => LargeDocumentThresholdWords = value; }
     public static int LargeDocumentLineThreshold { get => LargeDocumentThresholdLines; set => LargeDocumentThresholdLines = value; }
-    public static long WordThreshold { get => LargeDocumentThresholdWords; set => LargeDocumentThresholdWords = value; }
-    public static long LineThreshold { get => LargeDocumentThresholdLines; set => LargeDocumentThresholdLines = value; }
+    public static long WordThreshold { get => LargeDocumentThresholdWords; set => LargeDocumentThresholdWords = (int)value; }
+    public static long LineThreshold { get => LargeDocumentThresholdLines; set => LargeDocumentThresholdLines = (int)value; }
     public static int MaxWords { get => LargeDocumentThresholdWords; set => LargeDocumentThresholdWords = value; }
     public static int MaxLines { get => LargeDocumentThresholdLines; set => LargeDocumentThresholdLines = value; }
 
@@ -452,8 +462,6 @@ public class MarkdownAst
         return IsLargeDocument(ast.Source);
     }
 
-    public static bool IsLarge(MarkdownAst? ast) => IsLargeDocument(ast);
-    public static bool IsLarge(string? markdown) => IsLargeDocument(markdown);
     public static bool LargeDocument(string? markdown = null) => IsLargeDocument(markdown);
     public static bool DocumentIsLarge(string? markdown = null) => IsLargeDocument(markdown);
     public static bool IsBigDocument(string? markdown = null) => IsLargeDocument(markdown);
@@ -516,6 +524,19 @@ public class MarkdownAst
     public bool EnterDegradedMode() { return Degrade(); }
     public bool SetDegraded(bool value = true) { if (value) return Degrade(); _largeDocDegraded = false; return true; }
     public bool ResetDegradation() { _largeDocDegraded = false; _tableLimitExceeded = false; return true; }
+    // Spanish aliases
+    public static bool EstaDegradado { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool ModoDegradado { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool DegradacionActiva { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public bool DegradeEs() => Degrade();
+    public string ManejarDocumentoGrande(string? m = null) => HandleLargeDocument(m);
+    public string RegistrarDocumentoGrande(string? m = null) => HandleLargeDocument(m);
+    public string DegradarDocumento(string? m = null) => HandleLargeDocument(m);
+    public string Degradar(string? m = null) => HandleLargeDocument(m);
+    public string ManejarTablaFueraLimites(int r, int c, string? m = null) => HandleTableLimit(r, c, m);
+    public string RegistrarTablaFueraLimites(int r, int c, string? m = null) => HandleTableLimit(r, c, m);
+    public string ManejarLimiteTabla(int r, int c, string? m = null) => HandleTableLimit(r, c, m);
+    public bool EsDocumentoGrande(string? m = null) => IsLargeDocument(m);
 
     public string HandleTableLimit(int rows, int cols, string? message = null)
     {
