@@ -244,6 +244,12 @@ public class Renderer
 
         if (anyInvalid)
         {
+            try
+            {
+                Logger?.LogWarning("LOG-013 Error de renderizado de fórmula/diagrama. Hora: {Timestamp:O}. Resultado: fallo. Identificador de documento/solicitud: {DocumentId}. Tipo de bloque: fórmula/diagrama. Tiempo de ejecución: {DurationMs} ms. Código de error: ERR-019. Nivel: warn.", DateTimeOffset.UtcNow, Guid.Empty, 0L);
+                Logger?.LogError("LOG-013 Error de renderizado de fórmula/diagrama. Hora: {Timestamp:O}. Resultado: fallo. Identificador de documento/solicitud: {DocumentId}. Tipo de bloque: fórmula/diagrama. Tiempo de ejecución: {DurationMs} ms. Código de error: ERR-019. Nivel: error.", DateTimeOffset.UtcNow, Guid.Empty, 0L);
+            }
+            catch { }
             sb.AppendLine(WysiwygErrorMarker);
         }
 
