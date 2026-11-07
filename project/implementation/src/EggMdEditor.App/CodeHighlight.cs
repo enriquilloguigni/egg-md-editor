@@ -121,7 +121,7 @@ public class CodeHighlighter
 
     public static string HighlightInline(string? code)
     {
-        return "<code class=\"inline-code\" style=\"font-family: monospace;\">" + Encode(code ?? string.Empty) + "</code>";
+        return "<code class=\"inline-code\">" + Encode(code ?? string.Empty) + "</code>";
     }
     public static string RenderInline(string? code) => HighlightInline(code);
     public static string RenderInlineCode(string? code) => HighlightInline(code);
