@@ -134,6 +134,25 @@ public class MarkdownAst
     }
 
     public string Source => _source;
+
+    // Sanitization helpers (T-084)
+    public string SanitizedSource => Sanitizer.Sanitize(_source);
+    public string Sanitized => Sanitizer.Sanitize(_source);
+    public string SanitizedMarkdown => Sanitizer.Sanitize(_source);
+    public string SanitizedContent => Sanitizer.Sanitize(_source);
+    public string SanitizedText => Sanitizer.Sanitize(_source);
+    public bool IsDangerous => Sanitizer.IsDangerous(_source);
+    public bool HasDangerousContent => Sanitizer.IsDangerous(_source);
+    public bool ContainsDangerous => Sanitizer.IsDangerous(_source);
+    public string Sanitize() => Sanitizer.Sanitize(_source);
+    public string SanitizeMarkdown() => Sanitizer.Sanitize(_source);
+    public string SanitizeHtml() => Sanitizer.Sanitize(_source);
+    public string SanitizeContent() => Sanitizer.Sanitize(_source);
+    public MarkdownAst SanitizedAst() => MarkdownAst.Parse(Sanitizer.Sanitize(_source));
+    public static string Sanitize(string? markdown) => Sanitizer.Sanitize(markdown);
+    public static string SanitizeMarkdown(string? markdown) => Sanitizer.Sanitize(markdown);
+    public static string SanitizeHtml(string? markdown) => Sanitizer.Sanitize(markdown);
+    public static bool IsDangerousMarkdown(string? markdown) => Sanitizer.IsDangerous(markdown);
     public string SourceMarkdown => _source;
     public string Original => _source;
     public string MarkdownSource => _source;
