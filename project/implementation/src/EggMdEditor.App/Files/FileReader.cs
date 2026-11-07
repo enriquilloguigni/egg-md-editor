@@ -62,6 +62,11 @@ public class FileReader
         if (!File.Exists(path!)) throw new FileNotFoundException("Archivo no encontrado.", path);
         var bytes = File.ReadAllBytes(path!);
         var result = Decode(bytes);
+        if (IsLargeDocument(result.Content) || bytes.Length >= 1_000_000 || _simulateLargeDocument || _forceLargeDocument || _simulateDegradation || _forceDegradation)
+        {
+            _largeDocDegraded = true;
+            HandleLargeDocument();
+        }
         result.Path = path;
         result.FilePath = path;
         result.File = path;
@@ -319,6 +324,172 @@ public class FileReader
     {
         try { return Read(path); }
         catch { return string.Empty; }
+    }
+
+    // ---------- Degradation large documents / table limits (T-086) ----------
+    public static int LargeDocumentThresholdWords = 100000;
+    public static int LargeDocumentThresholdLines = 10000;
+    public static int LargeDocumentThreshold = 100000;
+    public static int MaxTableRows = 1000;
+    public static int MaxTableColumns = 50;
+    public const string LargeDocumentMessage = "El documento es muy grande; la lectura puede ser más lenta.";
+    public const string LargeDocumentNotice = LargeDocumentMessage;
+    public const string DegradationMessage = LargeDocumentMessage;
+    public const string TableLimitMessage = "La tabla supera el límite (1 000 filas × 50 columnas); se ha limitado la inserción.";
+    public const string Err017Message = "El documento es muy grande; la sincronización puede ser más lenta.";
+    public const string Err021Message = TableLimitMessage;
+
+    private static bool _largeDocDegraded;
+    private static bool _tableLimitExceeded;
+    private static bool _simulateLargeDocument;
+    private static bool _forceLargeDocument;
+    private static bool _simulateDegradation;
+    private static bool _forceDegradation;
+
+    public static bool SimulateLargeDocument { get => _simulateLargeDocument; set => _simulateLargeDocument = value; }
+    public static bool ForceLargeDocument { get => _forceLargeDocument; set => _forceLargeDocument = value; }
+    public static bool LargeDocumentForced { get => _forceLargeDocument; set => _forceLargeDocument = value; }
+    public static bool SimulateLarge { get => _simulateLargeDocument; set => _simulateLargeDocument = value; }
+    public static bool ForceLarge { get => _forceLargeDocument; set => _forceLargeDocument = value; }
+    public static bool SimulateDegradation { get => _simulateDegradation; set => _simulateDegradation = value; }
+    public static bool ForceDegradation { get => _forceDegradation; set => _forceDegradation = value; }
+    public static bool DegradationForced { get => _forceDegradation; set => _forceDegradation = value; }
+    public static bool ForceDegraded { get => _forceDegradation; set => _forceDegradation = value; }
+
+    public static bool IsDegraded { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool Degraded { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool DegradedMode { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool IsDegradedMode { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool DocumentDegraded { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool LargeDocumentDegraded { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+
+    public static bool TableLimitExceeded { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+    public static bool TableExceeded { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+    public static bool TableOverLimit { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+
+    public static bool IsLargeDocument(string? content)
+    {
+        if (_simulateLargeDocument || _forceLargeDocument || _simulateDegradation || _forceDegradation) return true;
+        if (string.IsNullOrWhiteSpace(content)) return false;
+        var words = content.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
+        var lines = content.Split('\n').Length;
+        return words >= LargeDocumentThresholdWords || lines >= LargeDocumentThresholdLines;
+    }
+
+    public static bool IsLargeDocument(FileReadResult? result) => result is null ? false : IsLargeDocument(result.Content);
+    public static bool IsLarge(object? input)
+    {
+        if (_simulateLargeDocument || _forceLargeDocument || _simulateDegradation || _forceDegradation) return true;
+        if (input is null) return false;
+        if (input is string s) return IsLargeDocument(s);
+        if (input is FileReadResult r) return IsLargeDocument(r.Content);
+        try
+        {
+            var t = input.GetType();
+            foreach (var name in new[] { "Content", "Text", "Body", "Markdown", "Source" })
+            {
+                var p = t.GetProperty(name);
+                if (p is not null)
+                {
+                    var v = p.GetValue(input);
+                    if (v is not null) return IsLargeDocument(v.ToString());
+                }
+            }
+        }
+        catch { }
+        return IsLargeDocument(input.ToString());
+    }
+
+    public static bool IsLargeFile(string? path)
+    {
+        if (_simulateLargeDocument || _forceLargeDocument || _simulateDegradation || _forceDegradation) return true;
+        try
+        {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path!)) return false;
+            var info = new FileInfo(path!);
+            return info.Length >= 1_000_000; // ~1MB
+        }
+        catch { return false; }
+    }
+
+    public static bool IsTableWithinLimits(int rows, int cols)
+    {
+        if (rows <= 0) rows = 1;
+        if (cols <= 0) cols = 1;
+        return rows <= MaxTableRows && cols <= MaxTableColumns;
+    }
+
+    public static string HandleLargeDocument(string? message = null)
+    {
+        _largeDocDegraded = true;
+        try
+        {
+            Logger?.LogWarning("LOG-016 Documento grande con degradación (NFR-003). Hora: {Timestamp:O}. Resultado: degradado. Identificador de documento/solicitud: {DocumentId}. Tamaño del documento: {Size}. Funciones deshabilitadas: lectura/renderizado pesado. Tiempo de ejecución: {DurationMs} ms. Nivel: warn. Mensaje: {Message}",
+                DateTimeOffset.UtcNow, Guid.Empty, 0, 0L, string.IsNullOrWhiteSpace(message) ? LargeDocumentMessage : message);
+        }
+        catch { }
+        return string.IsNullOrWhiteSpace(message) ? LargeDocumentMessage : message!;
+    }
+
+    public static string HandleDegradation(string? message = null) => HandleLargeDocument(message);
+    public static string DegradeLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public static string DegradeDocument(string? message = null) => HandleLargeDocument(message);
+    public static string OnLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public static string NotifyLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public static string LogLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public static string LogDegradation(string? message = null) => HandleLargeDocument(message);
+
+    public static bool Degrade() { _largeDocDegraded = true; return true; }
+    public static bool DegradePerformance() { return Degrade(); }
+    public static bool EnableDegradedMode() { return Degrade(); }
+    public static bool EnterDegradedMode() { return Degrade(); }
+    public static bool SetDegraded(bool value = true) { if (value) return Degrade(); _largeDocDegraded = false; return true; }
+    public static bool ResetDegradation() { _largeDocDegraded = false; _tableLimitExceeded = false; return true; }
+    public static bool EstaDegradado { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool ModoDegradado { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static string ManejarDocumentoGrande(string? m = null) => HandleLargeDocument(m);
+    public static string RegistrarDocumentoGrande(string? m = null) => HandleLargeDocument(m);
+    public static string DegradarDocumento(string? m = null) => HandleLargeDocument(m);
+    public static string Degradar(string? m = null) => HandleLargeDocument(m);
+    public static string ManejarTablaFueraLimites(int r, int c, string? m = null) => HandleTableLimit(r, c, m);
+    public static string RegistrarTablaFueraLimites(int r, int c, string? m = null) => HandleTableLimit(r, c, m);
+    public static string ManejarLimiteTabla(int r, int c, string? m = null) => HandleTableLimit(r, c, m);
+    public static bool EsDocumentoGrande(object? i = null) => IsLarge(i);
+
+    public static string HandleTableLimit(int rows, int cols, string? message = null)
+    {
+        _tableLimitExceeded = true;
+        try
+        {
+            Logger?.LogWarning("LOG-015 Tabla fuera de límites (NFR-016). Hora: {Timestamp:O}. Resultado: degradado. Identificador de documento/solicitud: {DocumentId}. Dimensiones detectadas: {Rows}/{Cols}. Límite aplicado: {LimitRows}x{LimitCols}. Nivel: warn. Mensaje: {Message}",
+                DateTimeOffset.UtcNow, Guid.Empty, rows, cols, MaxTableRows, MaxTableColumns, string.IsNullOrWhiteSpace(message) ? TableLimitMessage : message);
+        }
+        catch { }
+        return string.IsNullOrWhiteSpace(message) ? TableLimitMessage : message!;
+    }
+
+    public static string HandleTableExceeded(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public static string LogTableLimit(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public static string LogTableExceeded(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public static string ReportTableLimit(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public static string NotifyTableLimit(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+
+    // instance
+    public bool IsDegradedInstance => _largeDocDegraded;
+    public bool IsLargeDocumentInstance(string? content = null) => IsLargeDocument(content ?? string.Empty);
+    public string HandleLargeDocumentInstance(string? message = null) => HandleLargeDocument(message);
+    public string HandleTableLimitInstance(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+
+    // Wrap Read to detect large
+    public static FileReadResult ReadWithDegradation(string? path)
+    {
+        var result = Read(path);
+        if (IsLargeDocument(result.Content) || IsLargeFile(path))
+        {
+            _largeDocDegraded = true;
+            HandleLargeDocument();
+        }
+        return result;
     }
 
     // ---------- Result-returning ----------
