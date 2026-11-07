@@ -278,7 +278,21 @@ public partial class FormatBarAction
                 _vm.VisualEffectApplied = false;
             }
         }
-        // propagate to document? no
+        // propagate to document? apply motor de formato sobre el modelo único
+        // para que ambos paneles se sincronicen (T-089, COM-016/017).
+        try
+        {
+            var doc = _document ?? _vm?.Document ?? _left?.Document ?? _right?.Document;
+            if (doc is not null)
+            {
+                var engine = new FormatEngine(doc);
+                engine.LeftPanel = _left;
+                engine.RightPanel = _right;
+                engine.ActivePanel = ResolveActive();
+                engine.Apply(controlKey);
+            }
+        }
+        catch { }
         return true;
     }
 
