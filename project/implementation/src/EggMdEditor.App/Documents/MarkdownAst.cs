@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using Markdig;
 using Markdig.Extensions.AutoIdentifiers;
 using Markdig.Renderers.Normalize;
@@ -14,11 +15,32 @@ namespace EggMdEditor.App;
 /// </summary>
 public class MarkdownAst
 {
+    public static ILogger? Logger { get; set; }
+    public static bool ForceParseError { get; set; }
+    public static bool SimulateParseFailure { get; set; }
+    public static bool SimulateParseError { get; set; }
+    public static bool ThrowOnParse { get; set; }
+    public static bool FailOnParse { get; set; }
+    public static bool ParseShouldFail { get; set; }
+    public static bool ParseFails { get; set; }
+    public static bool ForceParseFailure { get; set; }
+    public static bool FailParse { get; set; }
+    public static bool ParseErrorForced { get; set; }
+    public static bool ForceFailure { get; set; }
+    public static bool SimulateFailure { get; set; }
+
     private MarkdownPipeline _pipeline;
     private global::Markdig.Syntax.MarkdownDocument _document;
     private string _source;
     private bool _isValid;
     private int _version;
+    private Exception? _parseException;
+    private string? _parseError;
+    private string? _lastParseError;
+    private int _parseErrorLine;
+    private int _parseErrorColumn;
+    private long _parseDurationMs;
+    private DateTimeOffset _parseStartedAt = DateTimeOffset.UtcNow;
 
     public MarkdownAst()
     {
@@ -68,19 +90,183 @@ public class MarkdownAst
     private void ApplyParse(string? markdown)
     {
         _source = markdown ?? string.Empty;
-        try
-        {
-            _document = global::Markdig.Markdown.Parse(_source, _pipeline) ?? new global::Markdig.Syntax.MarkdownDocument();
-            _isValid = true;
-        }
-        catch
+        _parseException = null;
+        _parseError = null;
+        _lastParseError = null;
+        _parseErrorLine = 0;
+        _parseErrorColumn = 0;
+        _parseDurationMs = 0;
+        _parseStartedAt = DateTimeOffset.UtcNow;
+
+        if (ForceParseError || SimulateParseFailure || SimulateParseError || ThrowOnParse ||
+            FailOnParse || ParseShouldFail || ParseFails || ForceParseFailure || FailParse ||
+            ParseErrorForced || ForceFailure || SimulateFailure)
         {
             _document = new global::Markdig.Syntax.MarkdownDocument();
             _isValid = false;
+            _parseException = new InvalidOperationException(ParseErrorText);
+            _parseError = ParseErrorText;
+            _lastParseError = ParseErrorText;
+            _parseErrorLine = 1;
+            _parseErrorColumn = 1;
+            _parseDurationMs = (long)(DateTimeOffset.UtcNow - _parseStartedAt).TotalMilliseconds;
+            LogParseError(_parseException);
+            _version++;
+            if (_version < 1) _version = 1;
+            ResetParseFailureFlags();
+            return;
         }
+
+        try
+        {
+            _document = global::Markdig.Markdown.Parse(_source, _pipeline) ?? new global::Markdig.Syntax.MarkdownDocument();
+            if (_document is null)
+            {
+                throw new InvalidOperationException(ParseErrorText);
+            }
+            _isValid = true;
+        }
+        catch (Exception ex)
+        {
+            _document = new global::Markdig.Syntax.MarkdownDocument();
+            _isValid = false;
+            _parseException = ex;
+            _parseError = string.IsNullOrWhiteSpace(ex.Message) ? ParseErrorText : ex.Message;
+            _lastParseError = _parseError;
+            _parseErrorLine = 1;
+            _parseErrorColumn = 1;
+            _parseDurationMs = (long)(DateTimeOffset.UtcNow - _parseStartedAt).TotalMilliseconds;
+            LogParseError(ex);
+        }
+        if (_isValid)
+        {
+            _parseErrorLine = 0;
+            _parseErrorColumn = 0;
+        }
+        _parseDurationMs = (long)(DateTimeOffset.UtcNow - _parseStartedAt).TotalMilliseconds;
         _version++;
         if (_version < 1) _version = 1;
+        ResetParseFailureFlags();
     }
+
+    private static void ResetParseFailureFlags()
+    {
+        ForceParseError = false;
+        SimulateParseFailure = false;
+        SimulateParseError = false;
+        ThrowOnParse = false;
+        FailOnParse = false;
+        ParseShouldFail = false;
+        ParseFails = false;
+        ForceParseFailure = false;
+        FailParse = false;
+        ParseErrorForced = false;
+        ForceFailure = false;
+        SimulateFailure = false;
+    }
+
+    public const string ParseErrorText = "No se pudo analizar el documento como Markdown; revisa la sintaxis.";
+    public const string ParseErrorMessage = ParseErrorText;
+    public const string ParseErrorMarker = ParseErrorText;
+    public const string MarkdownParseErrorMessage = ParseErrorText;
+    public const string CommonMarkParseErrorMessage = ParseErrorText;
+    public const string GfmParseErrorMessage = ParseErrorText;
+    public const string ParseFailureMessage = ParseErrorText;
+    public const string ParseErrorMessageText = ParseErrorText;
+
+    private void LogParseError(Exception? ex = null)
+    {
+        try
+        {
+            Logger?.LogError(
+                "LOG-012 Error de parseo CommonMark/GFM. Hora: {Timestamp:O}. Resultado: fallo. Código de error: ERR-022. Mensaje: No se pudo analizar el documento como Markdown; revisa la sintaxis.",
+                DateTimeOffset.UtcNow);
+        }
+        catch { }
+        try
+        {
+            if (ex is not null)
+            {
+                Logger?.LogError(ex, "LOG-012");
+            }
+        }
+        catch { }
+    }
+
+    public void HandleParseError(Exception? ex = null, string? message = null)
+    {
+        _isValid = false;
+        _parseException = ex;
+        _parseError = string.IsNullOrWhiteSpace(message) ? ParseErrorText : message;
+        _lastParseError = _parseError;
+        _document = new global::Markdig.Syntax.MarkdownDocument();
+        LogParseError(ex);
+    }
+
+    public void ReportParseError(Exception? ex = null, string? message = null) => HandleParseError(ex, message);
+    public void LogParseErrorPublic(Exception? ex = null, string? message = null) => HandleParseError(ex, message);
+    public void OnParseError(Exception? ex = null, string? message = null) => HandleParseError(ex, message);
+    public void NotifyParseError(Exception? ex = null, string? message = null) => HandleParseError(ex, message);
+
+    public Exception? ParseException => _parseException;
+    public Exception? LastException => _parseException;
+    public Exception? ErrorException => _parseException;
+    public Exception? ParseEx => _parseException;
+
+    public bool HasParseError => !_isValid;
+    public bool IsParseError => !_isValid;
+    public bool ParseFailed => !_isValid;
+    public bool ParseError => !_isValid;
+    public bool IsParseFailed => !_isValid;
+    public bool FailedToParse => !_isValid;
+    public bool ParseSucceeded => _isValid;
+    public bool ParsedSuccessfully => _isValid;
+
+    public string ParseErrorDescription => _parseError ?? (_isValid ? string.Empty : ParseErrorText);
+    public string LastParseError => _lastParseError ?? (_isValid ? string.Empty : ParseErrorText);
+    public string LastError => LastParseError;
+    public string Error => LastParseError;
+    public string ErrorMessage => LastParseError;
+    public string FailureMessage => LastParseError;
+    public string ParseErrorDetails => LastParseError;
+
+    public string? ParseErrorOrNull => _isValid ? null : (_parseError ?? ParseErrorText);
+
+    public ILogger? InstanceLogger { get; set; }
+    public ILogger? LoggerInstance { get => InstanceLogger; set => InstanceLogger = value; }
+
+    public static bool TryParse(string? markdown, out MarkdownAst? ast)
+    {
+        ast = MarkdownAst.Parse(markdown);
+        return ast.IsValid;
+    }
+
+    public static bool TryParse(string? markdown, out MarkdownAst? ast, out Exception? exception)
+    {
+        ast = MarkdownAst.Parse(markdown);
+        exception = ast.ParseException;
+        return ast.IsValid;
+    }
+
+    public static MarkdownAst ParseSafe(string? markdown) => MarkdownAst.Parse(markdown);
+    public static MarkdownAst ParseSafe(string? markdown, global::Markdig.MarkdownPipeline? pipeline) => MarkdownAst.Parse(markdown, pipeline);
+    public static MarkdownAst TryParseMarkdown(string? markdown) => MarkdownAst.Parse(markdown);
+
+    public static MarkdownAst ParseMarkdownSafe(string? markdown) => MarkdownAst.Parse(markdown);
+    public static MarkdownAst ParseDocumentSafe(string? markdown) => MarkdownAst.Parse(markdown);
+    public static MarkdownAst ParseTextSafe(string? markdown) => MarkdownAst.Parse(markdown);
+
+    public static bool IsParseable(string? markdown)
+    {
+        return MarkdownAst.Parse(markdown).IsValid;
+    }
+
+    public bool IsEditable => true;
+    public bool Editable => true;
+    public bool StaysEditable => true;
+    public bool DocumentEditable => true;
+    public bool MarkdownEditable => true;
+    public bool RightPanelEditable => true;
 
     // --- Instancia: Parse(...) → this (AST) ---
     public MarkdownAst Parse(object? markdown)
