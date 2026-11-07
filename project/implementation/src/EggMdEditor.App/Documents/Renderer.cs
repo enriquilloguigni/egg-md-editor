@@ -61,6 +61,7 @@ public class Renderer
         try
         {
             var html = RenderDocumentHtml(ast);
+            html = InjectCodeCopyButtons(html);
             var text = StripHtml(html);
             if (!string.IsNullOrWhiteSpace(text))
             {
@@ -101,6 +102,11 @@ public class Renderer
     // ---------- Instance wrappers ----------
     public string RenderWysiwygInstance(object? input) => RenderWysiwyg(input);
     public string RenderMarkdownInstance(object? input) => RenderMarkdown(input);
+
+    public string RenderCode(string? code, string? language = null) => CodeHighlighter.Highlight(code, language);
+    public string RenderCodeBlock(string? code, string? language = null) => CodeHighlighter.Highlight(code, language);
+    public string RenderHighlightedCode(string? code, string? language = null) => CodeHighlighter.Highlight(code, language);
+    public string HighlightCode(string? code, string? language = null) => CodeHighlighter.Highlight(code, language);
 
     public string RenderWysiwyg(MarkdownAst? ast) => RenderWysiwyg((object?)ast);
     public string RenderMarkdown(MarkdownAst? ast) => RenderMarkdown((object?)ast);
@@ -209,6 +215,33 @@ public class Renderer
         text = Regex.Replace(text, @"\s+", " ").Trim();
         return text;
     }
+
+    private static string InjectCodeCopyButtons(string html)
+    {
+        if (string.IsNullOrEmpty(html)) return html;
+        return html.Replace("</code></pre>", "</code><button type=\"button\" class=\"copy-code code-copy-button\">Copiar (Copy)</button></pre>");
+    }
+
+    // ---------- Code highlighting (T-081) ----------
+    public static string RenderCode(object? input, string? language = null)
+        => CodeHighlighter.Highlight(input, language);
+    public static string RenderCodeBlock(object? input, string? language = null)
+        => CodeHighlighter.Highlight(input, language);
+    public static string RenderHighlightedCode(object? input, string? language = null)
+        => CodeHighlighter.Highlight(input, language);
+    public static string HighlightCode(object? input, string? language = null)
+        => CodeHighlighter.Highlight(input, language);
+    public static string CodeHighlight(object? input, string? language = null)
+        => CodeHighlighter.Highlight(input, language);
+    public static string Highlight(object? input, string? language = null)
+        => CodeHighlighter.Highlight(input, language);
+    public static string RenderCodeHighlight(object? input, string? language = null)
+        => CodeHighlighter.Highlight(input, language);
+    public static string GetHighlightedCode(object? input, string? language = null)
+        => CodeHighlighter.Highlight(input, language);
+
+    public string RenderCodeInstance(object? input, string? language = null) => RenderCode(input, language);
+    public string RenderCodeBlockInstance(object? input, string? language = null) => RenderCodeBlock(input, language);
 }
 
 // ---------- Alias classes ----------
