@@ -13,7 +13,7 @@ namespace EggMdEditor.App;
 /// Renderizado de diagramas Mermaid en el panel WYSIWYG (T-083, VR-012, AC-040).
 /// Genera marcado accesible; ante error devuelve el marcador ERR-019 sin alterar el Markdown.
 /// </summary>
-public class DiagramRenderer
+public partial class DiagramRenderer
 {
     public const string ErrorMarker = Renderer.WysiwygErrorMarker;
 
