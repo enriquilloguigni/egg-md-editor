@@ -16,7 +16,7 @@ namespace EggMdEditor.App;
 /// Renderizado de tablas GFM con estados visuales (T-082, VR-011, AC-037).
 /// Genera HTML con bordes, alineación, cabecera distinguible y celda activa.
 /// </summary>
-public class TableRenderer
+public partial class TableRenderer
 {
     public const int MaxRows = 1000;
     public const int MaxCols = 50;
