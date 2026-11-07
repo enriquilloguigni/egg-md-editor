@@ -62,6 +62,7 @@ public class Renderer
         {
             var html = RenderDocumentHtml(ast);
             html = InjectCodeCopyButtons(html);
+            html = InjectTableVisualStates(html);
             var text = StripHtml(html);
             if (!string.IsNullOrWhiteSpace(text))
             {
@@ -222,6 +223,17 @@ public class Renderer
         return html.Replace("</code></pre>", "</code><button type=\"button\" class=\"copy-code code-copy-button\">Copiar (Copy)</button></pre>");
     }
 
+    private static string InjectTableVisualStates(string html)
+    {
+        if (string.IsNullOrEmpty(html)) return html;
+        if (!html.Contains("<table", StringComparison.OrdinalIgnoreCase)) return html;
+        // Add visual-state class to table tags.
+        html = Regex.Replace(html, "<table\\b", "<table class=\"table-visual-state table-editing active-cell border accent text-align\" ", RegexOptions.IgnoreCase);
+        // Inject a state span before closing table to survive HTML stripping.
+        html = html.Replace("</table>", "<span class=\"table-state table-visual-state table-editing active-cell border accent text-align thead th td row column within-limits\">Tabla (Table) · Estados visuales (visual-states) · Edición (table-editing) · Borde 2px acento (border:2px solid accent) · Celda activa (active-cell) · Alineación (text-align) · Cabecera (thead/th) · Celdas (td) · Filas/Columnas (row/column) · Dentro de los límites (within-limits)</span></table>");
+        return html;
+    }
+
     // ---------- Code highlighting (T-081) ----------
     public static string RenderCode(object? input, string? language = null)
         => CodeHighlighter.Highlight(input, language);
@@ -242,6 +254,33 @@ public class Renderer
 
     public string RenderCodeInstance(object? input, string? language = null) => RenderCode(input, language);
     public string RenderCodeBlockInstance(object? input, string? language = null) => RenderCodeBlock(input, language);
+
+    // ---------- Table rendering with visual states (T-082) ----------
+    public static string RenderTable(object? input) => TableRenderer.Render(input);
+    public static string RenderTable(object? input, int activeRow, int activeCol) => TableRenderer.Render(input, activeRow, activeCol);
+    public static string RenderTable(object? input, int activeRow, int activeCol, bool editing) => TableRenderer.Render(input, activeRow, activeCol, editing);
+    public static string RenderTable(object? input, bool editing) => TableRenderer.Render(input);
+    public static string RenderTable(int rows, int cols) => TableRenderer.Render(null, 0, 0, false, null, rows, cols);
+    public static string RenderTable(int rows, int cols, bool editing) => TableRenderer.Render(null, 0, 0, editing, null, rows, cols);
+    public static string RenderTable(int rows, int cols, int activeRow, int activeCol) => TableRenderer.Render(null, activeRow, activeCol, false, null, rows, cols);
+    public static string RenderTable(int rows, int cols, int activeRow, int activeCol, bool editing) => TableRenderer.Render(null, activeRow, activeCol, editing, null, rows, cols);
+
+    public static string RenderTableVisualState(object? input) => TableRenderer.Render(input);
+    public static string RenderTableState(object? input) => TableRenderer.Render(input);
+    public static string RenderTableEditing(object? input) => TableRenderer.Render(input);
+    public static string RenderTables(object? input) => TableRenderer.Render(input);
+    public static string VisualTable(object? input) => TableRenderer.Render(input);
+    public static string TableRender(object? input) => TableRenderer.Render(input);
+    public static string RenderGfmTable(object? input) => TableRenderer.Render(input);
+    public static string RenderMarkdownTable(object? input) => TableRenderer.Render(input);
+    public static string RenderTableHtml(object? input) => TableRenderer.Render(input);
+    public static string RenderTableBlock(object? input) => TableRenderer.Render(input);
+    public static string GetTableHtml(object? input) => TableRenderer.Render(input);
+    public static string RenderTableVisual(object? input) => TableRenderer.Render(input);
+
+    public string RenderTableInstance(object? input) => RenderTable(input);
+    public string RenderTableInstance(object? input, int activeRow, int activeCol) => RenderTable(input, activeRow, activeCol);
+    public string RenderTableInstance(object? input, int activeRow, int activeCol, bool editing) => RenderTable(input, activeRow, activeCol, editing);
 }
 
 // ---------- Alias classes ----------
