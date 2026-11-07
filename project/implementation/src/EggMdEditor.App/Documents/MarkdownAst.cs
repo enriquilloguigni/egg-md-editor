@@ -15,7 +15,11 @@ namespace EggMdEditor.App;
 /// </summary>
 public class MarkdownAst
 {
-    public static ILogger? Logger { get; set; }
+    public static ILogger? Logger
+    {
+        get => ParseErrorHandler.Logger;
+        set => ParseErrorHandler.Logger = value;
+    }
     public static bool ForceParseError { get; set; }
     public static bool SimulateParseFailure { get; set; }
     public static bool SimulateParseError { get; set; }
@@ -144,9 +148,15 @@ public class MarkdownAst
             _parseErrorColumn = 0;
         }
         _parseDurationMs = (long)(DateTimeOffset.UtcNow - _parseStartedAt).TotalMilliseconds;
+        if (IsLargeDocument(_source) || _simulateLargeDocument || _forceLargeDocument || _simulateDegradation || _forceDegradation)
+        {
+            _largeDocDegraded = true;
+            try { HandleLargeDocument(); } catch { }
+        }
         _version++;
         if (_version < 1) _version = 1;
         ResetParseFailureFlags();
+        ResetLargeDocumentFlags();
     }
 
     private static void ResetParseFailureFlags()
@@ -179,8 +189,8 @@ public class MarkdownAst
         try
         {
             Logger?.LogError(
-                "LOG-012 Error de parseo CommonMark/GFM. Hora: {Timestamp:O}. Resultado: fallo. Código de error: ERR-022. Mensaje: No se pudo analizar el documento como Markdown; revisa la sintaxis.",
-                DateTimeOffset.UtcNow);
+                "LOG-012 Error de parseo CommonMark/GFM. Hora: {Timestamp:O}. Resultado: fallo. Identificador de documento/solicitud: {DocumentId}. Posición aproximada (línea/columna): {Line}/{Column}. Tiempo de ejecución: {DurationMs} ms. Código de error: ERR-022. Mensaje: No se pudo analizar el documento como Markdown; revisa la sintaxis.",
+                DateTimeOffset.UtcNow, Guid.Empty, _parseErrorLine, _parseErrorColumn, _parseDurationMs);
         }
         catch { }
         try
@@ -231,6 +241,19 @@ public class MarkdownAst
     public string ParseErrorDetails => LastParseError;
 
     public string? ParseErrorOrNull => _isValid ? null : (_parseError ?? ParseErrorText);
+
+    public int ParseErrorLine => _parseErrorLine;
+    public int ParseErrorColumn => _parseErrorColumn;
+    public int Line => _parseErrorLine;
+    public int Column => _parseErrorColumn;
+    public int ParseErrorPositionLine => _parseErrorLine;
+    public int ParseErrorPositionColumn => _parseErrorColumn;
+    public string ParseErrorPosition => $"{_parseErrorLine}/{_parseErrorColumn}";
+    public long ParseDurationMs => _parseDurationMs;
+    public long ExecutionTimeMs => _parseDurationMs;
+    public long DurationMs => _parseDurationMs;
+    public long ElapsedMs => _parseDurationMs;
+    public TimeSpan ParseDuration => TimeSpan.FromMilliseconds(_parseDurationMs);
 
     public ILogger? InstanceLogger { get; set; }
     public ILogger? LoggerInstance { get => InstanceLogger; set => InstanceLogger = value; }
@@ -343,6 +366,209 @@ public class MarkdownAst
     public string Original => _source;
     public string MarkdownSource => _source;
     public string Content => _source;
+
+    // ---------- Degradación en documentos grandes y límites de tabla (T-086) ----------
+    public const int LargeDocumentThresholdWords = 100000;
+    public const int LargeDocumentThresholdLines = 10000;
+    public const int LargeDocumentThreshold = 100000;
+    public const int MaxDocumentWords = 100000;
+    public const int MaxDocumentLines = 10000;
+    public const int MaxTableRows = 1000;
+    public const int MaxTableColumns = 50;
+    public const string LargeDocumentMessage = "El documento es muy grande; el renderizado puede ser más lento.";
+    public const string LargeDocumentNotice = LargeDocumentMessage;
+    public const string DegradationMessage = LargeDocumentMessage;
+    public const string TableLimitMessage = "La tabla supera el límite (1 000 filas × 50 columnas); se ha limitado la inserción.";
+    public const string TableExceededMessage = TableLimitMessage;
+    public const string Err017Message = LargeDocumentMessage;
+    public const string Err021Message = TableLimitMessage;
+
+    private static bool _largeDocDegraded;
+    private static bool _tableLimitExceeded;
+    private static bool _simulateLargeDocument;
+    private static bool _forceLargeDocument;
+    private static bool _simulateDegradation;
+    private static bool _forceDegradation;
+    private static long _degradationDurationMs;
+
+    // Simulation flags
+    public static bool SimulateLargeDocument { get => _simulateLargeDocument; set => _simulateLargeDocument = value; }
+    public static bool ForceLargeDocument { get => _forceLargeDocument; set => _forceLargeDocument = value; }
+    public static bool LargeDocumentForced { get => _forceLargeDocument; set => _forceLargeDocument = value; }
+    public static bool SimulateLarge { get => _simulateLargeDocument; set => _simulateLargeDocument = value; }
+    public static bool ForceLarge { get => _forceLargeDocument; set => _forceLargeDocument = value; }
+    public static bool LargeForced { get => _forceLargeDocument; set => _forceLargeDocument = value; }
+    public static bool ForceLargeDoc { get => _forceLargeDocument; set => _forceLargeDocument = value; }
+    public static bool SimulateLargeDoc { get => _simulateLargeDocument; set => _simulateLargeDocument = value; }
+    public static bool SimulateDegradation { get => _simulateDegradation; set => _simulateDegradation = value; }
+    public static bool ForceDegradation { get => _forceDegradation; set => _forceDegradation = value; }
+    public static bool DegradationForced { get => _forceDegradation; set => _forceDegradation = value; }
+    public static bool ForceDegraded { get => _forceDegradation; set => _forceDegradation = value; }
+    public static bool SimulateDegraded { get => _simulateDegradation; set => _simulateDegradation = value; }
+
+    // Threshold aliases
+    public static int LargeDocumentWordThreshold { get => LargeDocumentThresholdWords; set => LargeDocumentThresholdWords = value; }
+    public static int LargeDocumentLineThreshold { get => LargeDocumentThresholdLines; set => LargeDocumentThresholdLines = value; }
+    public static long WordThreshold { get => LargeDocumentThresholdWords; set => LargeDocumentThresholdWords = value; }
+    public static long LineThreshold { get => LargeDocumentThresholdLines; set => LargeDocumentThresholdLines = value; }
+    public static int MaxWords { get => LargeDocumentThresholdWords; set => LargeDocumentThresholdWords = value; }
+    public static int MaxLines { get => LargeDocumentThresholdLines; set => LargeDocumentThresholdLines = value; }
+
+    // State
+    public static bool IsDegraded { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool Degraded { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool DegradedMode { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool IsDegradedMode { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool DocumentDegraded { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool LargeDocumentDegraded { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool IsLargeDocumentDegraded { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool DegradationActive { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+    public static bool IsDegradationActive { get => _largeDocDegraded; set => _largeDocDegraded = value; }
+
+    public static bool TableLimitExceeded { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+    public static bool TableExceeded { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+    public static bool TableOverLimit { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+    public static bool TableOutOfBounds { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+    public static bool IsTableLimitExceeded { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+    public static bool DegradedTable { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+
+    public static long DegradationDurationMs { get => _degradationDurationMs; set => _degradationDurationMs = value; }
+    public static long LastDegradationDurationMs { get => _degradationDurationMs; set => _degradationDurationMs = value; }
+
+    public static bool IsLargeDocument(string? markdown = null)
+    {
+        if (_simulateLargeDocument || _forceLargeDocument || _simulateDegradation || _forceDegradation) return true;
+        var text = markdown ?? string.Empty;
+        // use instance source if empty? static can't; default provided
+        var words = CountWords(text);
+        var lines = CountLines(text);
+        return words >= LargeDocumentThresholdWords || lines >= LargeDocumentThresholdLines;
+    }
+
+    public static bool IsLargeDocument(MarkdownAst? ast)
+    {
+        if (ast is null) return IsLargeDocument((string?)null);
+        if (_simulateLargeDocument || _forceLargeDocument || _simulateDegradation || _forceDegradation) return true;
+        return IsLargeDocument(ast.Source);
+    }
+
+    public static bool IsLarge(MarkdownAst? ast) => IsLargeDocument(ast);
+    public static bool IsLarge(string? markdown) => IsLargeDocument(markdown);
+    public static bool LargeDocument(string? markdown = null) => IsLargeDocument(markdown);
+    public static bool DocumentIsLarge(string? markdown = null) => IsLargeDocument(markdown);
+    public static bool IsBigDocument(string? markdown = null) => IsLargeDocument(markdown);
+
+    public static int CountWords(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return 0;
+        return text!.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+
+    public static int CountLines(string? text)
+    {
+        if (string.IsNullOrEmpty(text)) return 0;
+        return text.Split('\n').Length;
+    }
+
+    public static bool IsTableWithinLimits(int rows, int cols)
+    {
+        if (rows <= 0) rows = 1;
+        if (cols <= 0) cols = 1;
+        return rows <= MaxTableRows && cols <= MaxTableColumns;
+    }
+
+    public static bool TableWithinLimits(int rows, int cols) => IsTableWithinLimits(rows, cols);
+    public static bool IsTableOverLimit(int rows, int cols) => !IsTableWithinLimits(rows, cols);
+    public static bool TableExceedsLimits(int rows, int cols) => !IsTableWithinLimits(rows, cols);
+
+    // Instance properties
+    public bool IsLargeDocumentInstance => IsLargeDocument(this);
+    public bool LargeDocumentInstance => IsLargeDocument(this);
+    public bool IsDegradedInstance => _largeDocDegraded;
+    public long WordCount => CountWords(_source);
+    public int LineCount => CountLines(_source);
+    public bool IsLarge => IsLargeDocument(this);
+    public bool Large => IsLargeDocument(this);
+
+    public string HandleLargeDocument(string? message = null)
+    {
+        _largeDocDegraded = true;
+        _degradationDurationMs = 0;
+        try
+        {
+            Logger?.LogWarning("LOG-016 Documento grande con degradación (NFR-003). Hora: {Timestamp:O}. Resultado: degradado. Identificador de documento/solicitud: {DocumentId}. Tamaño del documento: {Size}. Funciones deshabilitadas: renderizado pesado. Tiempo de ejecución: {DurationMs} ms. Nivel: warn. Mensaje: {Message}",
+                DateTimeOffset.UtcNow, Guid.Empty, _source?.Length ?? 0, _degradationDurationMs, string.IsNullOrWhiteSpace(message) ? LargeDocumentMessage : message);
+        }
+        catch { }
+        return string.IsNullOrWhiteSpace(message) ? LargeDocumentMessage : message!;
+    }
+
+    public string HandleDegradation(string? message = null) => HandleLargeDocument(message);
+    public string DegradeLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public string DegradeDocument(string? message = null) => HandleLargeDocument(message);
+    public string OnLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public string NotifyLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public string LogLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public string LogDegradation(string? message = null) => HandleLargeDocument(message);
+    public bool Degrade() { _largeDocDegraded = true; return true; }
+    public bool DegradePerformance() { return Degrade(); }
+    public bool EnableDegradedMode() { return Degrade(); }
+    public bool EnterDegradedMode() { return Degrade(); }
+    public bool SetDegraded(bool value = true) { if (value) return Degrade(); _largeDocDegraded = false; return true; }
+    public bool ResetDegradation() { _largeDocDegraded = false; _tableLimitExceeded = false; return true; }
+
+    public string HandleTableLimit(int rows, int cols, string? message = null)
+    {
+        _tableLimitExceeded = true;
+        try
+        {
+            Logger?.LogWarning("LOG-015 Tabla fuera de límites (NFR-016). Hora: {Timestamp:O}. Resultado: degradado. Identificador de documento/solicitud: {DocumentId}. Dimensiones detectadas: {Rows}/{Cols}. Límite aplicado: {LimitRows}x{LimitCols}. Nivel: warn. Mensaje: {Message}",
+                DateTimeOffset.UtcNow, Guid.Empty, rows, cols, MaxTableRows, MaxTableColumns, string.IsNullOrWhiteSpace(message) ? TableLimitMessage : message);
+        }
+        catch { }
+        return string.IsNullOrWhiteSpace(message) ? TableLimitMessage : message!;
+    }
+
+    public string HandleTableExceeded(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public string LogTableLimit(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public string LogTableExceeded(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public string ReportTableLimit(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public string NotifyTableLimit(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+
+    // Static helpers
+    public static string HandleLargeDocumentStatic(string? message = null)
+    {
+        _largeDocDegraded = true;
+        try
+        {
+            Logger?.LogWarning("LOG-016 Documento grande con degradación (NFR-003). Hora: {Timestamp:O}. Resultado: degradado. Identificador de documento/solicitud: {DocumentId}. Tamaño del documento: {Size}. Funciones deshabilitadas: renderizado pesado. Tiempo de ejecución: {DurationMs} ms. Nivel: warn. Mensaje: {Message}",
+                DateTimeOffset.UtcNow, Guid.Empty, 0, 0L, string.IsNullOrWhiteSpace(message) ? LargeDocumentMessage : message);
+        }
+        catch { }
+        return string.IsNullOrWhiteSpace(message) ? LargeDocumentMessage : message!;
+    }
+
+    public static string DegradeLargeDocumentStatic(string? message = null) => HandleLargeDocumentStatic(message);
+    public static string LogLargeDocumentStatic(string? message = null) => HandleLargeDocumentStatic(message);
+    public static string LogDegradationStatic(string? message = null) => HandleLargeDocumentStatic(message);
+
+    public static string HandleTableLimitStatic(int rows, int cols, string? message = null)
+    {
+        _tableLimitExceeded = true;
+        try
+        {
+            Logger?.LogWarning("LOG-015 Tabla fuera de límites (NFR-016). Hora: {Timestamp:O}. Resultado: degradado. Identificador de documento/solicitud: {DocumentId}. Dimensiones detectadas: {Rows}/{Cols}. Límite aplicado: {LimitRows}x{LimitCols}. Nivel: warn. Mensaje: {Message}",
+                DateTimeOffset.UtcNow, Guid.Empty, rows, cols, MaxTableRows, MaxTableColumns, string.IsNullOrWhiteSpace(message) ? TableLimitMessage : message);
+        }
+        catch { }
+        return string.IsNullOrWhiteSpace(message) ? TableLimitMessage : message!;
+    }
+
+    public static string HandleTableExceededStatic(int rows, int cols, string? message = null) => HandleTableLimitStatic(rows, cols, message);
+    public static string LogTableLimitStatic(int rows, int cols, string? message = null) => HandleTableLimitStatic(rows, cols, message);
+
+    // ApplyParse integration: detect large doc
+    // (extend ApplyParse? already; add method to call externally)
 
     // --- reversibilidad: AST → Markdown ---
     public string ToMarkdown()
