@@ -45,7 +45,7 @@ public sealed class DialogClosedEventArgs : EventArgs
 /// reutilizable por los diálogos concretos de F-002…F-010; en F-001 no hay
 /// ninguno conectado (screens.md, SC-002).
 /// </summary>
-public sealed class DialogViewModel : INotifyPropertyChanged
+public sealed partial class DialogViewModel : INotifyPropertyChanged
 {
     public const string TitleKey = "Dialog.Title";
     public const string MessageKey = "Dialog.Message";
