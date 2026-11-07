@@ -1191,6 +1191,9 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
             try { FileReader.Logger = value; } catch { }
             try { Renderer.Logger = value; } catch { }
             try { Sanitizer.Logger = value; } catch { }
+            try { FormulaRenderer.Logger = value; } catch { }
+            try { DiagramRenderer.Logger = value; } catch { }
+            try { FormulaDiagramRenderer.Logger = value; } catch { }
         }
     }
 
