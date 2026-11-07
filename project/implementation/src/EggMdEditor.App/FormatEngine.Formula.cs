@@ -564,6 +564,9 @@ public enum FormulaModo { EnLinea, Bloque, Inline = EnLinea, Block = Bloque }
 public class FormulaInfo
 {
     public string Mode { get; set; } = "En línea";
+    public string RenderState { get; set; } = "OK";
+    public string Status { get => RenderState; set => RenderState = value; }
+    public string State { get => RenderState; set => RenderState = value; }
     public bool IsInline { get; set; }
     public bool IsBlock { get; set; }
     public string Code { get; set; } = string.Empty;
