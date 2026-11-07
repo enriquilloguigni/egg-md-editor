@@ -10,7 +10,7 @@ namespace EggMdEditor.App;
 /// Resaltado de sintaxis para bloques de código y botón de copia (T-081, AC-034).
 /// Lógica desacoplada de la UI (NFR-007); sin red (NFR-004/NFR-005).
 /// </summary>
-public class CodeHighlighter
+public partial class CodeHighlighter
 {
     public string? Language { get; set; }
     public string? Code { get; set; }
