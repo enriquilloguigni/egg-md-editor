@@ -166,6 +166,13 @@ public class MarkdownAst
     public string RenderWysiwyg() => Renderer.RenderWysiwyg(this);
     public string RenderWYSIWYG() => Renderer.RenderWysiwyg(this);
     public string RenderWysiwygView() => Renderer.RenderWysiwyg(this);
+    public string RenderFormula(string? mode = null) => Renderer.RenderFormula(this, mode);
+    public string RenderFormula(string? mode, bool error) => Renderer.RenderFormula(this, mode, error);
+    public string RenderLatex(string? mode = null) => Renderer.RenderLatex(this, mode);
+    public string RenderMath(string? mode = null) => Renderer.RenderMath(this, mode);
+    public string RenderDiagram(string? mode = null) => Renderer.RenderDiagram(this, mode);
+    public string RenderMermaid(string? mode = null) => Renderer.RenderMermaid(this, mode);
+    public string RenderFormulaDiagram(string? mode = null) => Renderer.RenderFormulaDiagram(this, mode);
     public static string RenderWysiwyg(MarkdownAst? ast) => Renderer.RenderWysiwyg(ast);
     public static string RenderWYSIWYG(MarkdownAst? ast) => Renderer.RenderWysiwyg(ast);
     public static string RenderMarkdown(MarkdownAst? ast) => Renderer.RenderMarkdown(ast);
