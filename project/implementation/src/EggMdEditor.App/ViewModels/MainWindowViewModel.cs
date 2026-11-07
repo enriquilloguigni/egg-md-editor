@@ -1646,6 +1646,14 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     }
 
     public bool Abrir(string? path = null) => Open(path);
+
+    // Sanitization helpers (T-084)
+    public string Sanitize(string? content) => Sanitizer.Sanitize(content);
+    public string SanitizeMarkdown(string? content) => Sanitizer.Sanitize(content);
+    public string SanitizeHtml(string? content) => Sanitizer.Sanitize(content);
+    public bool IsDangerous(string? content) => Sanitizer.IsDangerous(content);
+    public bool HasDangerousContent(string? content) => Sanitizer.IsDangerous(content);
+    public string Neutralize(string? content) => Sanitizer.Sanitize(content);
     public bool OpenFile(string? path = null) => Open(path);
     public bool AbrirArchivo(string? path = null) => Open(path);
 
