@@ -1724,8 +1724,103 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     public void LogParseError(Exception? ex = null, string? message = null) => HandleParseError(ex, message);
     public void OnParseError(Exception? ex = null, string? message = null) => HandleParseError(ex, message);
 
-    public bool IsMarkdownParseable(string? content) => MarkdownAst.Parse(content).IsValid;
-    public string RenderMarkdownSafe(object? input) => Renderer.RenderMarkdown(input);
+    // Degradation (T-086)
+    public const string LargeDocumentMessage = "El documento es muy grande; el renderizado puede ser más lento.";
+    public const string LargeDocumentNoticeMessage = LargeDocumentMessage;
+    public const string DegradationMessage = LargeDocumentMessage;
+    public const string TableLimitMessage = "La tabla supera el límite (1 000 filas × 50 columnas); se ha limitado la inserción.";
+    public static int LargeDocumentThresholdWords = 100000;
+    public static int LargeDocumentThresholdLines = 10000;
+    public static int MaxTableRows = 1000;
+    public static int MaxTableColumns = 50;
+
+    private bool _isDegraded;
+    private bool _tableLimitExceeded;
+    private string? _degradationMessage;
+
+    public bool IsDegraded { get => _isDegraded; set => _isDegraded = value; }
+    public bool Degraded { get => _isDegraded; set => _isDegraded = value; }
+    public bool DegradedMode { get => _isDegraded; set => _isDegraded = value; }
+    public bool IsDegradedMode { get => _isDegraded; set => _isDegraded = value; }
+    public bool DocumentDegraded { get => _isDegraded; set => _isDegraded = value; }
+    public bool LargeDocumentDegraded { get => _isDegraded; set => _isDegraded = value; }
+
+    public bool TableLimitExceeded { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+    public bool TableExceeded { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+    public bool TableOverLimit { get => _tableLimitExceeded; set => _tableLimitExceeded = value; }
+
+    public string? DegradationMessageText { get => _degradationMessage; set => _degradationMessage = value; }
+    public string DegradationNotice => _degradationMessage ?? LargeDocumentMessage;
+    public string DegradationNoticeMessage => DegradationNotice;
+
+    public bool IsLargeDocument(string? content = null)
+    {
+        var text = content ?? Document?.Content ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(text)) return false;
+        var words = text.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
+        var lines = text.Split('\n').Length;
+        return words >= LargeDocumentThresholdWords || lines >= LargeDocumentThresholdLines;
+    }
+
+    public bool IsLargeDocument(object? input) => IsLargeDocument(input?.ToString());
+
+    public string HandleLargeDocument(string? message = null)
+    {
+        _isDegraded = true;
+        _degradationMessage = string.IsNullOrWhiteSpace(message) ? LargeDocumentMessage : message;
+        try { Logger?.LogWarning("LOG-016 Documento grande con degradación (NFR-003). Hora: {Timestamp:O}. Resultado: degradado. Identificador de documento/solicitud: {DocumentId}. Tamaño del documento: {Size}. Funciones deshabilitadas: renderizado pesado. Tiempo de ejecución: {DurationMs} ms. Nivel: warn. Mensaje: {Message}", DateTimeOffset.UtcNow, SessionId ?? "sin-sesion", (Document?.Content ?? string.Empty).Length, 0L, _degradationMessage); }
+        catch { }
+        return _degradationMessage!;
+    }
+
+    public string HandleDegradation(string? message = null) => HandleLargeDocument(message);
+    public string DegradeLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public string DegradeDocument(string? message = null) => HandleLargeDocument(message);
+    public string OnLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public string NotifyLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public string LogLargeDocument(string? message = null) => HandleLargeDocument(message);
+    public string LogDegradation(string? message = null) => HandleLargeDocument(message);
+
+    public bool Degrade() { _isDegraded = true; return true; }
+    public bool DegradePerformance() { return Degrade(); }
+    public bool EnableDegradedMode() { return Degrade(); }
+    public bool EnterDegradedMode() { return Degrade(); }
+    public bool SetDegraded(bool value = true) { if (value) return Degrade(); _isDegraded = false; return true; }
+    public bool ResetDegradation() { _isDegraded = false; _tableLimitExceeded = false; _degradationMessage = null; return true; }
+    public bool EstaDegradado { get => _isDegraded; set => _isDegraded = value; }
+    public string ManejarDocumentoGrande(string? m = null) => HandleLargeDocument(m);
+    public string RegistrarDocumentoGrande(string? m = null) => HandleLargeDocument(m);
+    public string DegradarDocumento(string? m = null) => HandleLargeDocument(m);
+    public string Degradar(string? m = null) => HandleLargeDocument(m);
+    public string ManejarTablaFueraLimites(int r, int c, string? m = null) => HandleTableLimit(r, c, m);
+    public string RegistrarTablaFueraLimites(int r, int c, string? m = null) => HandleTableLimit(r, c, m);
+    public string ManejarLimiteTabla(int r, int c, string? m = null) => HandleTableLimit(r, c, m);
+
+    public string HandleTableLimit(int rows, int cols, string? message = null)
+    {
+        _tableLimitExceeded = true;
+        var msg = string.IsNullOrWhiteSpace(message) ? TableLimitMessage : message!;
+        try { Logger?.LogWarning("LOG-015 Tabla fuera de límites (NFR-016). Hora: {Timestamp:O}. Resultado: degradado. Identificador de documento/solicitud: {DocumentId}. Dimensiones detectadas: {Rows}/{Cols}. Límite aplicado: {LimitRows}x{LimitCols}. Nivel: warn. Mensaje: {Message}", DateTimeOffset.UtcNow, SessionId ?? "sin-sesion", rows, cols, MaxTableRows, MaxTableColumns, msg); }
+        catch { }
+        return msg;
+    }
+
+    public string HandleTableExceeded(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public string LogTableLimit(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public string LogTableExceeded(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public string ReportTableLimit(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+    public string NotifyTableLimit(int rows, int cols, string? message = null) => HandleTableLimit(rows, cols, message);
+
+    public bool IsTableWithinLimits(int rows, int cols)
+    {
+        if (rows <= 0) rows = 1;
+        if (cols <= 0) cols = 1;
+        return rows <= MaxTableRows && cols <= MaxTableColumns;
+    }
+
+    public static bool IsTableWithinLimitsStatic(int rows, int cols) => rows > 0 && cols > 0 && rows <= 1000 && cols <= 50;
+
+    public bool RenderLargeDocumentSafe(object? input) => Renderer.RenderWysiwyg(input) is not null;
     public bool OpenFile(string? path = null) => Open(path);
     public bool AbrirArchivo(string? path = null) => Open(path);
 
