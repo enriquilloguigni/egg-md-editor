@@ -100,6 +100,21 @@ public class Renderer
         }
     }
 
+    // ---------- Sanitization (T-084) ----------
+    public static string Sanitize(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeHtml(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeMarkdown(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeContent(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeText(string? content) => Sanitizer.Sanitize(content);
+    public static bool IsDangerous(string? content) => Sanitizer.IsDangerous(content);
+    public static bool IsDangerousContent(string? content) => Sanitizer.IsDangerous(content);
+    public static bool IsSafe(string? content) => Sanitizer.IsSafe(content);
+    public static string Neutralize(string? content) => Sanitizer.Sanitize(content);
+    public static string RenderSanitized(object? input) => Sanitize(Renderer.RenderWysiwyg(input));
+    public static string RenderSanitizedHtml(object? input) => Sanitize(RenderDocumentHtml(MarkdownAst.Parse(input is null ? null : input.ToString())));
+    public string SanitizeInstance(string? content = null) => Sanitizer.Sanitize(content);
+    public string SanitizeHtmlInstance(string? content = null) => Sanitizer.Sanitize(content);
+
     // ---------- Instance wrappers ----------
     public string RenderWysiwygInstance(object? input) => RenderWysiwyg(input);
     public string RenderMarkdownInstance(object? input) => RenderMarkdown(input);
@@ -205,7 +220,10 @@ public class Renderer
         try { ast.Pipeline.Setup(renderer); } catch { }
         renderer.Render(ast.Document);
         sb.Flush();
-        return sb.ToString();
+        var html = sb.ToString();
+        // Sanitization (T-084, NFR-017, AC-043): neutralize dangerous HTML.
+        html = Sanitizer.Sanitize(html);
+        return html;
     }
 
     private static string StripHtml(string html)
