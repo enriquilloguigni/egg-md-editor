@@ -258,6 +258,17 @@ public class FileReader
     public static LineEnding DetectLineEndings(string? text) => DetectLineEnding(text);
     public static LineEnding GetLineEnding(string? text) => DetectLineEnding(text);
 
+    // ---------- Sanitization (T-084) ----------
+    public static string Sanitize(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeMarkdown(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeHtml(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeContent(string? content) => Sanitizer.Sanitize(content);
+    public static string SanitizeText(string? content) => Sanitizer.Sanitize(content);
+    public static bool IsDangerous(string? content) => Sanitizer.IsDangerous(content);
+    public static bool HasDangerousContent(string? content) => Sanitizer.IsDangerous(content);
+    public static bool IsSafe(string? content) => Sanitizer.IsSafe(content);
+    public static string Neutralize(string? content) => Sanitizer.Sanitize(content);
+
     // ---------- Result-returning ----------
 
     public static FileReadResult ReadResult(string? path)
