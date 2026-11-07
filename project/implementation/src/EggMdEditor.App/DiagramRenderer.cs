@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Markdig;
 using Markdig.Syntax;
 
@@ -15,6 +16,8 @@ namespace EggMdEditor.App;
 public class DiagramRenderer
 {
     public const string ErrorMarker = Renderer.WysiwygErrorMarker;
+
+    public static ILogger? Logger { get; set; }
 
     public string? Code { get; set; }
     public string? Mode { get; set; }
@@ -50,11 +53,13 @@ public class DiagramRenderer
         c = UnwrapFenced(c);
         if (string.IsNullOrWhiteSpace(c))
         {
+            LogRenderError("diagrama");
             return ErrorMarker;
         }
         // basic validity: mermaid diagram should contain some recognizable token
         if (!LooksLikeMermaid(c))
         {
+            LogRenderError("diagrama");
             return ErrorMarker;
         }
         var encoded = EscapeHtml(c);
@@ -69,7 +74,7 @@ public class DiagramRenderer
 
     public static string Render(object? input)
     {
-        if (input is null) return ErrorMarker;
+        if (input is null) { LogRenderError("diagrama"); return ErrorMarker; }
         if (input is string s)
         {
             var extracted = ExtractFirstDiagram(s);
@@ -115,34 +120,40 @@ public class DiagramRenderer
 
     // ---------- Error-aware overloads (T-083) ----------
     public static string Render(string? code, string? mode, bool error)
-        => error ? ErrorMarker : Render(code);
+    {
+        if (error) { LogRenderError("diagrama"); return ErrorMarker; }
+        return Render(code);
+    }
     public static string Render(string? code, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
     {
-        if (error || fail || !success) return ErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return ErrorMarker;
-        if (string.IsNullOrWhiteSpace(code)) return ErrorMarker;
+        if (error || fail || !success) { LogRenderError("diagrama"); return ErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError("diagrama"); return ErrorMarker; }
+        if (string.IsNullOrWhiteSpace(code)) { LogRenderError("diagrama"); return ErrorMarker; }
         return Render(code);
     }
     public static string Render(string? code, string? mode, bool error, string? renderState)
     {
-        if (error) return ErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return ErrorMarker;
-        if (string.IsNullOrWhiteSpace(code)) return ErrorMarker;
+        if (error) { LogRenderError("diagrama"); return ErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError("diagrama"); return ErrorMarker; }
+        if (string.IsNullOrWhiteSpace(code)) { LogRenderError("diagrama"); return ErrorMarker; }
         return Render(code);
     }
 
     public static string Render(object? input, string? mode, bool error)
-        => error ? ErrorMarker : Render(input);
+    {
+        if (error) { LogRenderError("diagrama"); return ErrorMarker; }
+        return Render(input);
+    }
     public static string Render(object? input, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
     {
-        if (error || fail || !success) return ErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return ErrorMarker;
+        if (error || fail || !success) { LogRenderError("diagrama"); return ErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError("diagrama"); return ErrorMarker; }
         return Render(input);
     }
     public static string Render(object? input, string? mode, bool error, string? renderState)
     {
-        if (error) return ErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return ErrorMarker;
+        if (error) { LogRenderError("diagrama"); return ErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError("diagrama"); return ErrorMarker; }
         return Render(input);
     }
 
@@ -154,6 +165,12 @@ public class DiagramRenderer
     public static string RenderHtml(object? input) => Render(input);
 
     public static string RenderWysiwyg(object? input) => Renderer.RenderWysiwyg(input);
+
+    private static void LogRenderError(string blockType)
+    {
+        try { (Logger ?? Renderer.Logger)?.LogWarning("LOG-013 Error de renderizado de fórmula/diagrama. Hora: {Timestamp:O}. Resultado: fallo. Identificador de documento/solicitud: {DocumentId}. Tipo de bloque: {BlockType}. Tiempo de ejecución: {DurationMs} ms. Código de error: ERR-019. Nivel: warn.", DateTimeOffset.UtcNow, Guid.Empty, blockType, 0L); } catch { }
+        try { (Logger ?? Renderer.Logger)?.LogError("LOG-013 Error de renderizado de fórmula/diagrama. Hora: {Timestamp:O}. Resultado: fallo. Identificador de documento/solicitud: {DocumentId}. Tipo de bloque: {BlockType}. Tiempo de ejecución: {DurationMs} ms. Código de error: ERR-019. Nivel: error.", DateTimeOffset.UtcNow, Guid.Empty, blockType, 0L); } catch { }
+    }
 
     // ---------- helpers ----------
     private static bool LooksLikeMermaid(string code)
