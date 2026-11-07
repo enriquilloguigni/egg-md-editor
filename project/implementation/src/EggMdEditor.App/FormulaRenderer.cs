@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -16,6 +17,8 @@ namespace EggMdEditor.App;
 public class FormulaRenderer
 {
     public const string ErrorMarker = Renderer.WysiwygErrorMarker;
+
+    public static ILogger? Logger { get; set; }
 
     public string? Code { get; set; }
     public string Mode { get; set; } = "inline"; // inline | block
@@ -60,10 +63,12 @@ public class FormulaRenderer
         var c = Unwrap(code);
         if (string.IsNullOrWhiteSpace(c))
         {
+            LogRenderError("fórmula");
             return ErrorMarker;
         }
         if (!BracesBalanced(c))
         {
+            LogRenderError("fórmula");
             return ErrorMarker;
         }
         var encoded = EscapeHtml(c);
@@ -88,7 +93,7 @@ public class FormulaRenderer
 
     public static string Render(object? input, string? mode = null)
     {
-        if (input is null) return ErrorMarker;
+        if (input is null) { LogRenderError("fórmula"); return ErrorMarker; }
         if (input is string s)
         {
             // If the string contains delimiters, extract the first formula.
@@ -135,35 +140,41 @@ public class FormulaRenderer
 
     // ---------- Error-aware overloads (T-083) ----------
     public static string Render(string? code, string? mode, bool error)
-        => error ? ErrorMarker : Render(code, mode);
+    {
+        if (error) { LogRenderError("fórmula"); return ErrorMarker; }
+        return Render(code, mode);
+    }
     public static string Render(string? code, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
     {
-        if (error || fail || !success) return ErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return ErrorMarker;
-        if (!string.IsNullOrWhiteSpace(code) && code!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return ErrorMarker;
-        if (string.IsNullOrWhiteSpace(code)) return ErrorMarker;
+        if (error || fail || !success) { LogRenderError("fórmula"); return ErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError("fórmula"); return ErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(code) && code!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError("fórmula"); return ErrorMarker; }
+        if (string.IsNullOrWhiteSpace(code)) { LogRenderError("fórmula"); return ErrorMarker; }
         return Render(code, mode);
     }
     public static string Render(string? code, string? mode, bool error, string? renderState)
     {
-        if (error) return ErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return ErrorMarker;
-        if (string.IsNullOrWhiteSpace(code)) return ErrorMarker;
+        if (error) { LogRenderError("fórmula"); return ErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError("fórmula"); return ErrorMarker; }
+        if (string.IsNullOrWhiteSpace(code)) { LogRenderError("fórmula"); return ErrorMarker; }
         return Render(code, mode);
     }
 
     public static string Render(object? input, string? mode, bool error)
-        => error ? ErrorMarker : Render(input, mode);
+    {
+        if (error) { LogRenderError("fórmula"); return ErrorMarker; }
+        return Render(input, mode);
+    }
     public static string Render(object? input, string? mode, bool error, bool fail, bool success = true, string? renderState = null)
     {
-        if (error || fail || !success) return ErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return ErrorMarker;
+        if (error || fail || !success) { LogRenderError("fórmula"); return ErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError("fórmula"); return ErrorMarker; }
         return Render(input, mode);
     }
     public static string Render(object? input, string? mode, bool error, string? renderState)
     {
-        if (error) return ErrorMarker;
-        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) return ErrorMarker;
+        if (error) { LogRenderError("fórmula"); return ErrorMarker; }
+        if (!string.IsNullOrWhiteSpace(renderState) && renderState!.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0) { LogRenderError("fórmula"); return ErrorMarker; }
         return Render(input, mode);
     }
 
@@ -182,6 +193,12 @@ public class FormulaRenderer
     public static string RenderHtml(object? input, string? mode = null) => Render(input, mode);
 
     public static string RenderWysiwyg(object? input) => Renderer.RenderWysiwyg(input);
+
+    private static void LogRenderError(string blockType)
+    {
+        try { (Logger ?? Renderer.Logger)?.LogWarning("LOG-013 Error de renderizado de fórmula/diagrama. Hora: {Timestamp:O}. Resultado: fallo. Identificador de documento/solicitud: {DocumentId}. Tipo de bloque: {BlockType}. Tiempo de ejecución: {DurationMs} ms. Código de error: ERR-019. Nivel: warn.", DateTimeOffset.UtcNow, Guid.Empty, blockType, 0L); } catch { }
+        try { (Logger ?? Renderer.Logger)?.LogError("LOG-013 Error de renderizado de fórmula/diagrama. Hora: {Timestamp:O}. Resultado: fallo. Identificador de documento/solicitud: {DocumentId}. Tipo de bloque: {BlockType}. Tiempo de ejecución: {DurationMs} ms. Código de error: ERR-019. Nivel: error.", DateTimeOffset.UtcNow, Guid.Empty, blockType, 0L); } catch { }
+    }
 
     // ---------- helpers ----------
     private static string NormalizeMode(string? mode)
