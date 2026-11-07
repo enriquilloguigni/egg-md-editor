@@ -1176,11 +1176,23 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     /// <summary>Rótulo de la opción Sistema del selector de tema.</summary>
     public string SystemThemeOptionHeader => ResolveCatalog().Get(SystemThemeKey);
 
+    private ILogger? _logger;
     /// <summary>
     /// Registro técnico de LOG-002. Se inyecta desde la composición de la
     /// aplicación; sin logger el cambio de idioma sigue funcionando igual.
     /// </summary>
-    public ILogger? Logger { get; set; }
+    public ILogger? Logger
+    {
+        get => _logger;
+        set
+        {
+            _logger = value;
+            try { MarkdownAst.Logger = value; } catch { }
+            try { FileReader.Logger = value; } catch { }
+            try { Renderer.Logger = value; } catch { }
+            try { Sanitizer.Logger = value; } catch { }
+        }
+    }
 
     /// <summary>
     /// Identificador de la sesión técnica (LOG-002), compartido con el resto
@@ -1654,6 +1666,66 @@ public partial class MainWindowViewModel : CommandDispatcher, INotifyPropertyCha
     public bool IsDangerous(string? content) => Sanitizer.IsDangerous(content);
     public bool HasDangerousContent(string? content) => Sanitizer.IsDangerous(content);
     public string Neutralize(string? content) => Sanitizer.Sanitize(content);
+
+    // Parse error handling (T-085)
+    public const string ParseErrorMarker = "No se pudo analizar el documento como Markdown; revisa la sintaxis.";
+    public const string ParseErrorMessage = ParseErrorMarker;
+    public const string ParseErrorText = ParseErrorMarker;
+
+    private string? _parseError;
+    public string? ParseError { get => _parseError; set => _parseError = value; }
+    public string ParseErrorDescription => _parseError ?? string.Empty;
+    public string LastParseError => _parseError ?? string.Empty;
+    public bool HasParseError => !string.IsNullOrWhiteSpace(_parseError);
+    public bool IsParseError => HasParseError;
+
+    public MarkdownAst ParseMarkdownAst(string? content)
+    {
+        var ast = MarkdownAst.Parse(content);
+        if (!ast.IsValid)
+        {
+            _parseError = ParseErrorMarker;
+            HandleParseError(ast.ParseException);
+        }
+        else
+        {
+            _parseError = null;
+        }
+        return ast;
+    }
+
+    public MarkdownAst ParseMarkdown(string? content) => ParseMarkdownAst(content);
+    public MarkdownAst ParseDocument(string? content) => ParseMarkdownAst(content);
+    public MarkdownAst ParseCommonMark(string? content) => ParseMarkdownAst(content);
+    public MarkdownAst ParseGfm(string? content) => ParseMarkdownAst(content);
+
+    public bool TryParseMarkdown(string? content, out MarkdownAst? ast)
+    {
+        ast = MarkdownAst.Parse(content);
+        if (!ast.IsValid)
+        {
+            _parseError = ParseErrorMarker;
+            HandleParseError(ast.ParseException);
+            return false;
+        }
+        _parseError = null;
+        return true;
+    }
+
+    public void HandleParseError(Exception? ex = null, string? message = null)
+    {
+        _parseError = string.IsNullOrWhiteSpace(message) ? ParseErrorMarker : message;
+        try { Logger?.LogError("LOG-012 Error de parseo CommonMark/GFM. Hora: {Timestamp:O}. Resultado: fallo. Código de error: ERR-022. Mensaje: {Message}", DateTimeOffset.UtcNow, _parseError); }
+        catch { }
+        if (ex is not null) { try { Logger?.LogError(ex, "LOG-012"); } catch { } }
+    }
+
+    public void ReportParseError(Exception? ex = null, string? message = null) => HandleParseError(ex, message);
+    public void LogParseError(Exception? ex = null, string? message = null) => HandleParseError(ex, message);
+    public void OnParseError(Exception? ex = null, string? message = null) => HandleParseError(ex, message);
+
+    public bool IsMarkdownParseable(string? content) => MarkdownAst.Parse(content).IsValid;
+    public string RenderMarkdownSafe(object? input) => Renderer.RenderMarkdown(input);
     public bool OpenFile(string? path = null) => Open(path);
     public bool AbrirArchivo(string? path = null) => Open(path);
 
