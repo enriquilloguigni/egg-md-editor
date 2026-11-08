@@ -174,7 +174,7 @@
       }
     },
     "F-004-formato-markdown-completo": {
-      "status": "implementing",
+      "status": "verifying",
       "docs": {
         "process": "approved",
         "screens": "approved",
@@ -217,9 +217,13 @@
         "T-087": "done",
         "T-088": "done",
         "T-089": "done",
-        "T-090": "todo"
+        "T-090": "done"
       },
-      "verification": {},
+      "verification": {
+        "run": "v1",
+        "execution": "E-010",
+        "stale": false
+      },
       "plan_version": "v1"
     }
   },
@@ -354,7 +358,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-07T14:37:03.237Z",
+  "updated_at": "2026-11-08T18:08:28.571Z",
   "owner": "EG",
   "sources": [
     {
