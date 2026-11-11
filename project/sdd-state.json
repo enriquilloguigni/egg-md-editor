@@ -222,7 +222,9 @@
       "verification": {
         "run": "v1",
         "execution": "E-010",
-        "stale": false
+        "stale": false,
+        "result": "v1",
+        "outcome": "no-cubierto"
       },
       "plan_version": "v1"
     }
@@ -358,7 +360,7 @@
       "resolved_by": "humano"
     }
   ],
-  "updated_at": "2026-11-08T18:08:28.571Z",
+  "updated_at": "2026-11-11T17:38:10.162Z",
   "owner": "EG",
   "sources": [
     {
